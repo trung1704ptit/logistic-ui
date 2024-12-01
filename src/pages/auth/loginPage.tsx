@@ -89,18 +89,17 @@ const LoginPage = () => {
             rules={[
               {
                 required: true,
-                message: 'Please enter your email',
+                message: 'Vui lòng nhập email',
               },
               {
                 type: 'email',
-                message: 'Invalid email address',
+                message: 'Địa chỉ email không chính xác',
               },
             ]}
           >
             <Input
-              placeholder="name@example.com"
               size='large'
-              className="bg-gray-50 text-gray-900 sm:text-sm py-1.5"
+              className="bg-gray-50 text-gray-900 sm:text-sm py-2"
             />
           </Form.Item>
         </div>
@@ -109,21 +108,20 @@ const LoginPage = () => {
             name="password"
             label={
               <p className="block text-sm font-medium text-gray-900">
-                Password
+                Mật khẩu
               </p>
             }
             rules={[
               {
                 required: true,
-                message: 'Please enter your password',
+                message: 'Vui lòng nhập mật khẩu',
               },
             ]}
           >
             <Input.Password
-              placeholder="••••••••"
               size='large'
               visibilityToggle={false}
-              className="bg-gray-50 text-gray-900 sm:text-sm py-1.5"
+              className="bg-gray-50 text-gray-900 sm:text-sm py-2"
             />
           </Form.Item>
         </div>
@@ -137,7 +135,7 @@ const LoginPage = () => {
             size="large"
             htmlType={'submit'}
           >
-            Login
+            Đăng nhập
           </Button>
         </div>
       </Form>
