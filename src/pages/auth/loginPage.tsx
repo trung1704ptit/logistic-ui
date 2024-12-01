@@ -74,8 +74,8 @@ const LoginPage = () => {
         initialValues={
           import.meta.env.VITE_DEMO_MODE === 'true'
             ? {
-                email: 'eve.holt@reqres.in',
-                password: 'password',
+                email: 'admin@gmail.com',
+                password: 'admin',
               }
             : {}
         }
