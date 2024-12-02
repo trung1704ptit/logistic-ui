@@ -1,5 +1,5 @@
 import { Button, Form, Input } from 'antd';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { apiRoutes } from '@/routes/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '@/store/slices/adminSlice';
@@ -9,6 +9,7 @@ import { webRoutes } from '@/routes/web';
 import { handleErrorResponse, setPageTitle } from '@/lib/utils';
 import { Admin } from '@/interfaces/admin';
 import { defaultHttp } from '@/lib/http';
+import type { InputRef } from 'antd';
 
 interface FormValues {
   email: string;
@@ -23,9 +24,11 @@ const LoginPage = () => {
   const admin = useSelector((state: RootState) => state.admin);
   const [loading, setLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
+  const emailRef = useRef<InputRef>(null);
 
   useEffect(() => {
     setPageTitle(`Đăng nhập - ${CONFIG.appName}`);
+    emailRef?.current?.focus()
   }, []);
 
   useEffect(() => {
@@ -74,8 +77,8 @@ const LoginPage = () => {
         initialValues={
           import.meta.env.VITE_DEMO_MODE === 'true'
             ? {
-                email: 'admin@gmail.com',
-                password: 'admin',
+                email: 'eve.holt@reqres.in',
+                password: 'password',
               }
             : {}
         }
@@ -100,6 +103,7 @@ const LoginPage = () => {
             <Input
               size='large'
               className="bg-gray-50 text-gray-900 sm:text-sm py-2"
+              ref={emailRef}
             />
           </Form.Item>
         </div>

@@ -1,24 +1,69 @@
-import { webRoutes } from '@/routes/web';
-import { BiHomeAlt2 } from 'react-icons/bi';
-import Icon, { UserOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { webRoutes } from "@/routes/web";
+import { BiHomeAlt2 } from "react-icons/bi";
+import Icon, {
+  UserOutlined,
+  InfoCircleOutlined,
+  SettingOutlined,
+  LineChartOutlined,
+  DollarOutlined,
+  CarOutlined,
+  CopyOutlined,
+  TruckOutlined
+} from "@ant-design/icons";
 
 export const sidebar = [
   {
     path: webRoutes.dashboard,
     key: webRoutes.dashboard,
-    name: 'Dashboard',
+    name: "Tổng quan",
     icon: <Icon component={BiHomeAlt2} />,
+  },
+  {
+    path: webRoutes.prices,
+    key: webRoutes.prices,
+    name: "Bảng giá",
+    icon: <CopyOutlined />,
+  },
+  {
+    path: webRoutes.salaries,
+    key: webRoutes.salaries,
+    name: "Bảng lương",
+    icon: <DollarOutlined />,
+  },
+  {
+    path: webRoutes.drivers,
+    key: webRoutes.drivers,
+    name: "Tài xế",
+    icon: <UserOutlined />,
+  },
+  {
+    path: webRoutes.trucks,
+    key: webRoutes.trucks,
+    name: "Xe tải",
+    icon: <TruckOutlined />,
+  },
+  {
+    path: webRoutes.reports,
+    key: webRoutes.reports,
+    name: "Báo cáo",
+    icon: <LineChartOutlined />,
+  },
+  {
+    path: webRoutes.settings,
+    key: webRoutes.settings,
+    name: "Cài đặt",
+    icon: <SettingOutlined />,
   },
   {
     path: webRoutes.users,
     key: webRoutes.users,
-    name: 'Users',
+    name: "Tài khoản",
     icon: <UserOutlined />,
   },
   {
     path: webRoutes.about,
     key: webRoutes.about,
-    name: 'About',
+    name: "Thông tin",
     icon: <InfoCircleOutlined />,
   },
 ];

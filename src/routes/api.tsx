@@ -6,4 +6,5 @@ export const apiRoutes = {
   logout: `${BACKEND_API_URL}/logout`,
   users: `${BACKEND_API_URL}/users`,
   reviews: `${BACKEND_API_URL}/unknown`,
+  drivers: `${BACKEND_API_URL}/drivers`,
 };

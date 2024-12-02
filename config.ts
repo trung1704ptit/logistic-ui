@@ -9,7 +9,7 @@ enum LayoutType {
 }
 
 const CONFIG = {
-  appName: process.env.VITE_APP_NAME || 'Reforge',
+  appName: process.env.VITE_APP_NAME || 'Thọ Anh Logistic',
   enablePWA: process.env.VITE_ENABLE_PWA === 'true',
   theme: {
     accentColor: process.env.VITE_THEME_ACCENT_COLOR || '#009900',
@@ -17,7 +17,7 @@ const CONFIG = {
     showBreadcrumb: process.env.VITE_SHOW_BREADCRUMB === 'true',
   },
   metaTags: {
-    title: 'Reforge',
+    title: 'Thọ Anh Logistic',
     description:
       'An out-of-box UI solution for enterprise applications as a React boilerplate.',
     imageURL: 'logo.svg',

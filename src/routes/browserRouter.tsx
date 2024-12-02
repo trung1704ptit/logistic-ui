@@ -19,7 +19,26 @@ const DashboardPage = loadable(() => import('@/pages/dashboardPage'), {
 const UserListPage = loadable(() => import('@/pages/users/userListPage'), {
   fallback: fallbackElement,
 });
+const DriverListPage = loadable(() => import('@/pages/drivers/driverListPage'), {
+  fallback: fallbackElement,
+});
 const AboutPage = loadable(() => import('@/pages/aboutPage'), {
+  fallback: fallbackElement,
+});
+const TruckListPage = loadable(() => import('@/pages/trucks/truckPage'), {
+  fallback: fallbackElement,
+});
+const ReportPage = loadable(() => import('@/pages/reports/reportPage'), {
+  fallback: fallbackElement,
+});
+const SalaryPage  = loadable(() => import('@/pages/salaries/salaryPage'), {
+  fallback: fallbackElement,
+});
+const PriceListPage  = loadable(() => import('@/pages/prices/pricePage'), {
+  fallback: fallbackElement,
+});
+
+const SettingPage  = loadable(() => import('@/pages/settings/settingPage'), {
   fallback: fallbackElement,
 });
 
@@ -54,6 +73,30 @@ export const browserRouter = createBrowserRouter([
       {
         path: webRoutes.dashboard,
         element: <DashboardPage />,
+      },
+      {
+        path: webRoutes.drivers,
+        element: <DriverListPage />,
+      },
+      {
+        path: webRoutes.trucks,
+        element: <TruckListPage />,
+      },
+      {
+        path: webRoutes.reports,
+        element: <ReportPage />,
+      },
+      {
+        path: webRoutes.salaries,
+        element: <SalaryPage />,
+      },
+      {
+        path: webRoutes.settings,
+        element: <SettingPage/>,
+      },
+      {
+        path: webRoutes.prices,
+        element: <PriceListPage/>,
       },
       {
         path: webRoutes.users,
