@@ -1,5 +1,6 @@
 import { webRoutes } from "@/routes/web";
 import { BiHomeAlt2 } from "react-icons/bi";
+import { LiaHandshake } from "react-icons/lia";
 import Icon, {
   UserOutlined,
   InfoCircleOutlined,
@@ -17,6 +18,12 @@ export const sidebar = [
     key: webRoutes.dashboard,
     name: "Tổng quan",
     icon: <Icon component={BiHomeAlt2} />,
+  },
+  {
+    path: webRoutes.orders,
+    key: webRoutes.orders,
+    name: "Đơn hàng",
+    icon: <Icon component={LiaHandshake} />,
   },
   {
     path: webRoutes.expenses,

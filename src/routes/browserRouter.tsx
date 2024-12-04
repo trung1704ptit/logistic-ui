@@ -75,6 +75,10 @@ export const browserRouter = createBrowserRouter([
         element: <DashboardPage />,
       },
       {
+        path: webRoutes.orders,
+        element: <DriverListPage />,
+      },
+      {
         path: webRoutes.drivers,
         element: <DriverListPage />,
       },

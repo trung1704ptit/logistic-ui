@@ -1,4 +1,5 @@
 export const webRoutes = {
+  orders: '/orders',
   home: '/',
   login: '/login',
   logout: '/logout',
