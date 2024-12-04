@@ -106,6 +106,10 @@ export const browserRouter = createBrowserRouter([
         path: webRoutes.about,
         element: <AboutPage />,
       },
+      {
+        path: webRoutes.expenses,
+        element: <AboutPage />,
+      },
     ],
   },
 

@@ -6,9 +6,9 @@ import Icon, {
   SettingOutlined,
   LineChartOutlined,
   DollarOutlined,
-  CarOutlined,
   CopyOutlined,
-  TruckOutlined
+  TruckOutlined,
+  FormOutlined
 } from "@ant-design/icons";
 
 export const sidebar = [
@@ -17,6 +17,12 @@ export const sidebar = [
     key: webRoutes.dashboard,
     name: "Tổng quan",
     icon: <Icon component={BiHomeAlt2} />,
+  },
+  {
+    path: webRoutes.expenses,
+    key: webRoutes.expenses,
+    name: "Chi phí",
+    icon: <FormOutlined />,
   },
   {
     path: webRoutes.prices,

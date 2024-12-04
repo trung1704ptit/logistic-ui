@@ -10,5 +10,6 @@ export const webRoutes = {
   trucks: '/trucks',
   settings: '/settings',
   salaries: '/salaries',
-  reports: '/reports'
+  reports: '/reports',
+  expenses: '/expenses'
 };
