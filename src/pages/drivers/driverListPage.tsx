@@ -11,6 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { driverList } from "@/__mocks__/driver";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -24,51 +25,6 @@ const breadcrumb: BreadcrumbProps = {
     },
   ],
 };
-
-const driverList = [
-  {
-    id: "1",
-    avatar: null,
-    name: "Nguyễn Văn A",
-    phoneNumber: "0123456789",
-    idCard: "123456789",
-    issueDate: "2021-01-01",
-    birthDate: "1990-01-01",
-    hometown: "Hà Nội",
-    licenseNumber: "A123456",
-    licenseExpiry: "2025-01-01",
-    driverType: "Nội bộ",
-    contractor: null,
-  },
-  {
-    id: "2",
-    avatar: null,
-    name: "Trần Thị B",
-    phoneNumber: "0987654321",
-    idCard: "987654321",
-    issueDate: "2022-02-02",
-    birthDate: "1992-02-02",
-    hometown: "Hải Phòng",
-    licenseNumber: "B987654",
-    licenseExpiry: "2026-02-02",
-    driverType: "Nhà thầu",
-    contractor: "Nhà thầu A",
-  },
-  {
-    id: "3",
-    avatar: null,
-    name: "Lê Văn C",
-    phoneNumber: "0123987654",
-    idCard: "456789123",
-    issueDate: "2023-03-03",
-    birthDate: "1993-03-03",
-    hometown: "Đà Nẵng",
-    licenseNumber: "C456789",
-    licenseExpiry: "2027-03-03",
-    driverType: "Nội bộ",
-    contractor: null,
-  },
-];
 
 const DriverListPage = () => {
   const actionRef = useRef<ActionType>();
@@ -86,7 +42,10 @@ const DriverListPage = () => {
       content: (
         <div>
           <p>{`Bạn có chắc muốn xóa tài xế ${driver.name}?`}</p>
-          <p>Mọi thông tin về tài xế bao gồm thông tin cá nhân, thông tin chuyến xe, bảng lương sẽ bị xóa.</p>
+          <p>
+            Mọi thông tin về tài xế bao gồm thông tin cá nhân, thông tin chuyến
+            xe, bảng lương sẽ bị xóa.
+          </p>
         </div>
       ),
       okText: "Xóa",
@@ -100,7 +59,7 @@ const DriverListPage = () => {
   const columns: ProColumns[] = [
     {
       title: "Họ và Tên",
-      dataIndex: "name",
+      dataIndex: "fullName",
       sorter: false,
       align: "center",
       ellipsis: true,
@@ -141,7 +100,7 @@ const DriverListPage = () => {
       dataIndex: "driverType",
       align: "center",
       render: (_, row) =>
-        row.driverType === "Nội bộ"
+        row.driverType === "internal"
           ? "Nội bộ"
           : `Nhà thầu: ${row.contractor || "Không rõ"}`,
     },

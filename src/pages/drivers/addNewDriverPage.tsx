@@ -160,7 +160,7 @@ const AddDriverForm: React.FC = () => {
             >
               <Select size="large" placeholder="Chọn loại tài xế">
                 <Option value="internal">Nội bộ</Option>
-                <Option value="vendor">Nhà thầu</Option>
+                <Option value="contractor">Nhà thầu</Option>
               </Select>
             </Form.Item>
           </Col>

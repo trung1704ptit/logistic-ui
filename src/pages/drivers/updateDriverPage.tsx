@@ -1,16 +1,17 @@
-import React, { useState } from "react";
-import { Form, Input, DatePicker, Button, Row, Col, Select } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Form, Input, DatePicker, Button, Row, Col, Select, Space } from "antd";
+import { CloseOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { Avatar, BreadcrumbProps, Modal, Space } from "antd";
-import { apiRoutes } from "@/routes/api";
+import { BreadcrumbProps } from "antd";
 import { webRoutes } from "@/routes/web";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { driverList } from "@/__mocks__/driver";
+import moment from "moment";
 
 const { TextArea } = Input;
 const { Option } = Select;
 
-// Fake danh sách nhà thầu
 const contractorList = [
   { id: "ct1", name: "Nhà thầu A" },
   { id: "ct2", name: "Nhà thầu B" },
@@ -34,9 +35,13 @@ const breadcrumb: BreadcrumbProps = {
   ],
 };
 
-const AddDriverForm: React.FC = () => {
+const EditDriverForm: React.FC = () => {
   const [form] = Form.useForm();
   const [isVendorDriver, setIsVendorDriver] = useState(false); // Trạng thái xác định loại tài xế
+  const [driverId, setDriverId] = useState<string | null>(null);
+  const [driver, setDriver] = useState<any>(null); // Use proper typing here
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleFormChange = (changedValues: any) => {
     if (changedValues.driverType) {
@@ -62,6 +67,43 @@ const AddDriverForm: React.FC = () => {
     };
     console.log("Submitted values:", formattedValues);
   };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const driverId = urlParams.get("id");
+
+    if (driverId) {
+      const driverFilter: any = driverList.find((item) => item.id === driverId);
+      if (driverFilter) {
+        setDriver(driverFilter);
+        // Set form values here when the driver data is available
+        form.setFieldsValue({
+          fullName: driverFilter.fullName,
+          phoneNumber: driverFilter.phoneNumber,
+          idCard: driverFilter.idCard,
+          issueDate: driverFilter.issueDate
+            ? moment(driverFilter.issueDate)
+            : null,
+          birthDate: driverFilter.birthDate
+            ? moment(driverFilter.birthDate)
+            : null,
+          hometown: driverFilter.hometown,
+          licenseNumber: driverFilter.licenseNumber,
+          licenseExpiry: driverFilter.licenseExpiry
+            ? moment(driverFilter.licenseExpiry)
+            : null,
+          driverType: driverFilter.driverType,
+          contractor: driverFilter.contractor || undefined,
+          note: driverFilter.note,
+        });
+        setIsVendorDriver(driverFilter.driverType === "contractor");
+      }
+    }
+  }, [location.search]);
+
+  const handleCancel = () => {
+    navigate(webRoutes.drivers)
+  }
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -160,12 +202,12 @@ const AddDriverForm: React.FC = () => {
             >
               <Select size="large" placeholder="Chọn loại tài xế">
                 <Option value="internal">Nội bộ</Option>
-                <Option value="vendor">Nhà thầu</Option>
+                <Option value="contractor">Nhà thầu</Option>
               </Select>
             </Form.Item>
           </Col>
 
-          {isVendorDriver && ( // Hiển thị khi là nhà thầu
+          {isVendorDriver && (
             <Col xs={24} sm={12}>
               <Form.Item
                 label="Nhà Thầu"
@@ -194,14 +236,25 @@ const AddDriverForm: React.FC = () => {
           </Col>
           <Col xs={24}>
             <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                size="large"
-                icon={<PlusOutlined />}
-              >
-                Cập nhật tài xế
-              </Button>
+              <Space>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  icon={<SaveOutlined />}
+                >
+                  Cập nhật tài xế
+                </Button>
+                <Button
+                  type="default"
+                  htmlType="submit"
+                  size="large"
+                  icon={<CloseOutlined />}
+                  onClick={handleCancel}
+                >
+                  Thoát
+                </Button>
+              </Space>
             </Form.Item>
           </Col>
         </Row>
@@ -210,4 +263,4 @@ const AddDriverForm: React.FC = () => {
   );
 };
 
-export default AddDriverForm;
+export default EditDriverForm;
