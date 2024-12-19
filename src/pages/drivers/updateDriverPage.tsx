@@ -37,15 +37,14 @@ const breadcrumb: BreadcrumbProps = {
 
 const EditDriverForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [isVendorDriver, setIsVendorDriver] = useState(false); // Trạng thái xác định loại tài xế
-  const [driverId, setDriverId] = useState<string | null>(null);
-  const [driver, setDriver] = useState<any>(null); // Use proper typing here
+  const [isContractorDriver, setIsContractorDriver] = useState(false); // Trạng thái xác định loại tài xế
+  // const [driver, setDriver] = useState<any>(null); // Use proper typing here
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleFormChange = (changedValues: any) => {
     if (changedValues.driverType) {
-      setIsVendorDriver(changedValues.driverType === "vendor");
+      setIsContractorDriver(changedValues.driverType === "contractor");
       if (changedValues.driverType === "internal") {
         form.setFieldsValue({ contractor: undefined }); // Xóa giá trị nhà thầu nếu là nội bộ
       }
@@ -75,7 +74,7 @@ const EditDriverForm: React.FC = () => {
     if (driverId) {
       const driverFilter: any = driverList.find((item) => item.id === driverId);
       if (driverFilter) {
-        setDriver(driverFilter);
+        // setDriver(driverFilter);
         // Set form values here when the driver data is available
         form.setFieldsValue({
           fullName: driverFilter.fullName,
@@ -96,7 +95,7 @@ const EditDriverForm: React.FC = () => {
           contractor: driverFilter.contractor || undefined,
           note: driverFilter.note,
         });
-        setIsVendorDriver(driverFilter.driverType === "contractor");
+        setIsContractorDriver(driverFilter.driverType === "contractor");
       }
     }
   }, [location.search]);
@@ -207,7 +206,7 @@ const EditDriverForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {isVendorDriver && (
+          {isContractorDriver && (
             <Col xs={24} sm={12}>
               <Form.Item
                 label="Nhà Thầu"

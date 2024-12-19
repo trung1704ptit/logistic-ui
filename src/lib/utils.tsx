@@ -55,3 +55,12 @@ export const handleErrorResponse = (
     return callback();
   }
 };
+
+
+// Function to normalize and remove diacritics
+export const removeVietnameseTones = (str: string): string => {
+  // Normalize the string and remove diacritics
+  return str
+    .normalize('NFD') // Normalize to decomposed form
+    .replace(/[\u0300-\u036f]/g, ''); // Remove diacritics using regex
+};

@@ -36,11 +36,11 @@ const breadcrumb: BreadcrumbProps = {
 
 const AddDriverForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [isVendorDriver, setIsVendorDriver] = useState(false); // Trạng thái xác định loại tài xế
+  const [isContractorDriver, setIsContractorDriver] = useState(false); // Trạng thái xác định loại tài xế
 
   const handleFormChange = (changedValues: any) => {
     if (changedValues.driverType) {
-      setIsVendorDriver(changedValues.driverType === "vendor");
+      setIsContractorDriver(changedValues.driverType === "contractor");
       if (changedValues.driverType === "internal") {
         form.setFieldsValue({ contractor: undefined }); // Xóa giá trị nhà thầu nếu là nội bộ
       }
@@ -165,7 +165,7 @@ const AddDriverForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {isVendorDriver && ( // Hiển thị khi là nhà thầu
+          {isContractorDriver && ( // Hiển thị khi là nhà thầu
             <Col xs={24} sm={12}>
               <Form.Item
                 label="Nhà Thầu"

@@ -1,61 +1,44 @@
-import {
-  ActionType,
-  ProTable,
-  ProColumns,
-  RequestData,
-} from "@ant-design/pro-components";
-import { BreadcrumbProps, Button, Modal, Space } from "antd";
-import { useRef } from "react";
-import { FiUsers } from "react-icons/fi";
+import React, { useState } from "react";
+import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
+import { Button, Input, Space, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
+import { FiUsers } from "react-icons/fi";
+import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { driverList } from "@/__mocks__/driver";
+import { removeVietnameseTones } from "@/lib/utils";
 
-const breadcrumb: BreadcrumbProps = {
+// Breadcrumb for navigation
+const breadcrumb = {
   items: [
-    {
-      key: webRoutes.dashboard,
-      title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
-    },
-    {
-      key: webRoutes.drivers,
-      title: <Link to={webRoutes.drivers}>Tài xế</Link>,
-    },
+    { key: webRoutes.dashboard, title: <Link to={webRoutes.dashboard}>Trang chủ</Link> },
+    { key: webRoutes.drivers, title: <Link to={webRoutes.drivers}>Tài xế</Link> },
   ],
 };
 
 const DriverListPage = () => {
-  const actionRef = useRef<ActionType>();
-  const [modal, modalContextHolder] = Modal.useModal();
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [filteredDriverList, setFilteredDriverList] = useState(driverList);
 
+  // Handle driver edit
   const handleEditDriver = (driver: any) => {
     navigate(`/drivers/edit?id=${driver.id}`);
   };
 
+  // Handle driver deletion
   const handleDeleteDriver = (driver: any) => {
     Modal.confirm({
       title: "Xác nhận xóa tài xế",
-      icon: <ExclamationCircleOutlined />,
-      content: (
-        <div>
-          <p>{`Bạn có chắc muốn xóa tài xế ${driver.name}?`}</p>
-          <p>
-            Mọi thông tin về tài xế bao gồm thông tin cá nhân, thông tin chuyến
-            xe, bảng lương sẽ bị xóa.
-          </p>
-        </div>
-      ),
-      okText: "Xóa",
-      cancelText: "Hủy",
+      content: `Bạn có chắc muốn xóa tài xế ${driver.name}?`,
       onOk: () => {
         console.log("Deleted driver:", driver);
       },
     });
   };
 
+  // Columns configuration for ProTable
   const columns: ProColumns[] = [
     {
       title: "Họ và Tên",
@@ -113,7 +96,6 @@ const DriverListPage = () => {
           <Button type="dashed" onClick={() => handleEditDriver(row)}>
             Sửa
           </Button>
-
           <Button danger onClick={() => handleDeleteDriver(row)}>
             Xóa
           </Button>
@@ -122,6 +104,18 @@ const DriverListPage = () => {
     },
   ];
 
+// Example search function
+const handleSearch = (searchTerm: string) => {
+  const normalizedSearchTerm = removeVietnameseTones(searchTerm.toLowerCase());
+
+  const filtered = driverList.filter((driver: any) =>
+    Object.keys(driver).some((key) =>
+      removeVietnameseTones(String(driver[key])).toLowerCase().includes(normalizedSearchTerm)
+    )
+  );
+
+  setFilteredDriverList(filtered);
+};
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
       <ProTable
@@ -130,16 +124,24 @@ const DriverListPage = () => {
         cardProps={{
           title: <FiUsers className="opacity-60" />,
           subTitle: "Tài xế",
-          tooltip: {
-            className: "opacity-60",
-            title: "Danh sách tài xế",
-          },
           extra: (
-            <Link to={webRoutes.addNewDrivers}>
-              <Button type="primary" icon={<PlusOutlined />}>
-                Thêm mới tài xế
-              </Button>
-            </Link>
+            <Space>
+              <Input
+                placeholder="Tìm kiếm tài xế..."
+                value={searchTerm}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchTerm(value);
+                  handleSearch(value); // Call handleSearch whenever the input changes
+                }}
+                style={{ width: 300 }}
+              />
+              <Link to={webRoutes.addNewDrivers}>
+                <Button type="primary" icon={<PlusOutlined />}>
+                  Thêm mới tài xế
+                </Button>
+              </Link>
+            </Space>
           ),
         }}
         bordered={true}
@@ -149,32 +151,25 @@ const DriverListPage = () => {
         rowSelection={false}
         pagination={{
           showQuickJumper: true,
-          pageSize: 10,
+          pageSize: 20,
         }}
-        actionRef={actionRef}
         request={async (params) => {
-          if (params.current && params.pageSize) {
-            const data = driverList.slice(
-              (params?.current - 1) * params?.pageSize,
-              params?.current * params?.pageSize
-            );
-            return {
-              data,
-              success: true,
-              total: driverList.length,
-            } as RequestData<(typeof driverList)[0]>;
-          }
-          return {};
+          const data = filteredDriverList.slice(
+            ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
+            (params?.current ?? 1) * (params?.pageSize ?? 10)
+          );
+          return {
+            data,
+            success: true,
+            total: filteredDriverList.length,
+          } as RequestData<(typeof driverList)[0]>;
         }}
+        dataSource={filteredDriverList}
         dateFormatter="string"
-        search={false}
         rowKey="id"
-        options={{
-          search: false,
-        }}
-        defaultSize="small" // Chế độ mật độ mặc định là compact
+        search={false}
+        size="small"
       />
-      {modalContextHolder}
     </BasePageContainer>
   );
 };
