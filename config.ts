@@ -14,7 +14,7 @@ const CONFIG = {
   theme: {
     accentColor: process.env.VITE_THEME_ACCENT_COLOR || '#009900',
     sidebarLayout: process.env.VITE_THEME_SIDEBAR_LAYOUT || LayoutType.MIX,
-    showBreadcrumb: process.env.VITE_SHOW_BREADCRUMB === 'true',
+    showBreadcrumb: true,
   },
   metaTags: {
     title: 'Thọ Anh Logistic',

@@ -6,6 +6,8 @@ export const webRoutes = {
   dashboard: '/dashboard',
   users: '/users',
   drivers: '/drivers',
+  addNewDrivers: '/drivers/new-driver',
+  updateDrivers: '/drivers/update-driver',
   about: '/about',
   prices: '/prices',
   trucks: '/trucks',

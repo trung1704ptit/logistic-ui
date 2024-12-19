@@ -22,6 +22,12 @@ const UserListPage = loadable(() => import('@/pages/users/userListPage'), {
 const DriverListPage = loadable(() => import('@/pages/drivers/driverListPage'), {
   fallback: fallbackElement,
 });
+const AddNewDriverPage = loadable(() => import('@/pages/drivers/addNewDriverPage'), {
+  fallback: fallbackElement,
+});
+const UpdateDriverPage = loadable(() => import('@/pages/drivers/updateDriverPage'), {
+  fallback: fallbackElement,
+});
 const AboutPage = loadable(() => import('@/pages/aboutPage'), {
   fallback: fallbackElement,
 });
@@ -81,6 +87,14 @@ export const browserRouter = createBrowserRouter([
       {
         path: webRoutes.drivers,
         element: <DriverListPage />,
+      },
+      {
+        path: webRoutes.addNewDrivers,
+        element: <AddNewDriverPage />,
+      },
+      {
+        path: webRoutes.updateDrivers,
+        element: <UpdateDriverPage />,
       },
       {
         path: webRoutes.trucks,

@@ -5,41 +5,42 @@ import {
   RequestData,
   TableDropdown,
   ProDescriptions,
-} from '@ant-design/pro-components';
-import { Avatar, BreadcrumbProps, Modal, Space } from 'antd';
-import { useRef } from 'react';
-import { FiUsers } from 'react-icons/fi';
-import { CiCircleMore } from 'react-icons/ci';
-import { Link } from 'react-router-dom';
-import { User } from '@/interfaces/user';
-import { apiRoutes } from '@/routes/api';
-import { webRoutes } from '@/routes/web';
+} from "@ant-design/pro-components";
+import { Avatar, BreadcrumbProps, Button, Modal, Space } from "antd";
+import { useRef } from "react";
+import { FiUsers } from "react-icons/fi";
+import { CiCircleMore } from "react-icons/ci";
+import { Link } from "react-router-dom";
+import { User } from "@/interfaces/user";
+import { apiRoutes } from "@/routes/api";
+import { webRoutes } from "@/routes/web";
 import {
   handleErrorResponse,
   NotificationType,
   showNotification,
-} from '@/lib/utils';
-import http from '@/lib/http';
-import BasePageContainer from '@/components/layout/pageContainer';
-import LazyImage from '@/components/lazy-image';
+} from "@/lib/utils";
+import http from "@/lib/http";
+import BasePageContainer from "@/components/layout/pageContainer";
+import LazyImage from "@/components/lazy-image";
 import Icon, {
   ExclamationCircleOutlined,
   DeleteOutlined,
-} from '@ant-design/icons';
+  PlusOutlined
+} from "@ant-design/icons";
 
 enum ActionKey {
-  DELETE = 'delete',
+  DELETE = "delete",
 }
 
 const breadcrumb: BreadcrumbProps = {
   items: [
     {
       key: webRoutes.dashboard,
-      title: <Link to={webRoutes.dashboard}>Dashboard</Link>,
+      title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
     },
     {
-      key: webRoutes.users,
-      title: <Link to={webRoutes.users}>Users</Link>,
+      key: webRoutes.drivers,
+      title: <Link to={webRoutes.drivers}>Tài xế</Link>,
     },
   ],
 };
@@ -50,9 +51,9 @@ const DriverListPage = () => {
 
   const columns: ProColumns[] = [
     {
-      title: 'Avatar',
-      dataIndex: 'avatar',
-      align: 'center',
+      title: "Avatar",
+      dataIndex: "avatar",
+      align: "center",
       sorter: false,
       render: (_, row: User) =>
         row.avatar ? (
@@ -73,25 +74,25 @@ const DriverListPage = () => {
         ),
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: "Name",
+      dataIndex: "name",
       sorter: false,
-      align: 'center',
+      align: "center",
       ellipsis: true,
       render: (_, row: User) => `${row.first_name} ${row.last_name}`,
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
+      title: "Email",
+      dataIndex: "email",
       sorter: false,
-      align: 'center',
+      align: "center",
       ellipsis: true,
     },
     {
-      title: 'Action',
-      align: 'center',
-      key: 'option',
-      fixed: 'right',
+      title: "Action",
+      align: "center",
+      key: "option",
+      fixed: "right",
       render: (_, row: User) => [
         <TableDropdown
           key="actionGroup"
@@ -122,7 +123,7 @@ const DriverListPage = () => {
 
   const showDeleteConfirmation = (user: User) => {
     modal.confirm({
-      title: 'Are you sure to delete this user?',
+      title: "Are you sure to delete this user?",
       icon: <ExclamationCircleOutlined />,
       content: (
         <ProDescriptions column={1} title=" ">
@@ -142,9 +143,9 @@ const DriverListPage = () => {
           .delete(`${apiRoutes.users}/${user.id}`)
           .then(() => {
             showNotification(
-              'Success',
+              "Success",
               NotificationType.SUCCESS,
-              'User is deleted.'
+              "User is deleted."
             );
 
             actionRef.current?.reloadAndRest?.();
@@ -162,17 +163,18 @@ const DriverListPage = () => {
         columns={columns}
         cardBordered={false}
         cardProps={{
-          subTitle: 'Users',
-          tooltip: {
-            className: 'opacity-60',
-            title: 'Mocked data',
-          },
           title: <FiUsers className="opacity-60" />,
+          subTitle: "Tài xế",
+          tooltip: {
+            className: "opacity-60",
+            title: "Danh sách tài xế",
+          },
+          extra: <Link to={webRoutes.addNewDrivers}><Button type="primary" icon={<PlusOutlined />}>Thêm mới tài xế</Button></Link>,
         }}
         bordered={true}
         showSorterTooltip={false}
         scroll={{ x: true }}
-        tableLayout={'fixed'}
+        tableLayout={"fixed"}
         rowSelection={false}
         pagination={{
           showQuickJumper: true,
