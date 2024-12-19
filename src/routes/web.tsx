@@ -8,11 +8,10 @@ export const webRoutes = {
   drivers: '/drivers',
   addNewDrivers: '/drivers/new-driver',
   updateDrivers: '/drivers/update-driver',
-  about: '/about',
   prices: '/prices',
   trucks: '/trucks',
   settings: '/settings',
   salaries: '/salaries',
-  reports: '/reports',
+  reports: '/reports',    
   expenses: '/expenses'
 };

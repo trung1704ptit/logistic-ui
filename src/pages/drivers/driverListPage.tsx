@@ -3,34 +3,17 @@ import {
   ProTable,
   ProColumns,
   RequestData,
-  TableDropdown,
-  ProDescriptions,
 } from "@ant-design/pro-components";
-import { Avatar, BreadcrumbProps, Button, Modal, Space } from "antd";
+import { BreadcrumbProps, Button, Modal, Space } from "antd";
 import { useRef } from "react";
 import { FiUsers } from "react-icons/fi";
-import { CiCircleMore } from "react-icons/ci";
 import { Link } from "react-router-dom";
-import { User } from "@/interfaces/user";
-import { apiRoutes } from "@/routes/api";
 import { webRoutes } from "@/routes/web";
-import {
-  handleErrorResponse,
-  NotificationType,
-  showNotification,
-} from "@/lib/utils";
-import http from "@/lib/http";
 import BasePageContainer from "@/components/layout/pageContainer";
-import LazyImage from "@/components/lazy-image";
-import Icon, {
+import {
   ExclamationCircleOutlined,
-  DeleteOutlined,
-  PlusOutlined
+  PlusOutlined,
 } from "@ant-design/icons";
-
-enum ActionKey {
-  DELETE = "delete",
-}
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -45,117 +28,148 @@ const breadcrumb: BreadcrumbProps = {
   ],
 };
 
+const driverList = [
+  {
+    id: "1",
+    avatar: null,
+    name: "Nguyễn Văn A",
+    phoneNumber: "0123456789",
+    idCard: "123456789",
+    issueDate: "2021-01-01",
+    birthDate: "1990-01-01",
+    hometown: "Hà Nội",
+    licenseNumber: "A123456",
+    licenseExpiry: "2025-01-01",
+    driverType: "Nội bộ",
+    contractor: null,
+  },
+  {
+    id: "2",
+    avatar: null,
+    name: "Trần Thị B",
+    phoneNumber: "0987654321",
+    idCard: "987654321",
+    issueDate: "2022-02-02",
+    birthDate: "1992-02-02",
+    hometown: "Hải Phòng",
+    licenseNumber: "B987654",
+    licenseExpiry: "2026-02-02",
+    driverType: "Nhà thầu",
+    contractor: "Nhà thầu A",
+  },
+  {
+    id: "3",
+    avatar: null,
+    name: "Lê Văn C",
+    phoneNumber: "0123987654",
+    idCard: "456789123",
+    issueDate: "2023-03-03",
+    birthDate: "1993-03-03",
+    hometown: "Đà Nẵng",
+    licenseNumber: "C456789",
+    licenseExpiry: "2027-03-03",
+    driverType: "Nội bộ",
+    contractor: null,
+  },
+];
+
 const DriverListPage = () => {
   const actionRef = useRef<ActionType>();
   const [modal, modalContextHolder] = Modal.useModal();
+  const handleEditDriver = (driver: any) => {
+    // Logic điều hướng đến trang sửa thông tin
+    console.log("Edit driver:", driver);
+    // Điều hướng đến trang sửa:
+    // navigate(`/drivers/edit/${driver.id}`);
+  };
+
+  const handleDeleteDriver = (driver: any) => {
+    Modal.confirm({
+      title: "Xác nhận xóa tài xế",
+      icon: <ExclamationCircleOutlined />,
+      content: `Bạn có chắc muốn xóa tài xế ${driver.name}?`,
+      okText: "Xóa",
+      cancelText: "Hủy",
+      onOk: () => {
+        // Logic xóa tài xế
+        console.log("Deleted driver:", driver);
+        // Ví dụ gọi API xóa:
+        // deleteDriver(driver.id)
+        //   .then(() => {
+        //     actionRef.current?.reload();
+        //   })
+        //   .catch((err) => {
+        //     console.error(err);
+        //   });
+      },
+    });
+  };
 
   const columns: ProColumns[] = [
     {
-      title: "Avatar",
-      dataIndex: "avatar",
-      align: "center",
-      sorter: false,
-      render: (_, row: User) =>
-        row.avatar ? (
-          <Avatar
-            shape="circle"
-            size="small"
-            src={
-              <LazyImage
-                src={row.avatar}
-                placeholder={<div className="bg-gray-100 h-full w-full" />}
-              />
-            }
-          />
-        ) : (
-          <Avatar shape="circle" size="small">
-            {row.first_name.charAt(0).toUpperCase()}
-          </Avatar>
-        ),
-    },
-    {
-      title: "Name",
+      title: "Họ và Tên",
       dataIndex: "name",
       sorter: false,
       align: "center",
       ellipsis: true,
-      render: (_, row: User) => `${row.first_name} ${row.last_name}`,
     },
     {
-      title: "Email",
-      dataIndex: "email",
+      title: "Số Điện Thoại",
+      dataIndex: "phoneNumber",
       sorter: false,
       align: "center",
       ellipsis: true,
     },
     {
-      title: "Action",
+      title: "Căn Cước Công Dân",
+      dataIndex: "idCard",
+      sorter: false,
       align: "center",
-      key: "option",
-      fixed: "right",
-      render: (_, row: User) => [
-        <TableDropdown
-          key="actionGroup"
-          onSelect={(key) => handleActionOnSelect(key, row)}
-          menus={[
-            {
-              key: ActionKey.DELETE,
-              name: (
-                <Space>
-                  <DeleteOutlined />
-                  Delete
-                </Space>
-              ),
-            },
-          ]}
-        >
-          <Icon component={CiCircleMore} className="text-rfprimary text-xl" />
-        </TableDropdown>,
-      ],
+    },
+    {
+      title: "Ngày Cấp",
+      dataIndex: "issueDate",
+      sorter: true,
+      align: "center",
+    },
+    {
+      title: "Số bằng lái",
+      dataIndex: "licenseNumber",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Ngày hết hạn bằng lái",
+      dataIndex: "licenseExpiry",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Loại Tài Xế",
+      dataIndex: "driverType",
+      align: "center",
+      render: (_, row) =>
+        row.driverType === "Nội bộ"
+          ? "Nội bộ"
+          : `Nhà thầu: ${row.contractor || "Không rõ"}`,
+    },
+    {
+      title: "Hành động",
+      align: "center",
+      key: "actions",
+      render: (_, row) => (
+        <Space>
+          <Button type="dashed" onClick={() => handleEditDriver(row)}>
+            Sửa
+          </Button>
+
+          <Button danger onClick={() => handleDeleteDriver(row)}>
+            Xóa
+          </Button>
+        </Space>
+      ),
     },
   ];
-
-  const handleActionOnSelect = (key: string, user: User) => {
-    if (key === ActionKey.DELETE) {
-      showDeleteConfirmation(user);
-    }
-  };
-
-  const showDeleteConfirmation = (user: User) => {
-    modal.confirm({
-      title: "Are you sure to delete this user?",
-      icon: <ExclamationCircleOutlined />,
-      content: (
-        <ProDescriptions column={1} title=" ">
-          <ProDescriptions.Item valueType="avatar" label="Avatar">
-            {user.avatar}
-          </ProDescriptions.Item>
-          <ProDescriptions.Item valueType="text" label="Name">
-            {user.first_name} {user.last_name}
-          </ProDescriptions.Item>
-          <ProDescriptions.Item valueType="text" label="Email">
-            {user.email}
-          </ProDescriptions.Item>
-        </ProDescriptions>
-      ),
-      onOk: () => {
-        return http
-          .delete(`${apiRoutes.users}/${user.id}`)
-          .then(() => {
-            showNotification(
-              "Success",
-              NotificationType.SUCCESS,
-              "User is deleted."
-            );
-
-            actionRef.current?.reloadAndRest?.();
-          })
-          .catch((error) => {
-            handleErrorResponse(error);
-          });
-      },
-    });
-  };
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -169,7 +183,13 @@ const DriverListPage = () => {
             className: "opacity-60",
             title: "Danh sách tài xế",
           },
-          extra: <Link to={webRoutes.addNewDrivers}><Button type="primary" icon={<PlusOutlined />}>Thêm mới tài xế</Button></Link>,
+          extra: (
+            <Link to={webRoutes.addNewDrivers}>
+              <Button type="primary" icon={<PlusOutlined />}>
+                Thêm mới tài xế
+              </Button>
+            </Link>
+          ),
         }}
         bordered={true}
         showSorterTooltip={false}
@@ -181,31 +201,19 @@ const DriverListPage = () => {
           pageSize: 10,
         }}
         actionRef={actionRef}
-        request={(params) => {
-          return http
-            .get(apiRoutes.users, {
-              params: {
-                page: params.current,
-                per_page: params.pageSize,
-              },
-            })
-            .then((response) => {
-              const users: [User] = response.data.data;
-
-              return {
-                data: users,
-                success: true,
-                total: response.data.total,
-              } as RequestData<User>;
-            })
-            .catch((error) => {
-              handleErrorResponse(error);
-
-              return {
-                data: [],
-                success: false,
-              } as RequestData<User>;
-            });
+        request={async (params) => {
+          if (params.current && params.pageSize) {
+            const data = driverList.slice(
+              (params?.current - 1) * params?.pageSize,
+              params?.current * params?.pageSize
+            );
+            return {
+              data,
+              success: true,
+              total: driverList.length,
+            } as RequestData<(typeof driverList)[0]>;
+          }
+          return {};
         }}
         dateFormatter="string"
         search={false}
@@ -213,6 +221,7 @@ const DriverListPage = () => {
         options={{
           search: false,
         }}
+        defaultSize="small" // Chế độ mật độ mặc định là compact
       />
       {modalContextHolder}
     </BasePageContainer>

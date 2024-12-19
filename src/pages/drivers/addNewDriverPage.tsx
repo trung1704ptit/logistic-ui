@@ -1,15 +1,21 @@
-import React from "react";
-import { Form, Input, DatePicker, Button, Row, Col } from "antd";
+import React, { useState } from "react";
+import { Form, Input, DatePicker, Button, Row, Col, Select } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import BasePageContainer from "@/components/layout/pageContainer";
 import { Avatar, BreadcrumbProps, Modal, Space } from "antd";
 import { apiRoutes } from "@/routes/api";
 import { webRoutes } from "@/routes/web";
 import { Link } from "react-router-dom";
-import { PlusOutlined } from "@ant-design/icons";
-
-import dayjs from "dayjs";
-import BasePageContainer from "@/components/layout/pageContainer";
 
 const { TextArea } = Input;
+const { Option } = Select;
+
+// Fake danh sách nhà thầu
+const contractorList = [
+  { id: "ct1", name: "Nhà thầu A" },
+  { id: "ct2", name: "Nhà thầu B" },
+  { id: "ct3", name: "Nhà thầu C" },
+];
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -30,6 +36,16 @@ const breadcrumb: BreadcrumbProps = {
 
 const AddDriverForm: React.FC = () => {
   const [form] = Form.useForm();
+  const [isVendorDriver, setIsVendorDriver] = useState(false); // Trạng thái xác định loại tài xế
+
+  const handleFormChange = (changedValues: any) => {
+    if (changedValues.driverType) {
+      setIsVendorDriver(changedValues.driverType === "vendor");
+      if (changedValues.driverType === "internal") {
+        form.setFieldsValue({ contractor: undefined }); // Xóa giá trị nhà thầu nếu là nội bộ
+      }
+    }
+  };
 
   const handleSubmit = (values: any) => {
     const formattedValues = {
@@ -53,6 +69,7 @@ const AddDriverForm: React.FC = () => {
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
+        onValuesChange={handleFormChange} // Theo dõi thay đổi giá trị form
         style={{ maxWidth: 800, margin: "0 auto" }}
       >
         <Row gutter={[16, 16]}>
@@ -79,7 +96,7 @@ const AddDriverForm: React.FC = () => {
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
-              label="Căn cước công dân"
+              label="Căn cước công dân"
               name="idCard"
               rules={[{ required: true, message: "Hãy nhập CCCD!" }]}
             >
@@ -100,11 +117,7 @@ const AddDriverForm: React.FC = () => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
-            <Form.Item
-              label="Ngày Sinh"
-              name="birthDate"
-              rules={[{ required: true, message: "Hãy chọn ngày sinh!" }]}
-            >
+            <Form.Item label="Ngày Sinh" name="birthDate">
               <DatePicker
                 size="large"
                 placeholder="Chọn ngày sinh"
@@ -113,11 +126,7 @@ const AddDriverForm: React.FC = () => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
-            <Form.Item
-              label="Quê Quán"
-              name="hometown"
-              rules={[{ required: true, message: "Hãy nhập quê quán!" }]}
-            >
+            <Form.Item label="Quê Quán" name="hometown">
               <Input size="large" placeholder="Nhập quê quán" />
             </Form.Item>
           </Col>
@@ -143,6 +152,37 @@ const AddDriverForm: React.FC = () => {
               />
             </Form.Item>
           </Col>
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Loại tài xế"
+              name="driverType"
+              rules={[{ required: true, message: "Hãy chọn loại tài xế!" }]}
+            >
+              <Select size="large" placeholder="Chọn loại tài xế">
+                <Option value="internal">Nội bộ</Option>
+                <Option value="vendor">Nhà thầu</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+
+          {isVendorDriver && ( // Hiển thị khi là nhà thầu
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Nhà Thầu"
+                name="contractor"
+                rules={[{ required: true, message: "Hãy chọn nhà thầu!" }]}
+              >
+                <Select size="large" placeholder="Chọn nhà thầu">
+                  {contractorList.map((contractor) => (
+                    <Option key={contractor.id} value={contractor.id}>
+                      {contractor.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          )}
+
           <Col xs={24}>
             <Form.Item label="Ghi Chú" name="note">
               <TextArea
