@@ -7,13 +7,10 @@ import {
 import { BreadcrumbProps, Button, Modal, Space } from "antd";
 import { useRef } from "react";
 import { FiUsers } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import BasePageContainer from "@/components/layout/pageContainer";
-import {
-  ExclamationCircleOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -76,31 +73,26 @@ const driverList = [
 const DriverListPage = () => {
   const actionRef = useRef<ActionType>();
   const [modal, modalContextHolder] = Modal.useModal();
+  const navigate = useNavigate();
+
   const handleEditDriver = (driver: any) => {
-    // Logic điều hướng đến trang sửa thông tin
-    console.log("Edit driver:", driver);
-    // Điều hướng đến trang sửa:
-    // navigate(`/drivers/edit/${driver.id}`);
+    navigate(`/drivers/edit?id=${driver.id}`);
   };
 
   const handleDeleteDriver = (driver: any) => {
     Modal.confirm({
       title: "Xác nhận xóa tài xế",
       icon: <ExclamationCircleOutlined />,
-      content: `Bạn có chắc muốn xóa tài xế ${driver.name}?`,
+      content: (
+        <div>
+          <p>{`Bạn có chắc muốn xóa tài xế ${driver.name}?`}</p>
+          <p>Mọi thông tin về tài xế bao gồm thông tin cá nhân, thông tin chuyến xe, bảng lương sẽ bị xóa.</p>
+        </div>
+      ),
       okText: "Xóa",
       cancelText: "Hủy",
       onOk: () => {
-        // Logic xóa tài xế
         console.log("Deleted driver:", driver);
-        // Ví dụ gọi API xóa:
-        // deleteDriver(driver.id)
-        //   .then(() => {
-        //     actionRef.current?.reload();
-        //   })
-        //   .catch((err) => {
-        //     console.error(err);
-        //   });
       },
     });
   };

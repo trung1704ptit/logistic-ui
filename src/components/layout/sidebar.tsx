@@ -73,10 +73,4 @@ export const sidebar = [
     name: "Tài khoản",
     icon: <UserOutlined />,
   },
-  {
-    path: webRoutes.about,
-    key: webRoutes.about,
-    name: "Thông tin",
-    icon: <InfoCircleOutlined />,
-  },
 ];
