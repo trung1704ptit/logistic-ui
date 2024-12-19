@@ -3,28 +3,27 @@ import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
-import { FiUsers } from "react-icons/fi";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { driverList } from "@/__mocks__";
+import { contractors } from "@/__mocks__";
 import { removeVietnameseTones } from "@/lib/utils";
+import Title from "antd/lib/typography/Title";
 
-// Breadcrumb for navigation
 const breadcrumb = {
   items: [
     { key: webRoutes.dashboard, title: <Link to={webRoutes.dashboard}>Trang chủ</Link> },
-    { key: webRoutes.drivers, title: <Link to={webRoutes.drivers}>Tài xế</Link> },
+    { key: webRoutes.contractors, title: <Link to={webRoutes.contractors}>Nhà thầu</Link> },
   ],
 };
 
 const DriverListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const [filteredDriverList, setFilteredDriverList] = useState(driverList);
+  const [filteredContractorList, setFilteredContractorList] = useState(contractors);
 
   // Handle driver edit
   const handleEditDriver = (driver: any) => {
-    navigate(`${webRoutes.updateDrivers}?id=${driver.id}`);
+    navigate(`${webRoutes.updateContractors}?id=${driver.id}`);
   };
 
   // Handle driver deletion
@@ -41,8 +40,8 @@ const DriverListPage = () => {
   // Columns configuration for ProTable
   const columns: ProColumns[] = [
     {
-      title: "Họ và Tên",
-      dataIndex: "fullName",
+      title: "Tên nhà thầu",
+      dataIndex: "name",
       sorter: false,
       align: "center",
       ellipsis: true,
@@ -55,37 +54,16 @@ const DriverListPage = () => {
       ellipsis: true,
     },
     {
-      title: "Căn Cước Công Dân",
-      dataIndex: "idCard",
+      title: "Địa chỉ",
+      dataIndex: "address",
       sorter: false,
       align: "center",
     },
     {
-      title: "Ngày Cấp",
-      dataIndex: "issueDate",
-      sorter: true,
-      align: "center",
-    },
-    {
-      title: "Số bằng lái",
-      dataIndex: "licenseNumber",
+      title: "Ghi chú",
+      dataIndex: "note",
       sorter: false,
       align: "center",
-    },
-    {
-      title: "Ngày hết hạn bằng lái",
-      dataIndex: "licenseExpiry",
-      sorter: false,
-      align: "center",
-    },
-    {
-      title: "Loại Tài Xế",
-      dataIndex: "driverType",
-      align: "center",
-      render: (_, row) =>
-        row.driverType === "internal"
-          ? "Nội bộ"
-          : `Nhà thầu: ${row.contractor || "Không rõ"}`,
     },
     {
       title: "Hành động",
@@ -94,7 +72,7 @@ const DriverListPage = () => {
       render: (_, row) => (
         <Space>
           <Button type="dashed" onClick={() => handleEditDriver(row)}>
-            Sửa
+            Xem Chi Tiết
           </Button>
           <Button danger onClick={() => handleDeleteDriver(row)}>
             Xóa
@@ -108,13 +86,13 @@ const DriverListPage = () => {
 const handleSearch = (searchTerm: string) => {
   const normalizedSearchTerm = removeVietnameseTones(searchTerm.toLowerCase());
 
-  const filtered = driverList.filter((driver: any) =>
+  const filtered = contractors.filter((driver: any) =>
     Object.keys(driver).some((key) =>
       removeVietnameseTones(String(driver[key])).toLowerCase().includes(normalizedSearchTerm)
     )
   );
 
-  setFilteredDriverList(filtered);
+  setFilteredContractorList(filtered);
 };
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -122,23 +100,22 @@ const handleSearch = (searchTerm: string) => {
         columns={columns}
         cardBordered={false}
         cardProps={{
-          title: <FiUsers className="opacity-60" />,
-          subTitle: "Tài xế",
+          title: <Title level={5}>Nhà thầu</Title>,
           extra: (
             <Space>
               <Input
-                placeholder="Tìm kiếm tài xế..."
+                placeholder="Tìm kiếm nhà thầu..."
                 value={searchTerm}
                 onChange={(e) => {
                   const value = e.target.value;
                   setSearchTerm(value);
-                  handleSearch(value); // Call handleSearch whenever the input changes
+                  handleSearch(value);
                 }}
                 style={{ width: 300 }}
               />
-              <Link to={webRoutes.addNewDrivers}>
+              <Link to={webRoutes.addNewContractors}>
                 <Button type="primary" icon={<PlusOutlined />}>
-                  Thêm mới tài xế
+                  Thêm mới nhà thầu
                 </Button>
               </Link>
             </Space>
@@ -154,17 +131,17 @@ const handleSearch = (searchTerm: string) => {
           pageSize: 20,
         }}
         request={async (params) => {
-          const data = filteredDriverList.slice(
+          const data = filteredContractorList.slice(
             ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
             (params?.current ?? 1) * (params?.pageSize ?? 10)
           );
           return {
             data,
             success: true,
-            total: filteredDriverList.length,
-          } as RequestData<(typeof driverList)[0]>;
+            total: filteredContractorList.length,
+          } as RequestData<(typeof contractors)[0]>;
         }}
-        dataSource={filteredDriverList}
+        dataSource={filteredContractorList}
         dateFormatter="string"
         rowKey="id"
         search={false}

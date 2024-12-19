@@ -6,7 +6,7 @@ import { BreadcrumbProps } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { driverList } from "@/__mocks__/driver";
+import { driverList } from "@/__mocks__";
 import moment from "moment";
 
 const { TextArea } = Input;
@@ -239,15 +239,12 @@ const EditDriverForm: React.FC = () => {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  size="large"
                   icon={<SaveOutlined />}
                 >
                   Cập nhật tài xế
                 </Button>
                 <Button
                   type="default"
-                  htmlType="submit"
-                  size="large"
                   icon={<CloseOutlined />}
                   onClick={handleCancel}
                 >

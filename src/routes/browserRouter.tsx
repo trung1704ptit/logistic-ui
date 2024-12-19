@@ -45,6 +45,19 @@ const SettingPage  = loadable(() => import('@/pages/settings/settingPage'), {
   fallback: fallbackElement,
 });
 
+// Contractors
+const ContractorListPage  = loadable(() => import('@/pages/contractors/contractorListPage'), {
+  fallback: fallbackElement,
+});
+
+const NewContractorPage  = loadable(() => import('@/pages/contractors/newContractorPage'), {
+  fallback: fallbackElement,
+});
+
+const UpdateContractorPage  = loadable(() => import('@/pages/contractors/updateContractorPage'), {
+  fallback: fallbackElement,
+});
+
 export const browserRouter = createBrowserRouter([
   {
     path: webRoutes.home,
@@ -120,6 +133,18 @@ export const browserRouter = createBrowserRouter([
       {
         path: webRoutes.expenses,
         element: <UserListPage />,
+      },
+      {
+        path: webRoutes.contractors,
+        element: <ContractorListPage />,
+      },
+      {
+        path: webRoutes.addNewContractors,
+        element: <NewContractorPage />,
+      },
+      {
+        path: webRoutes.updateContractors,
+        element: <UpdateContractorPage />,
       },
     ],
   },

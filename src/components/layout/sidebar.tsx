@@ -3,13 +3,13 @@ import { BiHomeAlt2 } from "react-icons/bi";
 import { LiaHandshake } from "react-icons/lia";
 import Icon, {
   UserOutlined,
-  InfoCircleOutlined,
   SettingOutlined,
   LineChartOutlined,
   DollarOutlined,
   CopyOutlined,
   TruckOutlined,
-  FormOutlined
+  FormOutlined,
+  BuildOutlined
 } from "@ant-design/icons";
 
 export const sidebar = [
@@ -48,6 +48,12 @@ export const sidebar = [
     key: webRoutes.drivers,
     name: "Tài xế",
     icon: <UserOutlined />,
+  },
+  {
+    path: webRoutes.contractors,
+    key: webRoutes.contractors,
+    name: "Nhà thầu",
+    icon: <BuildOutlined />,
   },
   {
     path: webRoutes.trucks,
