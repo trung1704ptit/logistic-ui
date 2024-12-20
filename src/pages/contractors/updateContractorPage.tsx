@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Row, Col, Select } from "antd";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { Avatar, BreadcrumbProps, Space, Divider } from "antd";
-// import { apiRoutes } from "@/routes/api";
+import { BreadcrumbProps, Space, Divider, Modal } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 import Title from "antd/lib/typography/Title";
+
+import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
+import { PlusOutlined } from "@ant-design/icons";
+import { driverList } from "@/__mocks__";
+import { removeVietnameseTones } from "@/lib/utils";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -42,8 +46,9 @@ const ContractorForm: React.FC = () => {
   const [editingContractor, setEditingContractor] = useState<Contractor | null>(
     null
   );
-
+  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [filteredDriverList, setFilteredDriverList] = useState(driverList);
 
   const handleSubmit = (values: Contractor) => {
     if (editingContractor) {
@@ -68,6 +73,84 @@ const ContractorForm: React.FC = () => {
 
   const handleCancel = () => {
     navigate(webRoutes.contractors);
+  };
+
+  // Handle driver edit
+  const handleEditDriver = (driver: any) => {
+    navigate(`${webRoutes.updateDrivers}?id=${driver.id}`);
+  };
+
+  // Handle driver deletion
+  const handleDeleteDriver = (driver: any) => {
+    Modal.confirm({
+      title: "Xác nhận xóa tài xế",
+      content: `Bạn có chắc muốn xóa tài xế ${driver.fullName}?`,
+      onOk: () => {
+        console.log("Deleted driver:", driver.fullName);
+      },
+    });
+  };
+
+  // Columns configuration for ProTable
+  const columns: ProColumns[] = [
+    {
+      title: "Họ và Tên",
+      dataIndex: "fullName",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+    },
+    {
+      title: "Số Điện Thoại",
+      dataIndex: "phoneNumber",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+    },
+    {
+      title: "Căn Cước Công Dân",
+      dataIndex: "idCard",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Số bằng lái",
+      dataIndex: "licenseNumber",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Hành động",
+      align: "center",
+      key: "actions",
+      render: (_, row) => (
+        <Space>
+          <Button type="dashed" onClick={() => handleEditDriver(row)}>
+            Chi tiết
+          </Button>
+          <Button danger onClick={() => handleDeleteDriver(row)}>
+            Xóa
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  // Example search function
+  const handleSearchDriver = (searchTerm: string) => {
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTerm.toLowerCase()
+    );
+
+    const filtered = driverList.filter((driver: any) =>
+      Object.keys(driver).some((key) =>
+        removeVietnameseTones(String(driver[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
+      )
+    );
+
+    setFilteredDriverList(filtered);
   };
 
   return (
@@ -116,7 +199,7 @@ const ContractorForm: React.FC = () => {
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
-                Cập nhật tài xế
+                Cập nhật nhà thầu
               </Button>
               <Button
                 type="default"
@@ -128,11 +211,111 @@ const ContractorForm: React.FC = () => {
             </Space>
           </Form.Item>
         </Form>
-        <Divider style={{ borderColor: "#7cb305" }}></Divider>
-        <Title level={5}>Danh sách xe tải</Title>
 
-        <Divider style={{ borderColor: "#7cb305" }}></Divider>
+        <Divider></Divider>
+        <Title level={5}>Danh sách xe tải</Title>
+        <ProTable
+          columns={columns}
+          cardBordered={true}
+          cardProps={{
+            extra: (
+              <Space>
+                <Input
+                  placeholder="Tìm kiếm tài xế..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSearchTerm(value);
+                    handleSearchDriver(value);
+                  }}
+                  style={{ minWidth: "15%" }}
+                />
+                <Link to={`${webRoutes.addNewDrivers}?isContractor=true`}>
+                  <Button type="primary" icon={<PlusOutlined />}>
+                    Thêm tài xế
+                  </Button>
+                </Link>
+              </Space>
+            ),
+          }}
+          bordered={true}
+          showSorterTooltip={false}
+          scroll={{ x: true }}
+          tableLayout={"fixed"}
+          pagination={{
+            showQuickJumper: true,
+            pageSize: 50,
+          }}
+          request={async (params) => {
+            const data = filteredDriverList.slice(
+              ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
+              (params?.current ?? 1) * (params?.pageSize ?? 10)
+            );
+            return {
+              data,
+              success: true,
+              total: filteredDriverList.length,
+            } as RequestData<(typeof driverList)[0]>;
+          }}
+          dataSource={filteredDriverList}
+          dateFormatter="string"
+          rowKey="id"
+          search={false}
+          size="small"
+        />
+
+        <Divider></Divider>
         <Title level={5}>Danh sách tài xế</Title>
+
+        <ProTable
+          columns={columns}
+          cardBordered={true}
+          cardProps={{
+            extra: (
+              <Space>
+                <Input
+                  placeholder="Tìm kiếm tài xế..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSearchTerm(value);
+                    handleSearchDriver(value);
+                  }}
+                  style={{ minWidth: "15%" }}
+                />
+                <Link to={`${webRoutes.addNewDrivers}?isContractor=true`}>
+                  <Button type="primary" icon={<PlusOutlined />}>
+                    Thêm tài xế
+                  </Button>
+                </Link>
+              </Space>
+            ),
+          }}
+          bordered={true}
+          showSorterTooltip={false}
+          scroll={{ x: true }}
+          tableLayout={"fixed"}
+          pagination={{
+            showQuickJumper: true,
+            pageSize: 50,
+          }}
+          request={async (params) => {
+            const data = filteredDriverList.slice(
+              ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
+              (params?.current ?? 1) * (params?.pageSize ?? 10)
+            );
+            return {
+              data,
+              success: true,
+              total: filteredDriverList.length,
+            } as RequestData<(typeof driverList)[0]>;
+          }}
+          dataSource={filteredDriverList}
+          dateFormatter="string"
+          rowKey="id"
+          search={false}
+          size="small"
+        />
       </div>
     </BasePageContainer>
   );

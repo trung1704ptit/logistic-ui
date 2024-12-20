@@ -111,11 +111,11 @@ const handleSearch = (searchTerm: string) => {
                   setSearchTerm(value);
                   handleSearch(value);
                 }}
-                style={{ width: 300 }}
+                style={{ minWidth: '10%' }}
               />
               <Link to={webRoutes.addNewContractors}>
                 <Button type="primary" icon={<PlusOutlined />}>
-                  Thêm mới nhà thầu
+                  Thêm nhà thầu
                 </Button>
               </Link>
             </Space>

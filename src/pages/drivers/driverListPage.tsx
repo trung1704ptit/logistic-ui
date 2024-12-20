@@ -134,11 +134,11 @@ const handleSearch = (searchTerm: string) => {
                   setSearchTerm(value);
                   handleSearch(value); // Call handleSearch whenever the input changes
                 }}
-                style={{ width: 300 }}
+                style={{ minWidth: '10%' }}
               />
               <Link to={webRoutes.addNewDrivers}>
                 <Button type="primary" icon={<PlusOutlined />}>
-                  Thêm mới tài xế
+                  Thêm tài xế
                 </Button>
               </Link>
             </Space>

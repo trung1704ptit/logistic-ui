@@ -101,7 +101,7 @@ const EditDriverForm: React.FC = () => {
   }, [location.search]);
 
   const handleCancel = () => {
-    navigate(webRoutes.drivers)
+    navigate(-1)
   }
 
   return (
