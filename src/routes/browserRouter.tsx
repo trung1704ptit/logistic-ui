@@ -28,7 +28,13 @@ const AddNewDriverPage = loadable(() => import('@/pages/drivers/addNewDriverPage
 const UpdateDriverPage = loadable(() => import('@/pages/drivers/updateDriverPage'), {
   fallback: fallbackElement,
 });
-const TruckListPage = loadable(() => import('@/pages/trucks/truckPage'), {
+const TruckListPage = loadable(() => import('@/pages/trucks/truckListPage'), {
+  fallback: fallbackElement,
+});
+const NewTruckPage = loadable(() => import('@/pages/trucks/newTruckPage'), {
+  fallback: fallbackElement,
+});
+const UpdateTruckPage = loadable(() => import('@/pages/trucks/updateTruckPage'), {
   fallback: fallbackElement,
 });
 const ReportPage = loadable(() => import('@/pages/reports/reportPage'), {
@@ -109,6 +115,14 @@ export const browserRouter = createBrowserRouter([
       {
         path: webRoutes.trucks,
         element: <TruckListPage />,
+      },
+      {
+        path: webRoutes.addNewTruck,
+        element: <NewTruckPage />,
+      },
+      {
+        path: webRoutes.updateTruck,
+        element: <UpdateTruckPage />,
       },
       {
         path: webRoutes.reports,

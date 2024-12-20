@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Row, Col, Select } from "antd";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { BreadcrumbProps, Space, Divider, Modal } from "antd";
+import { BreadcrumbProps, Space, Divider, Modal, Card } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
@@ -9,8 +9,9 @@ import Title from "antd/lib/typography/Title";
 
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { PlusOutlined } from "@ant-design/icons";
-import { driverList } from "@/__mocks__";
+import { driverList, trucks } from "@/__mocks__";
 import { removeVietnameseTones } from "@/lib/utils";
+
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -49,6 +50,98 @@ const ContractorForm: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [filteredDriverList, setFilteredDriverList] = useState(driverList);
+
+  const [searchTruckTerm, setSearchTruckTerm] = useState("");
+  const [filteredTruckList, setFilteredTruckList] = useState(trucks);
+
+  const handleEditTruck = (truck: any) => {
+    navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
+  };
+
+  const handleDeleteTruck = (truck: any) => {
+    Modal.confirm({
+      title: "Xác nhận xóa xe tải",
+      content: `Bạn có chắc muốn xóa xe tải ${truck.plateNumber}?`,
+      onOk: () => {
+        console.log("Deleted truck:", truck);
+      },
+    });
+  };
+
+  const columnsTruck: ProColumns[] = [
+    {
+      title: "Biển Kiểm Soát",
+      dataIndex: "plateNumber",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+    },
+    {
+      title: "Tải Trọng",
+      dataIndex: "capacity",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+    },
+    {
+      title: "Kích Thước",
+      dataIndex: "dimensions",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Thể Tích",
+      dataIndex: "volume",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Loại xe",
+      dataIndex: "type",
+      align: "center",
+      render: (_, row) =>
+        row.type === "internal"
+          ? "Nội bộ"
+          : `Nhà thầu: ${row.contractor || "-"}`,
+    },
+    {
+      title: "Ghi Chú",
+      dataIndex: "note",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Hành động",
+      align: "center",
+      key: "actions",
+      render: (_, row) => (
+        <Space>
+          <Button type="dashed" onClick={() => handleEditTruck(row)}>
+            Chi Tiết
+          </Button>
+          <Button danger onClick={() => handleDeleteTruck(row)}>
+            Xóa
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  const handleSearchTruck = (searchTerm: string) => {
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTruckTerm.toLowerCase()
+    );
+
+    const filtered = trucks.filter((truck: any) =>
+      Object.keys(truck).some((key) =>
+        removeVietnameseTones(String(truck[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
+      )
+    );
+
+    setFilteredTruckList(filtered);
+  };
 
   const handleSubmit = (values: Contractor) => {
     if (editingContractor) {
@@ -91,7 +184,6 @@ const ContractorForm: React.FC = () => {
     });
   };
 
-  // Columns configuration for ProTable
   const columns: ProColumns[] = [
     {
       title: "Họ và Tên",
@@ -114,10 +206,31 @@ const ContractorForm: React.FC = () => {
       align: "center",
     },
     {
+      title: "Ngày Cấp",
+      dataIndex: "issueDate",
+      sorter: true,
+      align: "center",
+    },
+    {
       title: "Số bằng lái",
       dataIndex: "licenseNumber",
       sorter: false,
       align: "center",
+    },
+    {
+      title: "Ngày hết hạn bằng lái",
+      dataIndex: "licenseExpiry",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Loại Tài Xế",
+      dataIndex: "driverType",
+      align: "center",
+      render: (_, row) =>
+        row.driverType === "internal"
+          ? "Nội bộ"
+          : `Nhà thầu: ${row.contractor || "Không rõ"}`,
     },
     {
       title: "Hành động",
@@ -155,7 +268,7 @@ const ContractorForm: React.FC = () => {
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
-      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <Card>
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Row gutter={16}>
             <Col xs={24} sm={12}>
@@ -211,112 +324,114 @@ const ContractorForm: React.FC = () => {
             </Space>
           </Form.Item>
         </Form>
+      </Card>
 
-        <Divider></Divider>
-        <Title level={5}>Danh sách xe tải</Title>
-        <ProTable
-          columns={columns}
-          cardBordered={true}
-          cardProps={{
-            extra: (
-              <Space>
-                <Input
-                  placeholder="Tìm kiếm tài xế..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSearchTerm(value);
-                    handleSearchDriver(value);
-                  }}
-                  style={{ minWidth: "15%" }}
-                />
-                <Link to={`${webRoutes.addNewDrivers}?isContractor=true`}>
-                  <Button type="primary" icon={<PlusOutlined />}>
-                    Thêm tài xế
-                  </Button>
-                </Link>
-              </Space>
-            ),
-          }}
-          bordered={true}
-          showSorterTooltip={false}
-          scroll={{ x: true }}
-          tableLayout={"fixed"}
-          pagination={{
-            showQuickJumper: true,
-            pageSize: 50,
-          }}
-          request={async (params) => {
-            const data = filteredDriverList.slice(
-              ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
-              (params?.current ?? 1) * (params?.pageSize ?? 10)
-            );
-            return {
-              data,
-              success: true,
-              total: filteredDriverList.length,
-            } as RequestData<(typeof driverList)[0]>;
-          }}
-          dataSource={filteredDriverList}
-          dateFormatter="string"
-          rowKey="id"
-          search={false}
-          size="small"
-        />
+      <Divider></Divider>
 
-        <Divider></Divider>
-        <Title level={5}>Danh sách tài xế</Title>
+      <ProTable
+        columns={columnsTruck}
+        cardBordered={true}
+        cardProps={{
+          title: <Title level={5}>Danh sách xe tải</Title>,
+          extra: (
+            <Space>
+              <Input
+                placeholder="Tìm kiếm xe tải..."
+                value={searchTerm}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchTruckTerm(value);
+                  handleSearchTruck(value);
+                }}
+                style={{ minWidth: "10%" }}
+              />
+              <Link to={webRoutes.addNewTruck}>
+                <Button type="primary" icon={<PlusOutlined />}>
+                  Thêm xe tải
+                </Button>
+              </Link>
+            </Space>
+          ),
+        }}
+        bordered={true}
+        showSorterTooltip={false}
+        scroll={{ x: true }}
+        tableLayout={"fixed"}
+        rowSelection={false}
+        pagination={{
+          showQuickJumper: true,
+          pageSize: 20,
+        }}
+        request={async (params) => {
+          const data = filteredTruckList.slice(
+            ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
+            (params?.current ?? 1) * (params?.pageSize ?? 10)
+          );
+          return {
+            data,
+            success: true,
+            total: filteredTruckList.length,
+          } as RequestData<(typeof trucks)[0]>;
+        }}
+        dataSource={filteredTruckList}
+        dateFormatter="string"
+        rowKey="id"
+        search={false}
+        size="small"
+      />
 
-        <ProTable
-          columns={columns}
-          cardBordered={true}
-          cardProps={{
-            extra: (
-              <Space>
-                <Input
-                  placeholder="Tìm kiếm tài xế..."
-                  value={searchTerm}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSearchTerm(value);
-                    handleSearchDriver(value);
-                  }}
-                  style={{ minWidth: "15%" }}
-                />
-                <Link to={`${webRoutes.addNewDrivers}?isContractor=true`}>
-                  <Button type="primary" icon={<PlusOutlined />}>
-                    Thêm tài xế
-                  </Button>
-                </Link>
-              </Space>
-            ),
-          }}
-          bordered={true}
-          showSorterTooltip={false}
-          scroll={{ x: true }}
-          tableLayout={"fixed"}
-          pagination={{
-            showQuickJumper: true,
-            pageSize: 50,
-          }}
-          request={async (params) => {
-            const data = filteredDriverList.slice(
-              ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
-              (params?.current ?? 1) * (params?.pageSize ?? 10)
-            );
-            return {
-              data,
-              success: true,
-              total: filteredDriverList.length,
-            } as RequestData<(typeof driverList)[0]>;
-          }}
-          dataSource={filteredDriverList}
-          dateFormatter="string"
-          rowKey="id"
-          search={false}
-          size="small"
-        />
-      </div>
+      <Divider></Divider>
+
+      <ProTable
+        columns={columns}
+        cardBordered={true}
+        cardProps={{
+          title: <Title level={5}>Danh sách tài xế</Title>,
+          extra: (
+            <Space>
+              <Input
+                placeholder="Tìm kiếm tài xế..."
+                value={searchTerm}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchTerm(value);
+                  handleSearchDriver(value);
+                }}
+                style={{ minWidth: "15%" }}
+              />
+              <Link to={`${webRoutes.addNewDrivers}?isContractor=true`}>
+                <Button type="primary" icon={<PlusOutlined />}>
+                  Thêm tài xế
+                </Button>
+              </Link>
+            </Space>
+          ),
+        }}
+        bordered={true}
+        showSorterTooltip={false}
+        scroll={{ x: true }}
+        tableLayout={"fixed"}
+        pagination={{
+          showQuickJumper: true,
+          pageSize: 50,
+        }}
+        request={async (params) => {
+          const data = filteredDriverList.slice(
+            ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
+            (params?.current ?? 1) * (params?.pageSize ?? 10)
+          );
+          return {
+            data,
+            success: true,
+            total: filteredDriverList.length,
+          } as RequestData<(typeof driverList)[0]>;
+        }}
+        dataSource={filteredDriverList}
+        dateFormatter="string"
+        rowKey="id"
+        search={false}
+        size="small"
+      />
     </BasePageContainer>
   );
 };

@@ -12,7 +12,12 @@ export const webRoutes = {
   updateDrivers: '/drivers/edit',
 
   prices: '/prices',
+
+  // trucks
   trucks: '/trucks',
+  addNewTruck: '/trucks/new',
+  updateTruck: '/trucks/update',
+
   settings: '/settings',
   salaries: '/salaries',
   reports: '/reports',    

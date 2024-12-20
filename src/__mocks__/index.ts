@@ -81,3 +81,36 @@ export const contractors = [
     note: "Đối tác cũ, cần ký hợp đồng lại.",
   },
 ];
+
+export const trucks = [
+  {
+    id: "truck1",
+    plateNumber: "79C-12345",
+    capacity: "15 tấn",
+    dimensions: "6m x 2.5m x 2.5m",
+    volume: "37.5 m³",
+    type: "internal",
+    contractor: "",
+    note: "Xe mới bảo dưỡng.",
+  },
+  {
+    id: "truck2",
+    plateNumber: "81C-67890",
+    capacity: "10 tấn",
+    dimensions: "5m x 2.5m x 2m",
+    volume: "25 m³",
+    type: "contractor",
+    contractor: "Nhà thầu A",
+    note: "Sử dụng cho dự án X.",
+  },
+  {
+    id: "truck3",
+    plateNumber: "72C-11223",
+    capacity: "20 tấn",
+    dimensions: "7m x 3m x 3m",
+    volume: "63 m³",
+    type: "internal",
+    contractor: "",
+    note: "Chỉ sử dụng trong nội bộ.",
+  },
+];
