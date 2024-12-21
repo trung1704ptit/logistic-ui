@@ -78,11 +78,11 @@ const AddTruckForm: React.FC = () => {
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
-              label="Tải trọng xe"
+              label="Tải trọng xe (T)"
               name="capacity"
               rules={[{ required: true, message: "Hãy nhập tải trọng xe!" }]}
             >
-              <Input size="large" placeholder="Nhập tải trọng xe (tấn)" />
+              <Input size="large" placeholder="Ví dụ 2.5" />
             </Form.Item>
           </Col>
           <Col xs={24} sm={8}>

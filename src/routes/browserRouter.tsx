@@ -43,9 +43,22 @@ const ReportPage = loadable(() => import('@/pages/reports/reportPage'), {
 const SalaryPage  = loadable(() => import('@/pages/salaries/salaryPage'), {
   fallback: fallbackElement,
 });
-const PriceListPage  = loadable(() => import('@/pages/prices/pricePage'), {
+
+// Prices
+const PriceListPage  = loadable(() => import('@/pages/prices/priceListPage'), {
   fallback: fallbackElement,
 });
+
+const AddPricePage  = loadable(() => import('@/pages/prices/addPricePage'), {
+  fallback: fallbackElement,
+});
+
+const UpdatePricePage  = loadable(() => import('@/pages/prices/updatePricePage'), {
+  fallback: fallbackElement,
+});
+
+
+// -----------------------
 
 const SettingPage  = loadable(() => import('@/pages/settings/settingPage'), {
   fallback: fallbackElement,
@@ -139,6 +152,14 @@ export const browserRouter = createBrowserRouter([
       {
         path: webRoutes.prices,
         element: <PriceListPage/>,
+      },
+      {
+        path: webRoutes.addNewPrice,
+        element: <AddPricePage/>,
+      },
+      {
+        path: webRoutes.updatePrice,
+        element: <UpdatePricePage/>,
       },
       {
         path: webRoutes.users,

@@ -9,9 +9,11 @@ export const webRoutes = {
   // drivers
   drivers: '/drivers',
   addNewDrivers: '/drivers/new',
-  updateDrivers: '/drivers/edit',
+  updateDrivers: '/drivers/update',
 
   prices: '/prices',
+  addNewPrice: '/prices/new',
+  updatePrice: '/prices/update',
 
   // trucks
   trucks: '/trucks',
@@ -26,5 +28,5 @@ export const webRoutes = {
   // contractors
   contractors: '/contractors',
   addNewContractors: '/contractors/new',
-  updateContractors: '/contractors/edit'
+  updateContractors: '/contractors/update'
 };
