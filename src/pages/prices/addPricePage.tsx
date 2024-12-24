@@ -6,6 +6,7 @@ import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
 import { contractors } from "@/__mocks__";
 import {  District, provinceList } from "@/lib/provinces";
+import { searchByLabel } from "@/lib/utils";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -79,13 +80,6 @@ const AddDriverForm: React.FC = () => {
 
   const handleSubmit = (values: any) => {
     console.log("Submitted values:", values);
-  };
-
-  const searchByLabel = (input: string, option: any) => {
-    if (option && option.children) {
-      return `${option.children}`.toLowerCase().includes(input.toLowerCase());
-    }
-    return false;
   };
 
   return (
@@ -258,7 +252,7 @@ const AddDriverForm: React.FC = () => {
                         <Col xs={24} md={6}>
                           <Form.Item
                             {...restField}
-                            label="Theo tấn"
+                            label="Giá Theo tấn"
                             name={[name, "price_tons"]}
                             rules={[
                               {
@@ -278,7 +272,7 @@ const AddDriverForm: React.FC = () => {
                         <Col xs={24} md={6}>
                           <Form.Item
                             {...restField}
-                            label="Theo khối"
+                            label="Giá Theo khối"
                             name={[name, "price_volume"]}
                             rules={[
                               {

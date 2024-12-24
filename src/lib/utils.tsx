@@ -64,3 +64,11 @@ export const removeVietnameseTones = (str: string): string => {
     .normalize('NFD') // Normalize to decomposed form
     .replace(/[\u0300-\u036f]/g, ''); // Remove diacritics using regex
 };
+
+
+export const searchByLabel = (input: string, option: any) => {
+  if (option && option.children) {
+    return `${option.children}`.toLowerCase().includes(input.toLowerCase());
+  }
+  return false;
+};

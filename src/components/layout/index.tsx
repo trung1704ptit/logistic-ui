@@ -49,6 +49,7 @@ const Layout = () => {
         token={{
           sider: {
             colorMenuBackground: 'white',
+            colorBgMenuItemSelected: '#ccebcc',
           },
         }}
         location={location}

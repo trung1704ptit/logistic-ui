@@ -77,6 +77,20 @@ const UpdateContractorPage  = loadable(() => import('@/pages/contractors/updateC
   fallback: fallbackElement,
 });
 
+// Orders
+const OrderListPage  = loadable(() => import('@/pages/orders/orderListPage'), {
+  fallback: fallbackElement,
+});
+
+const AddNewOrderPage  = loadable(() => import('@/pages/orders/newOrderPage'), {
+  fallback: fallbackElement,
+});
+
+const UpdateOrderPage  = loadable(() => import('@/pages/orders/updateOrderPage'), {
+  fallback: fallbackElement,
+});
+
+
 export const browserRouter = createBrowserRouter([
   {
     path: webRoutes.home,
@@ -111,7 +125,15 @@ export const browserRouter = createBrowserRouter([
       },
       {
         path: webRoutes.orders,
-        element: <DriverListPage />,
+        element: <OrderListPage />,
+      },
+      {
+        path: webRoutes.addNewOrder,
+        element: <AddNewOrderPage />,
+      },
+      {
+        path: webRoutes.updateOrder,
+        element: <UpdateOrderPage />,
       },
       {
         path: webRoutes.drivers,
