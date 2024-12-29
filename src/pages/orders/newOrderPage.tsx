@@ -14,12 +14,12 @@ import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
 import { District, provinceList } from "@/lib/provinces";
 
-import moment from "moment";
 import { searchByLabel } from "@/lib/utils";
 import { contractors, trucks, driverList } from "@/__mocks__";
+
+const { TextArea } = Input;
 
 const { Option } = Select;
 
@@ -114,11 +114,7 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item label="Ngày tạo" name="orderDate">
-              <DatePicker
-                size="large"
-                style={{ width: "100%" }}
-                defaultValue={moment()} // Use moment for the default value
-              />
+              <DatePicker size="large" className="w-full" />
             </Form.Item>
           </Col>
 
@@ -138,14 +134,10 @@ const AddOrderForm: React.FC = () => {
               name="driver"
               rules={[{ required: true, message: "Hãy chọn lái xe!" }]}
             >
-              <Select
-                size="large"
-                placeholder="Chọn lái xe"
-                disabled={!selectedContractor}
-              >
+              <Select size="large" placeholder="Chọn lái xe" disabled={!selectedContractor}>
                 {selectedContractor &&
                   driverList.map((driver) => (
-                    <Option key={driver.id} value={driver}>
+                    <Option key={driver.id} value={driver.id}>
                       {driver.fullName}
                     </Option>
                   ))}
@@ -166,7 +158,7 @@ const AddOrderForm: React.FC = () => {
               >
                 {selectedContractor &&
                   trucks.map((truck) => (
-                    <Option key={truck.id} value={truck}>
+                    <Option key={truck.id} value={truck.id}>
                       {truck.capacity}
                     </Option>
                   ))}
@@ -282,11 +274,79 @@ const AddOrderForm: React.FC = () => {
           </Col>
 
           <Col xs={24}>
-            <Form.Item label="Chi phí khác" name="otherFee">
-              <Input
+            <Form.Item>
+              <Form.List name="otherFees">
+                {(fields, { add, remove }) => (
+                  <>
+                    {fields.map(({ key, name, ...restField }) => (
+                      <Row key={key} gutter={[8, 8]}>
+                        <Col md={8}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "name"]}
+                            className="mb-0"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng nhập tên chi phí!",
+                              },
+                            ]}
+                          >
+                            <Input size="large" placeholder="Tên chi phí" />
+                          </Form.Item>
+                        </Col>
+                        <Col md={8}>
+                          <Form.Item
+                            {...restField}
+                            name={[name, "value"]}
+                            rules={[
+                              {
+                                required: true,
+                                message: "Vui lòng nhập giá trị!",
+                              },
+                            ]}
+                          >
+                            <Input
+                              size="large"
+                              type="number"
+                              placeholder="Số tiền"
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col md={2}>
+                          <Button
+                            type="link"
+                            danger
+                            onClick={() => remove(name)}
+                          >
+                            Xóa
+                          </Button>
+                        </Col>
+                      </Row>
+                    ))}
+                    <Form.Item>
+                      <Button
+                        type="dashed"
+                        onClick={() => add()}
+                        block
+                        size="large"
+                        style={{ marginTop: 16 }}
+                      >
+                        + Thêm chi phí khác
+                      </Button>
+                    </Form.Item>
+                  </>
+                )}
+              </Form.List>
+            </Form.Item>
+          </Col>
+
+          <Col xs={24}>
+            <Form.Item label="Ghi chú" name="note">
+              <TextArea
                 size="large"
-                type="number"
-                placeholder="Nhập chi phí khác"
+                placeholder="Nhập ghi chú (nếu có)"
+                rows={3}
               />
             </Form.Item>
           </Col>

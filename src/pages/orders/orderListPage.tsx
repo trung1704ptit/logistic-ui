@@ -53,8 +53,8 @@ const TruckListPage = () => {
 
   const handleDeleteTruck = (truck: any) => {
     Modal.confirm({
-      title: "Xác nhận xóa xe tải",
-      content: `Bạn có chắc muốn xóa xe tải ${truck.plateNumber}?`,
+      title: "Xác nhận xóa đơn hàng",
+      content: `Bạn có chắc muốn xóa đơn hàng ${truck.plateNumber}?`,
       onOk: () => {
         console.log("Deleted truck:", truck);
       },
@@ -139,18 +139,18 @@ const TruckListPage = () => {
     <BasePageContainer breadcrumb={{
       items: [
         { key: webRoutes.dashboard, title: <Link to={webRoutes.dashboard}>Trang chủ</Link> },
-        { key: webRoutes.trucks, title: <Link to={webRoutes.trucks}>Xe tải</Link> },
+        { key: webRoutes.trucks, title: <Link to={webRoutes.trucks}>đơn hàng</Link> },
       ],
     }}>
       <ProTable
         columns={columns}
         cardBordered={false}
         cardProps={{
-          title: <Title level={5}>Danh sách xe tải</Title>,
+          title: <Title level={5}>Danh sách đơn hàng</Title>,
           extra: (
             <Space>
               <Input
-                placeholder="Tìm kiếm xe tải..."
+                placeholder="Tìm kiếm đơn hàng..."
                 value={searchTerm}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -160,7 +160,7 @@ const TruckListPage = () => {
                 style={{ minWidth: '10%' }}
               />
               <Link to={webRoutes.addNewOrder}>
-                <Button type="primary" icon={<PlusOutlined />}>Thêm xe tải</Button>
+                <Button type="primary" icon={<PlusOutlined />}>Thêm đơn hàng</Button>
               </Link>
             </Space>
           ),
@@ -172,7 +172,7 @@ const TruckListPage = () => {
         rowSelection={false}
         pagination={{
           showQuickJumper: true,
-          pageSize: 20,
+          pageSize: 30,
         }}
         request={async (params) => {
           const data = filteredTruckList.slice(

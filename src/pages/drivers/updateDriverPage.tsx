@@ -153,7 +153,7 @@ const EditDriverForm: React.FC = () => {
               <DatePicker
                 size="large"
                 placeholder="Chọn ngày cấp"
-                style={{ width: "100%" }}
+                className="w-full"
               />
             </Form.Item>
           </Col>
@@ -162,7 +162,7 @@ const EditDriverForm: React.FC = () => {
               <DatePicker
                 size="large"
                 placeholder="Chọn ngày sinh"
-                style={{ width: "100%" }}
+                className="w-full"
               />
             </Form.Item>
           </Col>
