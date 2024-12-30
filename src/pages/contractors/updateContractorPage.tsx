@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Row, Col, Select } from "antd";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space, Divider, Modal, Card } from "antd";
 import { webRoutes } from "@/routes/web";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 import Title from "antd/lib/typography/Title";
 
@@ -11,7 +11,10 @@ import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { PlusOutlined } from "@ant-design/icons";
 import { driverList, trucks } from "@/__mocks__";
 import { removeVietnameseTones } from "@/lib/utils";
-
+import { RootState } from "@/store";
+import { useSelector } from "react-redux";
+import { IContractor } from "@/interfaces/contractor";
+import http from "@/lib/http";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -33,26 +36,22 @@ const breadcrumb: BreadcrumbProps = {
   ],
 };
 
-interface Contractor {
-  id: string;
-  name: string;
-  phoneNumber: string;
-  address: string;
-  note?: string;
-}
-
 const ContractorForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [contractors, setContractors] = useState<Contractor[]>([]);
-  const [editingContractor, setEditingContractor] = useState<Contractor | null>(
-    null
-  );
-  const [searchTerm, setSearchTerm] = useState("");
+  const [editingContractor, setEditingContractor] = useState<IContractor>();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const params = new URLSearchParams(location.search);
+  const contractorState = useSelector((state: RootState) => state.contractor);
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredDriverList, setFilteredDriverList] = useState(driverList);
 
   const [searchTruckTerm, setSearchTruckTerm] = useState("");
   const [filteredTruckList, setFilteredTruckList] = useState(trucks);
+
+  const [isUpdateLoading, setIsUpdateLoading] = useState(false);
+  const [isUpdateError, setIsUpdateError] = useState(false)
 
   const handleEditTruck = (truck: any) => {
     navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
@@ -127,6 +126,18 @@ const ContractorForm: React.FC = () => {
     },
   ];
 
+  useEffect(() => {
+    if (contractorState.contractors) {
+      const contractorId = params.get("id");
+      console.log("contractorId", contractorId);
+      const contractor = contractorState.contractors.find(
+        (item) => item.id === contractorId
+      );
+      setEditingContractor(contractor);
+      form.setFieldsValue(contractor);
+    }
+  }, [contractorState, params]);
+
   const handleSearchTruck = (searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
       searchTruckTerm.toLowerCase()
@@ -143,25 +154,21 @@ const ContractorForm: React.FC = () => {
     setFilteredTruckList(filtered);
   };
 
-  const handleSubmit = (values: Contractor) => {
+  const handleSubmit = async (contractor: IContractor) => {
     if (editingContractor) {
-      // Update contractor
-      setContractors((prev) =>
-        prev.map((contractor) =>
-          contractor.id === editingContractor.id
-            ? { ...contractor, ...values }
-            : contractor
-        )
-      );
-      setEditingContractor(null);
-    } else {
-      // Add new contractor
-      setContractors((prev) => [
-        ...prev,
-        { ...values, id: Date.now().toString() },
-      ]);
+      try {
+        setIsUpdateLoading(true);
+        setIsUpdateError(false);
+        const res = await http.put(`/contractors/${editingContractor.id}`, contractor);
+        if (res && res.data) {
+          navigate(webRoutes.contractors);
+        }
+      } catch (error) {
+        setIsUpdateError(true);
+      } finally {
+        setIsUpdateLoading(false);
+      }
     }
-    form.resetFields();
   };
 
   const handleCancel = () => {
@@ -194,7 +201,7 @@ const ContractorForm: React.FC = () => {
     },
     {
       title: "Số Điện Thoại",
-      dataIndex: "phoneNumber",
+      dataIndex: "phone",
       sorter: false,
       align: "center",
       ellipsis: true,
@@ -283,7 +290,7 @@ const ContractorForm: React.FC = () => {
             <Col xs={24} sm={12}>
               <Form.Item
                 label="Số điện thoại"
-                name="phoneNumber"
+                name="phone"
                 rules={[
                   { required: true, message: "Hãy nhập số điện thoại!" },
                   { pattern: /^\d+$/, message: "Số điện thoại không hợp lệ!" },
@@ -326,7 +333,7 @@ const ContractorForm: React.FC = () => {
         </Form>
       </Card>
 
-      <Divider></Divider>
+      <div className="mt-6"></div>
 
       <ProTable
         columns={columnsTruck}
@@ -380,7 +387,7 @@ const ContractorForm: React.FC = () => {
         size="small"
       />
 
-      <Divider></Divider>
+      <div className="mt-6"></div>
 
       <ProTable
         columns={columns}

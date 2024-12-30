@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
-import { Button, Input, Space, Modal } from "antd";
+import { Button, Input, Space, Modal, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import { fetchContractors } from "@/store/slices/contractorSlice";
 import { IContractor } from "@/interfaces/contractor";
+import http from "@/lib/http";
 
 const breadcrumb = {
   items: [
@@ -29,32 +30,48 @@ const DriverListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const appDispatch = useDispatch<AppDispatch>();
-  const contractorState = useSelector((state: RootState) => state.contractor)
-
+  const contractorState = useSelector((state: RootState) => state.contractor);
+  const [messageApi, contextHolder] = message.useMessage();
   const [filteredContractorList, setFilteredContractorList] =
     useState<IContractor[]>();
 
-  // Handle driver edit
-  const handleEditDriver = (driver: any) => {
-    navigate(`${webRoutes.updateContractors}?id=${driver.id}`);
+  // Handle contractor edit
+  const handleEditContractor = (contractor: any) => {
+    navigate(`${webRoutes.updateContractors}?id=${contractor.id}`);
   };
 
-  // Handle driver deletion
-  const handleDeleteDriver = (driver: any) => {
+  // Handle contractor deletion
+  const handleDeleteContractor = (contractor: any) => {
     Modal.confirm({
-      title: "Xác nhận xóa tài xế",
-      content: `Bạn có chắc muốn xóa tài xế ${driver.name}?`,
-      onOk: () => {
-        console.log("Deleted driver:", driver);
+      title: "Xác nhận xóa nhà thầu",
+      content: `Bạn có chắc muốn xóa nhà thầu ${contractor.name}?`,
+      onOk: async () => {
+        try {
+          const res = await http.delete(`/contractors/${contractor.id}`);
+          console.log("Response:", res);
+
+          if (res.status === 204) {
+            messageApi.open({
+              type: "success",
+              content: "Xóa thành công",
+            });
+          }
+        } catch (error) {
+          console.error("Error deleting contractor:", error);
+          messageApi.open({
+            type: "error",
+            content: "Có lỗi xảy ra, vui lòng thử lại sau",
+          });
+        }
       },
     });
   };
 
   useEffect(() => {
     if (contractorState.contractors) {
-      setFilteredContractorList(contractorState.contractors)
+      setFilteredContractorList(contractorState.contractors);
     }
-  }, [contractorState])
+  }, [contractorState]);
 
   useEffect(() => {
     appDispatch(fetchContractors());
@@ -94,10 +111,10 @@ const DriverListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed" onClick={() => handleEditDriver(row)}>
+          <Button type="dashed" onClick={() => handleEditContractor(row)}>
             Chi Tiết
           </Button>
-          <Button danger onClick={() => handleDeleteDriver(row)}>
+          <Button danger onClick={() => handleDeleteContractor(row)}>
             Xóa
           </Button>
         </Space>

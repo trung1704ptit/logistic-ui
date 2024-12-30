@@ -41,7 +41,6 @@ const ContractorForm: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (values: Contractor) => {
-    console.log(values);
     try {
       setIsLoading(true);
       setIsError(false);
@@ -55,6 +54,7 @@ const ContractorForm: React.FC = () => {
       setIsLoading(false);
     }
   };
+
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
       <Form
