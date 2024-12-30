@@ -5,16 +5,19 @@ import { ProLayout, ProLayoutProps } from '@ant-design/pro-components';
 import Icon, { LogoutOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import { logout } from '@/store/slices/adminSlice';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { sidebar } from '@/components/layout/sidebar';
 import { apiRoutes } from '@/routes/api';
 import http from '@/lib/http';
 import { handleErrorResponse } from '@/lib/utils';
 import { RiShieldUserFill } from 'react-icons/ri';
+import { fetchContractors } from '@/store/slices/contractorSlice';
+import { AppDispatch } from "@/store";
 
 const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const appDispatch = useDispatch<AppDispatch>();
   const dispatch = useDispatch();
 
   const defaultProps: ProLayoutProps = {
@@ -31,16 +34,20 @@ const Layout = () => {
     },
   };
 
-  const logoutAdmin = () => {
-    dispatch(logout());
+  const logoutAdmin = async () => {
+    await http.get(apiRoutes.logout).catch((error) => {
+      handleErrorResponse(error);
+    });
     navigate(webRoutes.login, {
       replace: true,
     });
-
-    http.post(apiRoutes.logout).catch((error) => {
-      handleErrorResponse(error);
-    });
+    dispatch(logout());
   };
+
+
+  useEffect(() => {
+    appDispatch(fetchContractors());
+  }, [appDispatch]);
 
   return (
     <div className="h-screen">

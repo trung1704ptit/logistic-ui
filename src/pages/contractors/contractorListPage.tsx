@@ -1,25 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { contractors } from "@/__mocks__";
 import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { fetchContractors } from "@/store/slices/contractorSlice";
+import { IContractor } from "@/interfaces/contractor";
 
 const breadcrumb = {
   items: [
-    { key: webRoutes.dashboard, title: <Link to={webRoutes.dashboard}>Trang chủ</Link> },
-    { key: webRoutes.contractors, title: <Link to={webRoutes.contractors}>Nhà thầu</Link> },
+    {
+      key: webRoutes.dashboard,
+      title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
+    },
+    {
+      key: webRoutes.contractors,
+      title: <Link to={webRoutes.contractors}>Nhà thầu</Link>,
+    },
   ],
 };
 
 const DriverListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const [filteredContractorList, setFilteredContractorList] = useState(contractors);
+  const appDispatch = useDispatch<AppDispatch>();
+  const contractorState = useSelector((state: RootState) => state.contractor)
+
+  const [filteredContractorList, setFilteredContractorList] =
+    useState<IContractor[]>();
 
   // Handle driver edit
   const handleEditDriver = (driver: any) => {
@@ -37,6 +50,16 @@ const DriverListPage = () => {
     });
   };
 
+  useEffect(() => {
+    if (contractorState.contractors) {
+      setFilteredContractorList(contractorState.contractors)
+    }
+  }, [contractorState])
+
+  useEffect(() => {
+    appDispatch(fetchContractors());
+  }, [appDispatch]);
+
   // Columns configuration for ProTable
   const columns: ProColumns[] = [
     {
@@ -48,7 +71,7 @@ const DriverListPage = () => {
     },
     {
       title: "Số Điện Thoại",
-      dataIndex: "phoneNumber",
+      dataIndex: "phone",
       sorter: false,
       align: "center",
       ellipsis: true,
@@ -72,7 +95,7 @@ const DriverListPage = () => {
       render: (_, row) => (
         <Space>
           <Button type="dashed" onClick={() => handleEditDriver(row)}>
-            Xem Chi Tiết
+            Chi Tiết
           </Button>
           <Button danger onClick={() => handleDeleteDriver(row)}>
             Xóa
@@ -82,18 +105,23 @@ const DriverListPage = () => {
     },
   ];
 
-// Example search function
-const handleSearch = (searchTerm: string) => {
-  const normalizedSearchTerm = removeVietnameseTones(searchTerm.toLowerCase());
+  // Example search function
+  const handleSearch = (searchTerm: string) => {
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTerm.toLowerCase()
+    );
 
-  const filtered = contractors.filter((driver: any) =>
-    Object.keys(driver).some((key) =>
-      removeVietnameseTones(String(driver[key])).toLowerCase().includes(normalizedSearchTerm)
-    )
-  );
+    const filtered = contractorState?.contractors?.filter((driver: any) =>
+      Object.keys(driver).some((key) =>
+        removeVietnameseTones(String(driver[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
+      )
+    );
 
-  setFilteredContractorList(filtered);
-};
+    setFilteredContractorList(filtered);
+  };
+
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
       <ProTable
@@ -111,7 +139,7 @@ const handleSearch = (searchTerm: string) => {
                   setSearchTerm(value);
                   handleSearch(value);
                 }}
-                style={{ minWidth: '10%' }}
+                style={{ minWidth: "10%" }}
               />
               <Link to={webRoutes.addNewContractors}>
                 <Button type="primary" icon={<PlusOutlined />}>
@@ -131,15 +159,15 @@ const handleSearch = (searchTerm: string) => {
           pageSize: 20,
         }}
         request={async (params) => {
-          const data = filteredContractorList.slice(
+          const data = filteredContractorList?.slice(
             ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
             (params?.current ?? 1) * (params?.pageSize ?? 10)
           );
           return {
             data,
             success: true,
-            total: filteredContractorList.length,
-          } as RequestData<(typeof contractors)[0]>;
+            total: filteredContractorList?.length || 0,
+          } as RequestData<(typeof contractorState.contractors)[0]>;
         }}
         dataSource={filteredContractorList}
         dateFormatter="string"

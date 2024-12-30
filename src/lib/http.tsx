@@ -1,7 +1,7 @@
-import { Store } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { RootState } from '@/store';
-import { logout } from '@/store/slices/adminSlice';
+import { Store } from "@reduxjs/toolkit";
+import axios from "axios";
+import { RootState } from "@/store";
+import { logout } from "@/store/slices/adminSlice";
 
 let store: Store;
 
@@ -10,7 +10,14 @@ export const injectStore = (_store: Store) => {
 };
 
 export const defaultHttp = axios.create();
-const http = axios.create();
+const http = axios.create({
+  baseURL:
+    import.meta.env.VITE_BACKEND_API_URL || "https://localhost:8000.com/api", // Replace with your API's base URL
+  timeout: 10000, // 10 seconds timeout
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
 http.interceptors.request.use(
   (config) => {

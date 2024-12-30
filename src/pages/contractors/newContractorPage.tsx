@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import { Form, Input, Table, Button, Row, Col, Select } from "antd";
+import { Form, Input, Button, Row, Col, Select, Alert, Space } from "antd";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { Avatar, BreadcrumbProps, Modal, Space } from "antd";
-import { apiRoutes } from "@/routes/api";
+import { BreadcrumbProps } from "antd";
 import { webRoutes } from "@/routes/web";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons";
-
-const { TextArea } = Input;
-const { Option } = Select;
+import { PlusOutlined } from "@ant-design/icons";
+import http from "@/lib/http";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -28,7 +25,6 @@ const breadcrumb: BreadcrumbProps = {
   ],
 };
 
-
 interface Contractor {
   id: string;
   name: string;
@@ -39,88 +35,26 @@ interface Contractor {
 
 const ContractorForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [contractors, setContractors] = useState<Contractor[]>([]);
-  const [editingContractor, setEditingContractor] = useState<Contractor | null>(
-    null
-  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
-  const handleSubmit = (values: Contractor) => {
-    if (editingContractor) {
-      // Update contractor
-      setContractors((prev) =>
-        prev.map((contractor) =>
-          contractor.id === editingContractor.id
-            ? { ...contractor, ...values }
-            : contractor
-        )
-      );
-      setEditingContractor(null);
-    } else {
-      // Add new contractor
-      setContractors((prev) => [
-        ...prev,
-        { ...values, id: Date.now().toString() },
-      ]);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (values: Contractor) => {
+    console.log(values);
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      const res = await http.post("/contractors", values);
+      if (res && res.data) {
+        navigate(webRoutes.contractors);
+      }
+    } catch (error) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
-    form.resetFields();
   };
-
-  const handleEdit = (contractor: Contractor) => {
-    setEditingContractor(contractor);
-    form.setFieldsValue(contractor);
-  };
-
-  const handleDelete = (contractor: Contractor) => {
-    Modal.confirm({
-      title: "Xác nhận xóa nhà thầu",
-      icon: <ExclamationCircleOutlined />,
-      content: `Bạn có chắc muốn xóa nhà thầu ${contractor.name}?`,
-      okText: "Xóa",
-      cancelText: "Hủy",
-      onOk: () =>
-        setContractors((prev) =>
-          prev.filter((item) => item.id !== contractor.id)
-        ),
-    });
-  };
-
-  const columns = [
-    {
-      title: "Tên nhà thầu",
-      dataIndex: "name",
-      key: "name",
-    },
-    {
-      title: "Số điện thoại",
-      dataIndex: "phoneNumber",
-      key: "phoneNumber",
-    },
-    {
-      title: "Địa chỉ",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Ghi chú",
-      dataIndex: "note",
-      key: "note",
-    },
-    {
-      title: "Hành động",
-      key: "actions",
-      render: (_: any, contractor: Contractor) => (
-        <Space>
-          <Button type="dashed" onClick={() => handleEdit(contractor)}>
-            Sửa
-          </Button>
-          <Button danger onClick={() => handleDelete(contractor)}>
-            Xóa
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
       <Form
@@ -136,19 +70,19 @@ const ContractorForm: React.FC = () => {
               name="name"
               rules={[{ required: true, message: "Hãy nhập tên nhà thầu!" }]}
             >
-              <Input placeholder="Nhập tên nhà thầu" size="large"/>
+              <Input placeholder="Nhập tên nhà thầu" size="large" />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
               label="Số điện thoại"
-              name="phoneNumber"
+              name="phone"
               rules={[
                 { required: true, message: "Hãy nhập số điện thoại!" },
                 { pattern: /^\d+$/, message: "Số điện thoại không hợp lệ!" },
               ]}
             >
-              <Input placeholder="Nhập số điện thoại" size="large"/>
+              <Input placeholder="Nhập số điện thoại" size="large" />
             </Form.Item>
           </Col>
         </Row>
@@ -169,9 +103,27 @@ const ContractorForm: React.FC = () => {
           </Col>
         </Row>
         <Form.Item>
-          <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-            {editingContractor ? "Cập nhật nhà thầu" : "Thêm nhà thầu"}
-          </Button>
+          <Space direction="vertical">
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<PlusOutlined />}
+              disabled={isLoading}
+              loading={isLoading}
+            >
+              Thêm nhà thầu
+            </Button>
+            {isError && (
+              <Alert
+                message="Đã xảy ra lỗi"
+                description="Có lỗi xảy ra trong quá trình thêm mới Nhà thầu, vui lòng thử lại sau"
+                type="error"
+                showIcon
+                className="w-full"
+                closable
+              />
+            )}
+          </Space>
         </Form.Item>
       </Form>
     </BasePageContainer>

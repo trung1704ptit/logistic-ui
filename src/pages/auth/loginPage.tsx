@@ -47,7 +47,7 @@ const LoginPage = () => {
       })
       .then((response) => {
         const admin: Admin = {
-          token: response.data.token,
+          token: response?.data?.access_token,
         };
         dispatch(login(admin));
       })
