@@ -5,15 +5,13 @@ import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
+import { RootState } from "@/store";
+import { useSelector } from "react-redux";
+import http from "@/lib/http";
+import ErrorMessage from "@/components/Alert/Error";
 
 const { TextArea } = Input;
 const { Option } = Select;
-
-const contractorList = [
-  { id: "ct1", name: "Nhà thầu A" },
-  { id: "ct2", name: "Nhà thầu B" },
-  { id: "ct3", name: "Nhà thầu C" },
-];
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -34,23 +32,33 @@ const breadcrumb: BreadcrumbProps = {
 
 const AddTruckForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [isContractorVehicle, setIsContractorVehicle] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const contractorState = useSelector((state: RootState) => state.contractor);
   const navigate = useNavigate();
 
-  const handleFormChange = (changedValues: any) => {
-    if (changedValues.vehicleType) {
-      setIsContractorVehicle(changedValues.vehicleType === "contractor");
-      if (changedValues.vehicleType === "internal") {
-        form.setFieldsValue({ contractor: undefined }); // Xóa giá trị nhà thầu nếu là nội bộ
+  const handleSubmit = async (values: any) => {
+    try {
+      const payload = {
+        ...values,
+        height: parseFloat(values.height),
+        width: parseFloat(values.width),
+        length: parseFloat(values.length),
+        capacity: parseFloat(values.capacity),
+        volume: parseFloat(values.volume)
+      };
+      setIsLoading(true);
+      setIsError(false);
+      const res = await http.post("/trucks", payload);
+      if (res && res.data) {
+        navigate(webRoutes.trucks);
       }
+    } catch (error) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  const handleSubmit = (values: any) => {
-    const formattedValues = {
-      ...values,
-    };
-    console.log("Submitted values:", formattedValues);
   };
 
   const handleCancel = () => {
@@ -63,14 +71,13 @@ const AddTruckForm: React.FC = () => {
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        onValuesChange={handleFormChange}
         style={{ maxWidth: 800, margin: "0 auto" }}
       >
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12}>
             <Form.Item
               label="Biển kiểm soát"
-              name="licensePlate"
+              name="license_plate"
               rules={[{ required: true, message: "Hãy nhập biển kiểm soát!" }]}
             >
               <Input size="large" placeholder="Nhập biển kiểm soát" />
@@ -85,7 +92,7 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Ví dụ 2.5" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={6}>
             <Form.Item
               label="Dài (m)"
               name="length"
@@ -94,7 +101,7 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Nhập chiều dài" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={6}>
             <Form.Item
               label="Rộng (m)"
               name="width"
@@ -103,7 +110,7 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Nhập chiều rộng" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={6}>
             <Form.Item
               label="Cao (m)"
               name="height"
@@ -112,7 +119,7 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Nhập chiều cao" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={6}>
             <Form.Item
               label="Mét khối"
               name="volume"
@@ -123,33 +130,28 @@ const AddTruckForm: React.FC = () => {
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
-              label="Loại xe"
-              name="vehicleType"
-              rules={[{ required: true, message: "Hãy chọn loại xe!" }]}
+              label="Thương hiệu xe"
+              name="brand"
+              rules={[{ required: true, message: "Hãy nhập Thương hiệu xe!" }]}
             >
-              <Select size="large" placeholder="Chọn loại xe">
-                <Option value="internal">Nội bộ</Option>
-                <Option value="contractor">Nhà thầu</Option>
+              <Input size="large" placeholder="Ví dụ Huyndai" />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Nhà thầu"
+              name="contractor_id"
+              rules={[{ required: true, message: "Hãy chọn nhà thầu!" }]}
+            >
+              <Select size="large" placeholder="Chọn nhà thầu">
+                {contractorState.contractors.map((contractor) => (
+                  <Option value={contractor.id} key={contractor.id}>
+                    {contractor.name}
+                  </Option>
+                ))}
               </Select>
             </Form.Item>
           </Col>
-          {isContractorVehicle && (
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Nhà Thầu"
-                name="contractor"
-                rules={[{ required: true, message: "Hãy chọn nhà thầu!" }]}
-              >
-                <Select size="large" placeholder="Chọn nhà thầu">
-                  {contractorList.map((contractor) => (
-                    <Option key={contractor.id} value={contractor.id}>
-                      {contractor.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          )}
           <Col xs={24}>
             <Form.Item label="Ghi chú" name="note">
               <TextArea
@@ -165,18 +167,23 @@ const AddTruckForm: React.FC = () => {
                 <Button
                   type="primary"
                   htmlType="submit"
+                  className="shadow-none"
                   icon={<PlusOutlined />}
+                  loading={isLoading}
+                  disabled={isLoading}
                 >
                   Thêm xe tải
                 </Button>
                 <Button
                   type="default"
+                  className="shadow-none"
                   icon={<CloseOutlined />}
                   onClick={handleCancel}
                 >
                   Thoát
                 </Button>
               </Space>
+              {isError && <ErrorMessage />}
             </Form.Item>
           </Col>
         </Row>

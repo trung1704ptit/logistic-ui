@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { PlusOutlined } from "@ant-design/icons";
 import http from "@/lib/http";
+import ErrorMessage from "@/components/Alert/Error";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -114,14 +115,7 @@ const ContractorForm: React.FC = () => {
               Thêm nhà thầu
             </Button>
             {isError && (
-              <Alert
-                message="Đã xảy ra lỗi"
-                description="Có lỗi xảy ra trong quá trình thêm mới Nhà thầu, vui lòng thử lại sau"
-                type="error"
-                showIcon
-                className="w-full"
-                closable
-              />
+              <ErrorMessage />
             )}
           </Space>
         </Form.Item>
