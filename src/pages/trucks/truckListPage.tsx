@@ -130,7 +130,7 @@ const TruckListPage = () => {
         const contractor = contractorState?.contractors?.find(
           (contractor) => contractor.id === row.contractor_id
         );
-        return contractor ? contractor.name : "Unknown Contractor";
+        return contractor ? contractor.name : undefined;
       },
     },
     {

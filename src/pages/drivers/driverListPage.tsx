@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,86 +6,121 @@ import { webRoutes } from "@/routes/web";
 import { FiUsers } from "react-icons/fi";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { driverList } from "@/__mocks__";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
 import { removeVietnameseTones } from "@/lib/utils";
+import { fetchDrivers } from "@/store/slices/driverSlice";
+import moment from "moment";
 
-// Breadcrumb for navigation
-const breadcrumb = {
-  items: [
-    { key: webRoutes.dashboard, title: <Link to={webRoutes.dashboard}>Trang chủ</Link> },
-    { key: webRoutes.drivers, title: <Link to={webRoutes.drivers}>Tài xế</Link> },
-  ],
-};
-
+// Driver List Page Component
 const DriverListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const [filteredDriverList, setFilteredDriverList] = useState(driverList);
 
-  // Handle driver edit
+  // Access drivers from Redux store
+  const drivers = useSelector(
+    (state: RootState) => state.driver.drivers
+  );
+
+  const contractors = useSelector(
+    (state: RootState) => state.contractor.contractors
+  );
+
+  const [filteredDriverList, setFilteredDriverList] = useState(drivers);
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (drivers.length === 0) {
+      dispatch(fetchDrivers());
+    } else {
+      setFilteredDriverList(drivers);
+    }
+  }, [drivers, dispatch]);
+
   const handleEditDriver = (driver: any) => {
     navigate(`${webRoutes.updateDrivers}?id=${driver.id}`);
   };
 
-  // Handle driver deletion
   const handleDeleteDriver = (driver: any) => {
     Modal.confirm({
       title: "Xác nhận xóa tài xế",
-      content: `Bạn có chắc muốn xóa tài xế ${driver.name}?`,
+      content: `Bạn có chắc muốn xóa tài xế ${driver.full_name}?`,
       onOk: () => {
         console.log("Deleted driver:", driver);
       },
     });
   };
 
-  // Columns configuration for ProTable
   const columns: ProColumns[] = [
     {
       title: "Họ và Tên",
-      dataIndex: "fullName",
+      dataIndex: "full_name",
       sorter: false,
       align: "center",
       ellipsis: true,
     },
     {
       title: "Số Điện Thoại",
-      dataIndex: "phoneNumber",
+      dataIndex: "phone",
       sorter: false,
       align: "center",
       ellipsis: true,
     },
     {
       title: "Căn Cước Công Dân",
-      dataIndex: "idCard",
+      dataIndex: "cccd",
       sorter: false,
       align: "center",
     },
     {
       title: "Ngày Cấp",
-      dataIndex: "issueDate",
+      dataIndex: "issue_date", // Date string 'YYYY-MM-DD'
       sorter: true,
       align: "center",
+      render: (_, row) => moment(row.issue_date).format("DD-MM-YYYY"), // Render the string directly
     },
     {
-      title: "Số bằng lái",
-      dataIndex: "licenseNumber",
+      title: "Ngày Sinh",
+      dataIndex: "date_of_birth", // Date string 'YYYY-MM-DD'
+      sorter: false,
+      align: "center",
+      render: (_, row) => moment(row.date_of_birth).format("DD-MM-YYYY"), // Render the string directly
+    },
+    {
+      title: "Địa Chỉ",
+      dataIndex: "address",
       sorter: false,
       align: "center",
     },
     {
-      title: "Ngày hết hạn bằng lái",
-      dataIndex: "licenseExpiry",
+      title: "Số Bằng Lái",
+      dataIndex: "license_number",
       sorter: false,
       align: "center",
+    },
+    {
+      title: "Ngày Hết Hạn Bằng Lái",
+      dataIndex: "license_expiry", // Date string 'YYYY-MM-DD'
+      sorter: false,
+      align: "center",
+      render: (_, row) => moment(row.license_expiry).format("DD-MM-YYYY"), // Render the string directly
     },
     {
       title: "Loại Tài Xế",
-      dataIndex: "driverType",
+      dataIndex: "contractor_id",
       align: "center",
-      render: (_, row) =>
-        row.driverType === "internal"
-          ? "Nội bộ"
-          : `Nhà thầu: ${row.contractor || "Không rõ"}`,
+      render: (_, row) => {
+        const contractor = contractors?.find(
+          (contractor) => contractor.id === row.contractor_id
+        );
+        return contractor ? contractor.name : undefined;
+      },
+    },
+    {
+      title: "Ghi Chú",
+      dataIndex: "note",
+      align: "center",
     },
     {
       title: "Hành động",
@@ -104,20 +139,25 @@ const DriverListPage = () => {
     },
   ];
 
-// Example search function
-const handleSearch = (searchTerm: string) => {
-  const normalizedSearchTerm = removeVietnameseTones(searchTerm.toLowerCase());
+  // Search functionality
+  const handleSearch = (searchTerm: string) => {
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTerm.toLowerCase()
+    );
 
-  const filtered = driverList.filter((driver: any) =>
-    Object.keys(driver).some((key) =>
-      removeVietnameseTones(String(driver[key])).toLowerCase().includes(normalizedSearchTerm)
-    )
-  );
+    const filtered = drivers.filter((driver: any) =>
+      Object.keys(driver).some((key) =>
+        removeVietnameseTones(String(driver[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
+      )
+    );
 
-  setFilteredDriverList(filtered);
-};
+    setFilteredDriverList(filtered);
+  };
+
   return (
-    <BasePageContainer breadcrumb={breadcrumb}>
+    <BasePageContainer breadcrumb={{ items: [] }}>
       <ProTable
         columns={columns}
         cardBordered={false}
@@ -132,9 +172,9 @@ const handleSearch = (searchTerm: string) => {
                 onChange={(e) => {
                   const value = e.target.value;
                   setSearchTerm(value);
-                  handleSearch(value); // Call handleSearch whenever the input changes
+                  handleSearch(value);
                 }}
-                style={{ minWidth: '10%' }}
+                style={{ minWidth: "10%" }}
               />
               <Link to={webRoutes.addNewDrivers}>
                 <Button type="primary" icon={<PlusOutlined />}>
@@ -145,14 +185,8 @@ const handleSearch = (searchTerm: string) => {
           ),
         }}
         bordered={true}
-        showSorterTooltip={false}
         scroll={{ x: true }}
-        tableLayout={"fixed"}
-        rowSelection={false}
-        pagination={{
-          showQuickJumper: true,
-          pageSize: 20,
-        }}
+        pagination={{ pageSize: 20 }}
         request={async (params) => {
           const data = filteredDriverList.slice(
             ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
@@ -162,7 +196,7 @@ const handleSearch = (searchTerm: string) => {
             data,
             success: true,
             total: filteredDriverList.length,
-          } as RequestData<(typeof driverList)[0]>;
+          } as RequestData<(typeof drivers)[0]>;
         }}
         dataSource={filteredDriverList}
         dateFormatter="string"

@@ -1,5 +1,5 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import adminSlice, { AdminState } from '@/store/slices/adminSlice';
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import adminSlice, { AdminState } from "@/store/slices/adminSlice";
 import {
   persistReducer,
   FLUSH,
@@ -8,10 +8,11 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import contractorSlice, { ContractorState } from './slices/contractorSlice';
-import truckSlice, { TruckState } from './slices/truckSlice';
+} from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import contractorSlice, { ContractorState } from "./slices/contractorSlice";
+import truckSlice, { TruckState } from "./slices/truckSlice";
+import driverSlice, { DriverState } from "./slices/driverSlice";
 
 const persistConfig = {
   key: CONFIG.appName,
@@ -22,7 +23,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   admin: adminSlice,
   contractor: contractorSlice,
-  truck: truckSlice
+  truck: truckSlice,
+  driver: driverSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -41,5 +43,6 @@ export type RootState = {
   admin: AdminState;
   contractor: ContractorState;
   truck: TruckState;
+  driver: DriverState;
 };
 export type AppDispatch = typeof store.dispatch;
