@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
-import { Button, Input, Space, Modal } from "antd";
+import { Button, Input, Space, Modal, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
@@ -10,12 +10,12 @@ import Title from "antd/lib/typography/Title";
 import { ITruck } from "@/interfaces/truck";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
-// import { fetchTrucks } from "@/store/slices/truckSlice";
+import http from "@/lib/http";
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  // const appDispatch = useDispatch<AppDispatch>();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const truckState = useSelector((state: RootState) => state.truck);
   const contractorState = useSelector((state: RootState) => state.contractor);
@@ -31,16 +31,26 @@ const TruckListPage = () => {
     }
   }, [truckState]);
 
-  // useEffect(() => {
-  //   appDispatch(fetchTrucks());
-  // }, [appDispatch]);
-
   const handleDeleteTruck = (truck: any) => {
     Modal.confirm({
       title: "Xác nhận xóa xe tải",
       content: `Bạn có chắc muốn xóa xe tải ${truck.plateNumber}?`,
-      onOk: () => {
-        console.log("Deleted truck:", truck);
+      onOk: async () => {
+        try {
+          const res = await http.delete(`/trucks/${truck.id}`);
+          if (res.status === 204) {
+            messageApi.open({
+              type: "success",
+              content: "Xóa thành công",
+            });
+          }
+        } catch (error) {
+          console.error("Error deleting contractor:", error);
+          messageApi.open({
+            type: "error",
+            content: "Có lỗi xảy ra, vui lòng thử lại sau",
+          });
+        }
       },
     });
   };

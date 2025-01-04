@@ -29,7 +29,6 @@ const breadcrumb = {
 const DriverListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const appDispatch = useDispatch<AppDispatch>();
   const contractorState = useSelector((state: RootState) => state.contractor);
   const [messageApi, contextHolder] = message.useMessage();
   const [filteredContractorList, setFilteredContractorList] =

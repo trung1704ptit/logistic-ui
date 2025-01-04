@@ -5,10 +5,11 @@ import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
-import { RootState } from "@/store";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
 import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
+import { fetchTrucks } from "@/store/slices/truckSlice";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -33,6 +34,7 @@ const breadcrumb: BreadcrumbProps = {
 const AddTruckForm: React.FC = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
+  const appDispatch = useDispatch<AppDispatch>();
   const [isError, setIsError] = useState(false);
 
   const contractorState = useSelector((state: RootState) => state.contractor);
@@ -52,6 +54,7 @@ const AddTruckForm: React.FC = () => {
       setIsError(false);
       const res = await http.post("/trucks", payload);
       if (res && res.data) {
+        appDispatch(fetchTrucks());
         navigate(webRoutes.trucks);
       }
     } catch (error) {

@@ -8,6 +8,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { PlusOutlined } from "@ant-design/icons";
 import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
+import { fetchContractors } from "@/store/slices/contractorSlice";
+import { AppDispatch } from "@/store";
+import { useDispatch } from "react-redux";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -38,6 +41,7 @@ const ContractorForm: React.FC = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const appDispatch = useDispatch<AppDispatch>();
 
   const navigate = useNavigate();
 
@@ -47,6 +51,7 @@ const ContractorForm: React.FC = () => {
       setIsError(false);
       const res = await http.post("/contractors", values);
       if (res && res.data) {
+        appDispatch(fetchContractors());
         navigate(webRoutes.contractors);
       }
     } catch (error) {
