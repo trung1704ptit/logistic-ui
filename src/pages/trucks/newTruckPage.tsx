@@ -46,7 +46,7 @@ const AddTruckForm: React.FC = () => {
         width: parseFloat(values.width),
         length: parseFloat(values.length),
         capacity: parseFloat(values.capacity),
-        volume: parseFloat(values.volume)
+        volume: parseFloat(values.volume),
       };
       setIsLoading(true);
       setIsError(false);

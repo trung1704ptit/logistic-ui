@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,49 +7,19 @@ import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
-
-// Fake data for trucks
-const trucks = [
-  {
-    id: "truck1",
-    plateNumber: "79C-12345",
-    capacity: "15 tấn",
-    dimensions: "6m x 2.5m x 2.5m",
-    volume: "37.5 m³",
-    type: "Nội bộ",
-    contractor: "",
-    note: "Xe mới bảo dưỡng."
-  },
-  {
-    id: "truck2",
-    plateNumber: "81C-67890",
-    capacity: "10 tấn",
-    dimensions: "5m x 2.5m x 2m",
-    volume: "25 m³",
-    type: "Nhà thầu",
-    contractor: "Nhà thầu A",
-    note: "Sử dụng cho dự án X."
-  },
-  {
-    id: "truck3",
-    plateNumber: "72C-11223",
-    capacity: "20 tấn",
-    dimensions: "7m x 3m x 3m",
-    volume: "63 m³",
-    type: "Nội bộ",
-    contractor: "",
-    note: "Chỉ sử dụng trong nội bộ."
-  }
-];
+import { ITruck } from "@/interfaces/truck";
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const [filteredTruckList, setFilteredTruckList] = useState(trucks);
+  const [trucks, setTrucks] = useState<ITruck[]>([]);
+  const [filteredTruckList, setFilteredTruckList] = useState<ITruck[]>(trucks);
 
   const handleEditTruck = (truck: any) => {
     navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
   };
+
+  useEffect(() => {}, []);
 
   const handleDeleteTruck = (truck: any) => {
     Modal.confirm({
@@ -62,11 +32,15 @@ const TruckListPage = () => {
   };
 
   const handleSearchTruck = (searchTerm: string) => {
-    const normalizedSearchTerm = removeVietnameseTones(searchTerm.toLowerCase());
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTerm.toLowerCase()
+    );
 
     const filtered = trucks.filter((truck: any) =>
       Object.keys(truck).some((key) =>
-        removeVietnameseTones(String(truck[key])).toLowerCase().includes(normalizedSearchTerm)
+        removeVietnameseTones(String(truck[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
       )
     );
 
@@ -76,7 +50,7 @@ const TruckListPage = () => {
   const columns: ProColumns[] = [
     {
       title: "Biển Kiểm Soát",
-      dataIndex: "plateNumber",
+      dataIndex: "license_plate",
       sorter: false,
       align: "center",
       ellipsis: true,
@@ -89,8 +63,20 @@ const TruckListPage = () => {
       ellipsis: true,
     },
     {
-      title: "Kích Thước",
-      dataIndex: "dimensions",
+      title: "Dài",
+      dataIndex: "length",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Rộng",
+      dataIndex: "width",
+      sorter: false,
+      align: "center",
+    },
+    {
+      title: "Cao",
+      dataIndex: "height",
       sorter: false,
       align: "center",
     },
@@ -101,14 +87,14 @@ const TruckListPage = () => {
       align: "center",
     },
     {
-      title: "Loại Xe",
-      dataIndex: "type",
+      title: "Thương hiệu",
+      dataIndex: "brand",
       sorter: false,
       align: "center",
     },
     {
       title: "Nhà Thầu",
-      dataIndex: "contractor",
+      dataIndex: "contractor_id",
       sorter: false,
       align: "center",
     },
@@ -136,12 +122,20 @@ const TruckListPage = () => {
   ];
 
   return (
-    <BasePageContainer breadcrumb={{
-      items: [
-        { key: webRoutes.dashboard, title: <Link to={webRoutes.dashboard}>Trang chủ</Link> },
-        { key: webRoutes.trucks, title: <Link to={webRoutes.trucks}>Xe tải</Link> },
-      ],
-    }}>
+    <BasePageContainer
+      breadcrumb={{
+        items: [
+          {
+            key: webRoutes.dashboard,
+            title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
+          },
+          {
+            key: webRoutes.trucks,
+            title: <Link to={webRoutes.trucks}>Xe tải</Link>,
+          },
+        ],
+      }}
+    >
       <ProTable
         columns={columns}
         cardBordered={false}
@@ -157,10 +151,12 @@ const TruckListPage = () => {
                   setSearchTerm(value);
                   handleSearchTruck(value);
                 }}
-                style={{ minWidth: '10%' }}
+                style={{ minWidth: "10%" }}
               />
               <Link to={webRoutes.addNewTruck}>
-                <Button type="primary" icon={<PlusOutlined />}>Thêm xe tải</Button>
+                <Button type="primary" icon={<PlusOutlined />}>
+                  Thêm xe tải
+                </Button>
               </Link>
             </Space>
           ),
@@ -183,7 +179,7 @@ const TruckListPage = () => {
             data,
             success: true,
             total: filteredTruckList.length,
-          } as RequestData<typeof trucks[0]>;
+          } as RequestData<(typeof trucks)[0]>;
         }}
         dataSource={filteredTruckList}
         dateFormatter="string"
