@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
 import http from "@/lib/http";
 import { fetchDrivers } from "@/store/slices/driverSlice";
-import moment from "moment";
+import dayjs from "dayjs";
 import ErrorMessage from "@/components/Alert/Error";
 
 const { TextArea } = Input;
@@ -38,6 +38,7 @@ const AddDriverForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const appDispatch = useDispatch<AppDispatch>();
   const [isError, setIsError] = useState(false);
+
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
@@ -46,15 +47,9 @@ const AddDriverForm: React.FC = () => {
     try {
       const payload = {
         ...values,
-        issue_date: values.issue_date
-          ? moment(values.issue_date).toISOString() // Convert to ISO 8601 format
-          : null,
-        date_of_birth: values.date_of_birth
-          ? moment(values.date_of_birth).toISOString()
-          : null,
-        license_expiry: values.license_expiry
-          ? moment(values.license_expiry).toISOString()
-          : null,
+        issue_date: dayjs(values.issue_date),
+        date_of_birth: dayjs(values.date_of_birth),
+        license_expiry: dayjs(values.license_expiry),
       };
       setIsLoading(true);
       setIsError(false);
@@ -119,6 +114,7 @@ const AddDriverForm: React.FC = () => {
                 size="large"
                 placeholder="Chọn ngày cấp"
                 className="w-full"
+                format="DD-MM-YYYY"
               />
             </Form.Item>
           </Col>
@@ -128,6 +124,7 @@ const AddDriverForm: React.FC = () => {
                 size="large"
                 placeholder="Chọn ngày sinh"
                 className="w-full"
+                format="DD-MM-YYYY"
               />
             </Form.Item>
           </Col>
@@ -155,6 +152,7 @@ const AddDriverForm: React.FC = () => {
                 size="large"
                 placeholder="Chọn ngày hết hạn"
                 className="w-full"
+                format="DD-MM-YYYY"
               />
             </Form.Item>
           </Col>
