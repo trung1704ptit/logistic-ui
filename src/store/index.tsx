@@ -11,16 +11,18 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import contractorSlice, { ContractorState } from './slices/contractorSlice';
+import truckSlice, { TruckState } from './slices/truckSlice';
 
 const persistConfig = {
   key: CONFIG.appName,
   storage,
-  blacklist: ["contractor", "driver", "trucks"],
+  blacklist: ["contractor", "driver", "truck"],
 };
 
 const rootReducer = combineReducers({
   admin: adminSlice,
-  contractor: contractorSlice
+  contractor: contractorSlice,
+  truck: truckSlice
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -38,5 +40,6 @@ export const store = configureStore({
 export type RootState = {
   admin: AdminState;
   contractor: ContractorState;
+  truck: TruckState;
 };
 export type AppDispatch = typeof store.dispatch;

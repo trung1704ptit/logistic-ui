@@ -11,8 +11,10 @@ import { apiRoutes } from '@/routes/api';
 import http from '@/lib/http';
 import { handleErrorResponse } from '@/lib/utils';
 import { RiShieldUserFill } from 'react-icons/ri';
-import { fetchContractors } from '@/store/slices/contractorSlice';
 import { AppDispatch } from "@/store";
+import { fetchTrucks } from '@/store/slices/truckSlice';
+import { fetchContractors } from '@/store/slices/contractorSlice';
+
 
 const Layout = () => {
   const location = useLocation();
@@ -47,6 +49,7 @@ const Layout = () => {
 
   useEffect(() => {
     appDispatch(fetchContractors());
+    appDispatch(fetchTrucks());
   }, [appDispatch]);
 
   return (

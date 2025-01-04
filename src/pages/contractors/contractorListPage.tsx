@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,7 +9,7 @@ import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { fetchContractors } from "@/store/slices/contractorSlice";
+// import { fetchContractors } from "@/store/slices/contractorSlice";
 import { IContractor } from "@/interfaces/contractor";
 import http from "@/lib/http";
 
@@ -73,9 +73,9 @@ const DriverListPage = () => {
     }
   }, [contractorState]);
 
-  useEffect(() => {
-    appDispatch(fetchContractors());
-  }, [appDispatch]);
+  // useEffect(() => {
+  //   appDispatch(fetchContractors());
+  // }, [appDispatch]);
 
   // Columns configuration for ProTable
   const columns: ProColumns[] = [
