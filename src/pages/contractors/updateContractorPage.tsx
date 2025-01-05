@@ -9,15 +9,15 @@ import Title from "antd/lib/typography/Title";
 
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { PlusOutlined } from "@ant-design/icons";
-import { driverList, trucks } from "@/__mocks__";
 import { removeVietnameseTones } from "@/lib/utils";
 import { RootState } from "@/store";
 import { useSelector } from "react-redux";
 import { IContractor } from "@/interfaces/contractor";
 import http from "@/lib/http";
-
-const { TextArea } = Input;
-const { Option } = Select;
+import { ITruck } from "@/interfaces/truck";
+import { IDriver } from "@/interfaces/driver";
+import moment from "moment";
+import ErrorMessage from "@/components/Alert/Error";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -43,15 +43,20 @@ const ContractorForm: React.FC = () => {
   const navigate = useNavigate();
 
   const params = new URLSearchParams(location.search);
-  const contractorState = useSelector((state: RootState) => state.contractor);
+  const contractors = useSelector(
+    (state: RootState) => state.contractor.contractors
+  );
+  const drivers = useSelector((state: RootState) => state.driver.drivers);
+  const trucks = useSelector((state: RootState) => state.truck.trucks);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredDriverList, setFilteredDriverList] = useState(driverList);
+  const [filteredDriverList, setFilteredDriverList] = useState<IDriver[]>([]);
 
   const [searchTruckTerm, setSearchTruckTerm] = useState("");
-  const [filteredTruckList, setFilteredTruckList] = useState(trucks);
+  const [filteredTruckList, setFilteredTruckList] = useState<ITruck[]>([]);
 
   const [isUpdateLoading, setIsUpdateLoading] = useState(false);
-  const [isUpdateError, setIsUpdateError] = useState(false)
+  const [isUpdateError, setIsUpdateError] = useState(false);
 
   const handleEditTruck = (truck: any) => {
     navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
@@ -67,10 +72,10 @@ const ContractorForm: React.FC = () => {
     });
   };
 
-  const columnsTruck: ProColumns[] = [
+  const truckColumns: ProColumns[] = [
     {
       title: "Biển Kiểm Soát",
-      dataIndex: "plateNumber",
+      dataIndex: "license_plate",
       sorter: false,
       align: "center",
       ellipsis: true,
@@ -81,27 +86,53 @@ const ContractorForm: React.FC = () => {
       sorter: false,
       align: "center",
       ellipsis: true,
+      render: (_, row) => `${row.capacity} T`,
     },
     {
-      title: "Kích Thước",
-      dataIndex: "dimensions",
+      title: "Dài",
+      dataIndex: "length",
       sorter: false,
       align: "center",
+      render: (_, row) => `${row.length} m`,
+    },
+    {
+      title: "Rộng",
+      dataIndex: "width",
+      sorter: false,
+      align: "center",
+      render: (_, row) => `${row.width} m`,
+    },
+    {
+      title: "Cao",
+      dataIndex: "height",
+      sorter: false,
+      align: "center",
+      render: (_, row) => `${row.height} m`,
     },
     {
       title: "Thể Tích",
       dataIndex: "volume",
       sorter: false,
       align: "center",
+      render: (_, row) => `${row.volume} m³`,
     },
     {
-      title: "Loại xe",
-      dataIndex: "type",
+      title: "Thương hiệu",
+      dataIndex: "brand",
+      sorter: false,
       align: "center",
-      render: (_, row) =>
-        row.type === "internal"
-          ? "Nội bộ"
-          : `Nhà thầu: ${row.contractor || "-"}`,
+    },
+    {
+      title: "Nhà Thầu",
+      dataIndex: "contractor_id",
+      sorter: false,
+      align: "center",
+      render: (_, row) => {
+        const contractor = contractors?.find(
+          (contractor) => contractor.id === row.contractor_id
+        );
+        return contractor ? contractor.name : undefined;
+      },
     },
     {
       title: "Ghi Chú",
@@ -116,7 +147,7 @@ const ContractorForm: React.FC = () => {
       render: (_, row) => (
         <Space>
           <Button type="dashed" onClick={() => handleEditTruck(row)}>
-            Chi Tiết
+            Xem Chi Tiết
           </Button>
           <Button danger onClick={() => handleDeleteTruck(row)}>
             Xóa
@@ -127,16 +158,19 @@ const ContractorForm: React.FC = () => {
   ];
 
   useEffect(() => {
-    if (contractorState.contractors) {
+    if (contractors) {
       const contractorId = params.get("id");
-      console.log("contractorId", contractorId);
-      const contractor = contractorState.contractors.find(
+      const contractor: IContractor | undefined = contractors.find(
         (item) => item.id === contractorId
       );
-      setEditingContractor(contractor);
-      form.setFieldsValue(contractor);
+      if (contractor && contractor.id !== editingContractor?.id) {
+        setEditingContractor(contractor);
+        setFilteredDriverList(contractor?.drivers || []);
+        setFilteredTruckList(contractor?.trucks || []);
+        form.setFieldsValue(contractor);
+      }
     }
-  }, [contractorState, params]);
+  }, [contractors, params]);
 
   const handleSearchTruck = (searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
@@ -159,7 +193,10 @@ const ContractorForm: React.FC = () => {
       try {
         setIsUpdateLoading(true);
         setIsUpdateError(false);
-        const res = await http.put(`/contractors/${editingContractor.id}`, contractor);
+        const res = await http.put(
+          `/contractors/${editingContractor.id}`,
+          contractor
+        );
         if (res && res.data) {
           navigate(webRoutes.contractors);
         }
@@ -176,25 +213,25 @@ const ContractorForm: React.FC = () => {
   };
 
   // Handle driver edit
-  const handleEditDriver = (driver: any) => {
+  const handleEditDriver = (driver: IDriver) => {
     navigate(`${webRoutes.updateDrivers}?id=${driver.id}`);
   };
 
   // Handle driver deletion
-  const handleDeleteDriver = (driver: any) => {
+  const handleDeleteDriver = (driver: IDriver) => {
     Modal.confirm({
       title: "Xác nhận xóa tài xế",
-      content: `Bạn có chắc muốn xóa tài xế ${driver.fullName}?`,
+      content: `Bạn có chắc muốn xóa tài xế ${driver.full_name}?`,
       onOk: () => {
-        console.log("Deleted driver:", driver.fullName);
+        console.log("Deleted driver:", driver.full_name);
       },
     });
   };
 
-  const columns: ProColumns[] = [
+  const driverColumns: ProColumns[] = [
     {
       title: "Họ và Tên",
-      dataIndex: "fullName",
+      dataIndex: "full_name",
       sorter: false,
       align: "center",
       ellipsis: true,
@@ -208,36 +245,58 @@ const ContractorForm: React.FC = () => {
     },
     {
       title: "Căn Cước Công Dân",
-      dataIndex: "idCard",
+      dataIndex: "cccd",
       sorter: false,
       align: "center",
     },
     {
       title: "Ngày Cấp",
-      dataIndex: "issueDate",
+      dataIndex: "issue_date", // Date string 'YYYY-MM-DD'
       sorter: true,
       align: "center",
+      render: (_, row) => moment(row.issue_date).format("DD-MM-YYYY"), // Render the string directly
     },
     {
-      title: "Số bằng lái",
-      dataIndex: "licenseNumber",
+      title: "Ngày Sinh",
+      dataIndex: "date_of_birth", // Date string 'YYYY-MM-DD'
+      sorter: false,
+      align: "center",
+      render: (_, row) => moment(row.date_of_birth).format("DD-MM-YYYY"), // Render the string directly
+    },
+    {
+      title: "Địa Chỉ",
+      dataIndex: "address",
       sorter: false,
       align: "center",
     },
     {
-      title: "Ngày hết hạn bằng lái",
-      dataIndex: "licenseExpiry",
+      title: "Số Bằng Lái",
+      dataIndex: "license_number",
       sorter: false,
       align: "center",
+    },
+    {
+      title: "Ngày Hết Hạn Bằng Lái",
+      dataIndex: "license_expiry", // Date string 'YYYY-MM-DD'
+      sorter: false,
+      align: "center",
+      render: (_, row) => moment(row.license_expiry).format("DD-MM-YYYY"), // Render the string directly
     },
     {
       title: "Loại Tài Xế",
-      dataIndex: "driverType",
+      dataIndex: "contractor_id",
       align: "center",
-      render: (_, row) =>
-        row.driverType === "internal"
-          ? "Nội bộ"
-          : `Nhà thầu: ${row.contractor || "Không rõ"}`,
+      render: (_, row) => {
+        const contractor = contractors?.find(
+          (contractor) => contractor.id === row.contractor_id
+        );
+        return contractor ? contractor.name : undefined;
+      },
+    },
+    {
+      title: "Ghi Chú",
+      dataIndex: "note",
+      align: "center",
     },
     {
       title: "Hành động",
@@ -246,7 +305,7 @@ const ContractorForm: React.FC = () => {
       render: (_, row) => (
         <Space>
           <Button type="dashed" onClick={() => handleEditDriver(row)}>
-            Chi tiết
+            Sửa
           </Button>
           <Button danger onClick={() => handleDeleteDriver(row)}>
             Xóa
@@ -262,7 +321,7 @@ const ContractorForm: React.FC = () => {
       searchTerm.toLowerCase()
     );
 
-    const filtered = driverList.filter((driver: any) =>
+    const filtered = drivers.filter((driver: any) =>
       Object.keys(driver).some((key) =>
         removeVietnameseTones(String(driver[key]))
           .toLowerCase()
@@ -325,10 +384,13 @@ const ContractorForm: React.FC = () => {
                 type="default"
                 icon={<CloseOutlined />}
                 onClick={handleCancel}
+                loading={isUpdateLoading}
+                disabled={isUpdateLoading}
               >
                 Thoát
               </Button>
             </Space>
+            {isUpdateError && <ErrorMessage />}
           </Form.Item>
         </Form>
       </Card>
@@ -336,7 +398,7 @@ const ContractorForm: React.FC = () => {
       <div className="mt-6"></div>
 
       <ProTable
-        columns={columnsTruck}
+        columns={truckColumns}
         cardBordered={true}
         cardProps={{
           title: <Title level={5}>Danh sách xe tải</Title>,
@@ -390,7 +452,7 @@ const ContractorForm: React.FC = () => {
       <div className="mt-6"></div>
 
       <ProTable
-        columns={columns}
+        columns={driverColumns}
         cardBordered={true}
         cardProps={{
           title: <Title level={5}>Danh sách tài xế</Title>,
@@ -431,7 +493,7 @@ const ContractorForm: React.FC = () => {
             data,
             success: true,
             total: filteredDriverList.length,
-          } as RequestData<(typeof driverList)[0]>;
+          } as RequestData<(typeof drivers)[0]>;
         }}
         dataSource={filteredDriverList}
         dateFormatter="string"

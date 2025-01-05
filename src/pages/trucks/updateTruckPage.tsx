@@ -10,6 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
 import { fetchTrucks } from "@/store/slices/truckSlice";
+import { fetchDrivers } from "@/store/slices/driverSlice";
+import { fetchContractors } from "@/store/slices/contractorSlice";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -67,6 +69,8 @@ const UpdateTruckForm: React.FC = () => {
       setIsError(false);
       const res = await http.put(`/trucks/${truckId}`, payload); // Use PUT for update
       if (res && res.data) {
+        appDispatch(fetchDrivers());
+        appDispatch(fetchContractors());
         appDispatch(fetchTrucks());
         navigate(webRoutes.trucks);
       }

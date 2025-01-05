@@ -14,6 +14,7 @@ import { RiShieldUserFill } from 'react-icons/ri';
 import { AppDispatch } from "@/store";
 import { fetchTrucks } from '@/store/slices/truckSlice';
 import { fetchContractors } from '@/store/slices/contractorSlice';
+import { fetchDrivers } from '@/store/slices/driverSlice';
 
 
 const Layout = () => {
@@ -50,6 +51,7 @@ const Layout = () => {
   useEffect(() => {
     appDispatch(fetchContractors());
     appDispatch(fetchTrucks());
+    appDispatch(fetchDrivers());
   }, [appDispatch]);
 
   return (

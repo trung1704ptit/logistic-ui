@@ -13,6 +13,8 @@ import { fetchDrivers } from "@/store/slices/driverSlice";
 import moment from "moment";
 import ErrorMessage from "@/components/Alert/Error";
 import { IDriver } from "@/interfaces/driver";
+import { fetchContractors } from "@/store/slices/contractorSlice";
+import { fetchTrucks } from "@/store/slices/truckSlice";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -79,6 +81,8 @@ const EditDriverForm: React.FC = () => {
       const res = await http.put(`/drivers/${driverId}`, values); // PUT request for update
       if (res && res.data) {
         appDispatch(fetchDrivers());
+        appDispatch(fetchContractors());
+        appDispatch(fetchTrucks());
         navigate(webRoutes.drivers);
       }
     } catch (error) {
