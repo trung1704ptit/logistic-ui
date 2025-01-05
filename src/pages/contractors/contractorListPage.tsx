@@ -9,9 +9,9 @@ import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-// import { fetchContractors } from "@/store/slices/contractorSlice";
 import { IContractor } from "@/interfaces/contractor";
 import http from "@/lib/http";
+import { fetchContractors } from "@/store/slices/contractorSlice";
 
 const breadcrumb = {
   items: [
@@ -29,10 +29,12 @@ const breadcrumb = {
 const DriverListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const contractorState = useSelector((state: RootState) => state.contractor);
+  const contractors = useSelector((state: RootState) => state.contractor.contractors);
   const [messageApi, contextHolder] = message.useMessage();
   const [filteredContractorList, setFilteredContractorList] =
     useState<IContractor[]>();
+
+  const dispatch = useDispatch<AppDispatch>();
 
   // Handle contractor edit
   const handleEditContractor = (contractor: any) => {
@@ -47,9 +49,9 @@ const DriverListPage = () => {
       onOk: async () => {
         try {
           const res = await http.delete(`/contractors/${contractor.id}`);
-          console.log("Response:", res);
 
           if (res.status === 204) {
+            dispatch(fetchContractors());
             messageApi.open({
               type: "success",
               content: "Xóa thành công",
@@ -67,14 +69,10 @@ const DriverListPage = () => {
   };
 
   useEffect(() => {
-    if (contractorState.contractors) {
-      setFilteredContractorList(contractorState.contractors);
+    if (contractors) {
+      setFilteredContractorList(contractors);
     }
-  }, [contractorState]);
-
-  // useEffect(() => {
-  //   appDispatch(fetchContractors());
-  // }, [appDispatch]);
+  }, [contractors]);
 
   // Columns configuration for ProTable
   const columns: ProColumns[] = [
@@ -127,7 +125,7 @@ const DriverListPage = () => {
       searchTerm.toLowerCase()
     );
 
-    const filtered = contractorState?.contractors?.filter((driver: any) =>
+    const filtered = contractors?.filter((driver: any) =>
       Object.keys(driver).some((key) =>
         removeVietnameseTones(String(driver[key]))
           .toLowerCase()
@@ -140,6 +138,7 @@ const DriverListPage = () => {
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
+      {contextHolder}
       <ProTable
         columns={columns}
         cardBordered={false}
@@ -183,7 +182,7 @@ const DriverListPage = () => {
             data,
             success: true,
             total: filteredContractorList?.length || 0,
-          } as RequestData<(typeof contractorState.contractors)[0]>;
+          } as RequestData<(typeof contractors)[0]>;
         }}
         dataSource={filteredContractorList}
         dateFormatter="string"

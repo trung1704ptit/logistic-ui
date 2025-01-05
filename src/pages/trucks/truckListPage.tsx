@@ -9,13 +9,15 @@ import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
 import { ITruck } from "@/interfaces/truck";
 import { RootState } from "@/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import http from "@/lib/http";
+import { fetchTrucks } from "@/store/slices/truckSlice";
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
+  const appDispatch = useDispatch();
 
   const truckState = useSelector((state: RootState) => state.truck);
   const contractorState = useSelector((state: RootState) => state.contractor);
@@ -31,13 +33,15 @@ const TruckListPage = () => {
     }
   }, [truckState]);
 
-  const handleDeleteTruck = (truck: any) => {
+  const handleDeleteTruck = (truck: ITruck) => {
     Modal.confirm({
       title: "Xác nhận xóa xe tải",
-      content: `Bạn có chắc muốn xóa xe tải ${truck.plateNumber}?`,
+      content: `Bạn có chắc muốn xóa xe tải?`,
       onOk: async () => {
         try {
           const res = await http.delete(`/trucks/${truck.id}`);
+          console.log(res)
+          appDispatch(fetchTrucks() as any);
           if (res.status === 204) {
             messageApi.open({
               type: "success",
@@ -171,6 +175,7 @@ const TruckListPage = () => {
         ],
       }}
     >
+      {contextHolder}
       <ProTable
         columns={columns}
         cardBordered={false}
