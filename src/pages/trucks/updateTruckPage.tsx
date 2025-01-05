@@ -69,7 +69,6 @@ const UpdateTruckForm: React.FC = () => {
       setIsError(false);
       const res = await http.put(`/trucks/${truckId}`, payload); // Use PUT for update
       if (res && res.data) {
-        appDispatch(fetchDrivers());
         appDispatch(fetchContractors());
         appDispatch(fetchTrucks());
         navigate(webRoutes.trucks);

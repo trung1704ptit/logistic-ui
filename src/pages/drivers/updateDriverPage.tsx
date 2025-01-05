@@ -82,7 +82,6 @@ const EditDriverForm: React.FC = () => {
       if (res && res.data) {
         appDispatch(fetchDrivers());
         appDispatch(fetchContractors());
-        appDispatch(fetchTrucks());
         navigate(webRoutes.drivers);
       }
     } catch (error) {

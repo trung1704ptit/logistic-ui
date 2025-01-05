@@ -11,6 +11,7 @@ import http from "@/lib/http";
 import { fetchDrivers } from "@/store/slices/driverSlice";
 import dayjs from "dayjs";
 import ErrorMessage from "@/components/Alert/Error";
+import { fetchContractors } from "@/store/slices/contractorSlice";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -56,6 +57,7 @@ const AddDriverForm: React.FC = () => {
       const res = await http.post("/drivers", payload);
       if (res && res.data) {
         appDispatch(fetchDrivers());
+        appDispatch(fetchContractors());
         navigate(webRoutes.drivers);
       }
     } catch (error) {

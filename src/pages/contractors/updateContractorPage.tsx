@@ -10,14 +10,15 @@ import Title from "antd/lib/typography/Title";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { PlusOutlined } from "@ant-design/icons";
 import { removeVietnameseTones } from "@/lib/utils";
-import { RootState } from "@/store";
-import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import { useDispatch, useSelector } from "react-redux";
 import { IContractor } from "@/interfaces/contractor";
 import http from "@/lib/http";
 import { ITruck } from "@/interfaces/truck";
 import { IDriver } from "@/interfaces/driver";
 import moment from "moment";
 import ErrorMessage from "@/components/Alert/Error";
+import { fetchContractors } from "@/store/slices/contractorSlice";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -57,7 +58,7 @@ const ContractorForm: React.FC = () => {
 
   const [isUpdateLoading, setIsUpdateLoading] = useState(false);
   const [isUpdateError, setIsUpdateError] = useState(false);
-
+  const dispatch = useDispatch<AppDispatch>();
   const handleEditTruck = (truck: any) => {
     navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
   };
@@ -198,6 +199,7 @@ const ContractorForm: React.FC = () => {
           contractor
         );
         if (res && res.data) {
+          dispatch(fetchContractors());
           navigate(webRoutes.contractors);
         }
       } catch (error) {
@@ -468,7 +470,7 @@ const ContractorForm: React.FC = () => {
                 }}
                 style={{ minWidth: "15%" }}
               />
-              <Link to={`${webRoutes.addNewDrivers}?isContractor=true`}>
+              <Link to={webRoutes.addNewDrivers}>
                 <Button type="primary" icon={<PlusOutlined />}>
                   Thêm tài xế
                 </Button>

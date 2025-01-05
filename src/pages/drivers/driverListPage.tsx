@@ -28,17 +28,13 @@ const DriverListPage = () => {
     (state: RootState) => state.contractor.contractors
   );
 
-  const [filteredDriverList, setFilteredDriverList] = useState(drivers);
+  const [filteredDriverList, setFilteredDriverList] = useState<IDriver[]>([]);
 
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (drivers.length === 0) {
-      dispatch(fetchDrivers());
-    } else {
-      setFilteredDriverList(drivers);
-    }
-  }, [drivers, dispatch]);
+    setFilteredDriverList(drivers);
+  }, [drivers]);
 
   const handleEditDriver = (driver: IDriver) => {
     navigate(`${webRoutes.updateDrivers}?id=${driver.id}`);
@@ -53,7 +49,7 @@ const DriverListPage = () => {
           const res = await http.delete(`/drivers/${driver.id}`);
 
           if (res.status === 204) {
-            dispatch(fetchDrivers() as any);
+            dispatch(fetchDrivers());
             messageApi.open({
               type: "success",
               content: "Xóa thành công",
