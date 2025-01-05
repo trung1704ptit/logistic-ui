@@ -18,6 +18,7 @@ export const webRoutes = {
   prices: '/prices',
   addNewPrice: '/prices/new',
   updatePrice: '/prices/update',
+  addNewPriceExcel: '/prices/new-excel',
 
   // trucks
   trucks: '/trucks',

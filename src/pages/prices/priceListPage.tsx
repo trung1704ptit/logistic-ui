@@ -10,8 +10,14 @@ import { removeVietnameseTones } from "@/lib/utils";
 
 const breadcrumb = {
   items: [
-    { key: webRoutes.dashboard, title: <Link to={webRoutes.dashboard}>Trang chủ</Link> },
-    { key: webRoutes.prices, title: <Link to={webRoutes.prices}>Bảng giá</Link> },
+    {
+      key: webRoutes.dashboard,
+      title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
+    },
+    {
+      key: webRoutes.prices,
+      title: <Link to={webRoutes.prices}>Bảng giá</Link>,
+    },
   ],
 };
 
@@ -72,11 +78,15 @@ const PriceListPage = () => {
   ];
 
   const handleSearch = (searchTerm: string) => {
-    const normalizedSearchTerm = removeVietnameseTones(searchTerm.toLowerCase());
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTerm.toLowerCase()
+    );
 
     const filtered = priceList.filter((price: any) =>
       Object.keys(price).some((key) =>
-        removeVietnameseTones(String(price[key])).toLowerCase().includes(normalizedSearchTerm)
+        removeVietnameseTones(String(price[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
       )
     );
 
@@ -102,7 +112,7 @@ const PriceListPage = () => {
                 }}
                 style={{ minWidth: "10%" }}
               />
-              <Link to={webRoutes.addNewPrice}>
+              <Link to={webRoutes.addNewPriceExcel}>
                 <Button type="primary" icon={<PlusOutlined />}>
                   Thêm giá
                 </Button>

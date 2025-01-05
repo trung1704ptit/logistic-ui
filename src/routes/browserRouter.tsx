@@ -57,6 +57,10 @@ const UpdatePricePage  = loadable(() => import('@/pages/prices/updatePricePage')
   fallback: fallbackElement,
 });
 
+const AddPriceExcelPage  = loadable(() => import('@/pages/prices/addPriceExcelPage'), {
+  fallback: fallbackElement,
+});
+
 
 // -----------------------
 
@@ -178,6 +182,10 @@ export const browserRouter = createBrowserRouter([
       {
         path: webRoutes.addNewPrice,
         element: <AddPricePage/>,
+      },
+      {
+        path: webRoutes.addNewPriceExcel,
+        element: <AddPriceExcelPage/>,
       },
       {
         path: webRoutes.updatePrice,
