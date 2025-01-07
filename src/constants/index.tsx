@@ -1,5 +1,5 @@
-import { ConfigProviderProps } from 'antd/es/config-provider';
-import enUSIntl from 'antd/locale/en_US';
+import { ConfigProviderProps } from "antd/es/config-provider";
+import enUSIntl from "antd/locale/en_US";
 
 export const antdConfig: ConfigProviderProps = {
   theme: {
@@ -9,3 +9,21 @@ export const antdConfig: ConfigProviderProps = {
   },
   locale: enUSIntl,
 };
+
+export const priceKeys = {
+  note: "Ghi chú",
+  fromCity: "Tỉnh đóng hàng",
+  fromDistrict:  "Huyện đóng hàng",
+  toCity: "Tỉnh trả hàng",
+  toDistrcit: "Huyện trả hàng",
+  numOfOrder: "STT",
+}
+
+export const priceKeysBlackList = [
+  priceKeys.note,
+  priceKeys.fromCity,
+  priceKeys.fromDistrict,
+  priceKeys.toCity,
+  priceKeys.toDistrcit,
+  priceKeys.numOfOrder
+];

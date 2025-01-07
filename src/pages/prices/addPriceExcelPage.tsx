@@ -5,8 +5,12 @@ import BasePageContainer from "@/components/layout/pageContainer";
 import { webRoutes } from "@/routes/web";
 
 import { Upload, Button, message, Row, Col, Space, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
+import http from "@/lib/http";
+import { priceKeys, priceKeysBlackList } from "@/constants";
+import { omit } from "lodash";
+
 // Assuming file data is stored as an array of objects
 interface FileData {
   key: string;
@@ -68,71 +72,81 @@ const breadcrumb = {
 const ExcelUpload: React.FC = () => {
   const [fileLink, setFileLink] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const contractorId = params.get("id");
 
   const handleFileUpload = async (file: any) => {
-    // Step 1: Prepare FormData for uploading the Excel file
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // Step 2: Start uploading the Excel file and parsing the Excel data in parallel
     try {
-      const uploadFilePromise = fetch("/upload", {
-        method: "POST",
-        body: formData,
+      const timestamp = new Date().getTime();
+      // Step 2: Parse the file locally
+      const jsonData = await parseExcelFile(file);
+
+      // Step 1: Prepare the file for upload
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Step 3: Upload the file
+      try {
+        const uploadResponse = await http.post("/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data", // Required to indicate file upload
+          },
+        });
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+
+      // const { fileUrl } = await uploadResponse.json();
+      setFileLink("");
+
+      const data = jsonData.map((item: any) => {
+        if (item) {
+          return {
+            contractor_id: contractorId,
+            from_city: item[priceKeys.fromCity],
+            from_district: item[priceKeys.fromDistrict],
+            to_city: item[priceKeys.toCity],
+            to_district: item[priceKeys.toDistrcit],
+            prices: {
+              ...omit(item, priceKeysBlackList),
+            },
+            note: item[priceKeys.note],
+            file_name: timestamp.toString(),
+          };
+        }
       });
 
-      const parseFilePromise = new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async (e: any) => {
+      // Step 4: Send parsed data to the API
+      const parseResponse = await http.post(
+        `/prices/${contractorId}`,
+        data
+      );
+    } catch (error) {
+      message.error("Có lỗi xảy ra trong quá trình tải file");
+    }
+  };
+
+  // Utility function to parse Excel file locally
+  const parseExcelFile = (file: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        try {
           const ab = e.target.result;
           const wb = XLSX.read(ab, { type: "array" });
           const ws = wb.Sheets[wb.SheetNames[0]];
           const jsonData = XLSX.utils.sheet_to_json(ws);
-          console.log("jsonData:", jsonData);
-
           resolve(jsonData);
-        };
-        reader.onerror = (error) => reject(error);
-        reader.readAsArrayBuffer(file);
-      });
-
-      // Wait for both the upload and the parsing to finish
-      const [uploadResponse, jsonData] = await Promise.all([
-        uploadFilePromise,
-        parseFilePromise,
-      ]);
-
-      if (uploadResponse.ok) {
-        const data = await uploadResponse.json();
-        const fileUrl = data.fileUrl; // Adjust based on your server's response
-        setFileLink(fileUrl);
-
-        // Step 3: Send parsed JSON data to another API
-        try {
-          const jsonResponse = await fetch("/parse-data", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ data: jsonData }),
-          });
-
-          if (jsonResponse.ok) {
-            message.success(
-              `File uploaded and data parsed successfully! Link: ${fileUrl}`
-            );
-          } else {
-            message.error("Failed to parse the Excel data");
-          }
         } catch (error) {
-          message.error("An error occurred while parsing the file data");
+          reject(error);
         }
-      } else {
-        message.error("Upload failed");
-      }
-    } catch (error) {
-      message.error("An error occurred while uploading the file");
-    }
+      };
+
+      reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
+    });
   };
 
   // Simulate the "View" action (open the file in a new tab)
