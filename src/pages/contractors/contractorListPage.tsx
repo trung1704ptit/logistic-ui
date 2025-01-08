@@ -37,7 +37,7 @@ const DriverListPage = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   // Handle contractor edit
-  const handleEditContractor = (contractor: any) => {
+  const handleEditContractor = (contractor: IContractor) => {
     navigate(`${webRoutes.updateContractors}?id=${contractor.id}`);
   };
 
@@ -74,6 +74,10 @@ const DriverListPage = () => {
     }
   }, [contractors]);
 
+  const handleViewContractorPrices = (contractor: IContractor) => {
+    navigate(`${webRoutes.addNewPriceExcel}?id=${contractor.id}`)
+  }
+
   // Columns configuration for ProTable
   const columns: ProColumns[] = [
     {
@@ -108,6 +112,9 @@ const DriverListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
+          <Button type="dashed" onClick={() => handleViewContractorPrices(row)}>
+            Bảng giá
+          </Button>
           <Button type="dashed" onClick={() => handleEditContractor(row)}>
             Chi Tiết
           </Button>

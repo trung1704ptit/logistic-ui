@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { webRoutes } from "@/routes/web";
 
-import { Upload, Button, message, Row, Col, Space, Input } from "antd";
+import { Upload, Button, message, Row, Col, Space, Input, Card } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
 import http from "@/lib/http";
 import { priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { IContractor } from "@/interfaces/contractor";
 
 // Assuming file data is stored as an array of objects
 interface FileData {
@@ -59,8 +62,8 @@ const breadcrumb = {
       title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
     },
     {
-      key: webRoutes.drivers,
-      title: <Link to={webRoutes.drivers}>Bảng giá</Link>,
+      key: webRoutes.contractors,
+      title: <Link to={webRoutes.contractors}>Nhà thầu</Link>,
     },
     {
       key: webRoutes.addNewDrivers,
@@ -75,16 +78,41 @@ const ExcelUpload: React.FC = () => {
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const contractorId = params.get("id");
+  const contractors = useSelector(
+    (state: RootState) => state.contractor.contractors
+  );
+  const [contractor, setContractor] = useState<IContractor>();
+
+  useEffect(() => {
+    if (contractorId) {
+      const filteredContractor = contractors.find((c) => c.id === contractorId);
+      if (filteredContractor) {
+        setContractor(filteredContractor);
+      }
+    }
+  }, [contractorId, contractors]);
 
   const handleFileUpload = async (file: any) => {
     try {
       const timestamp = new Date().getTime();
-      // Step 2: Parse the file locally
-      const jsonData = await parseExcelFile(file);
+      const formattedDate = new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+        .format(new Date())
+        .replace(/\//g, "_"); // Replace "/" with "_" to get "DD_MM_YYYY"
+
+      // Combine timestamp and formatted date in the filename
+      const originalExtension = file.name.split(".").pop();
+      const newFileName = `${timestamp}_${formattedDate}.${originalExtension}`;
+
+      const renamedFile = new File([file], newFileName, { type: file.type });
+      const jsonData = await parseExcelFile(renamedFile);
 
       // Step 1: Prepare the file for upload
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", renamedFile);
 
       // Step 3: Upload the file
       try {
@@ -118,10 +146,7 @@ const ExcelUpload: React.FC = () => {
       });
 
       // Step 4: Send parsed data to the API
-      const parseResponse = await http.post(
-        `/prices/${contractorId}`,
-        data
-      );
+      const parseResponse = await http.post(`/prices/${contractorId}`, data);
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
     }
@@ -155,7 +180,7 @@ const ExcelUpload: React.FC = () => {
   };
 
   const uploadButton = (
-    <button style={{ border: 0, background: "none" }} type="button">
+    <button style={{ border: 0, background: "none" }} type="button" className="cursor-pointer">
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
       <div style={{ marginTop: 8 }}>Tải lên Excel</div>
     </button>
@@ -201,41 +226,47 @@ const ExcelUpload: React.FC = () => {
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
-      <Upload
-        name="avatar"
-        listType="picture-card"
-        className="avatar-uploader m-3"
-        customRequest={({ file, onSuccess, onError }: any) => {
-          handleFileUpload(file)
-            .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
-            .catch((err) => onError?.(err)); // Handle errors
-        }}
-        showUploadList={false}
-        accept=".xlsx,.xls"
-      >
-        {uploadButton}
-      </Upload>
+      {!contractor ? (
+        <Card className="text-center">Đang tìm kiếm thông tin nhà thầu.</Card>
+      ) : (
+        <>
+          <Upload
+            name="avatar"
+            listType="picture-card"
+            className="avatar-uploader m-3 cursor-pointer"
+            customRequest={({ file, onSuccess, onError }: any) => {
+              handleFileUpload(file)
+                .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
+                .catch((err) => onError?.(err)); // Handle errors
+            }}
+            showUploadList={false}
+            accept=".xlsx,.xls"
+          >
+            {uploadButton}
+          </Upload>
 
-      {fileLink && (
-        <div>
-          <p>File uploaded successfully!</p>
-          <a href={fileLink} target="_blank" rel="noopener noreferrer">
-            Click here to view the file
-          </a>
-        </div>
+          {fileLink && (
+            <div>
+              <p>File uploaded successfully!</p>
+              <a href={fileLink} target="_blank" rel="noopener noreferrer">
+                Click here to view the file
+              </a>
+            </div>
+          )}
+
+          <ProTable<FileData>
+            columns={columns}
+            dataSource={fakeFileList}
+            rowKey="key"
+            search={false}
+            pagination={false}
+            tableLayout="fixed"
+            bordered
+            scroll={{ x: true }}
+            size="small"
+          />
+        </>
       )}
-
-      <ProTable<FileData>
-        columns={columns}
-        dataSource={fakeFileList}
-        rowKey="key"
-        search={false}
-        pagination={false}
-        tableLayout="fixed"
-        bordered
-        scroll={{ x: true }}
-        size="small"
-      />
     </BasePageContainer>
   );
 };
