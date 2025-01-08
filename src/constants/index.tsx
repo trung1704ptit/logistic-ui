@@ -11,7 +11,7 @@ export const antdConfig: ConfigProviderProps = {
 };
 
 export const priceKeys = {
-  note: "Ghi chú",
+  notes: "Ghi chú",
   fromCity: "Tỉnh đóng hàng",
   fromDistrict:  "Huyện đóng hàng",
   toCity: "Tỉnh trả hàng",
@@ -20,7 +20,7 @@ export const priceKeys = {
 }
 
 export const priceKeysBlackList = [
-  priceKeys.note,
+  priceKeys.notes,
   priceKeys.fromCity,
   priceKeys.fromDistrict,
   priceKeys.toCity,

@@ -128,25 +128,31 @@ const ExcelUpload: React.FC = () => {
       // const { fileUrl } = await uploadResponse.json();
       setFileLink("");
 
-      const data = jsonData.map((item: any) => {
-        if (item) {
-          return {
-            contractor_id: contractorId,
-            from_city: item[priceKeys.fromCity],
-            from_district: item[priceKeys.fromDistrict],
-            to_city: item[priceKeys.toCity],
-            to_district: item[priceKeys.toDistrcit],
-            prices: {
-              ...omit(item, priceKeysBlackList),
-            },
-            note: item[priceKeys.note],
-            file_name: timestamp.toString(),
-          };
-        }
-      });
+      console.log("jsonData 1:", jsonData[0]);
+      const prices = jsonData.map((item: any) => ({
+        from_city: item[priceKeys.fromCity],
+        from_district: item[priceKeys.fromDistrict],
+        to_city: item[priceKeys.toCity],
+        to_district: item[priceKeys.toDistrcit],
+        weight_prices: {
+          ...omit(item, priceKeysBlackList),
+        },
+        notes: item[priceKeys.notes],
+      }));
+
+      const data = {
+        contractor_id: contractorId,
+        file_name: newFileName,
+        prices,
+      };
 
       // Step 4: Send parsed data to the API
-      const parseResponse = await http.post(`/prices/${contractorId}`, data);
+      const parseResponse = await http.post(`/prices/${contractorId}`, data, {
+        headers: {
+          'Content-Type': 'application/json', // Ensure this header is set for JSON data
+        }
+
+      } );
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
     }
@@ -180,7 +186,11 @@ const ExcelUpload: React.FC = () => {
   };
 
   const uploadButton = (
-    <button style={{ border: 0, background: "none" }} type="button" className="cursor-pointer">
+    <button
+      style={{ border: 0, background: "none" }}
+      type="button"
+      className="cursor-pointer"
+    >
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
       <div style={{ marginTop: 8 }}>Tải lên Excel</div>
     </button>
