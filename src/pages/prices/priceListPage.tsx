@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal, message, Upload } from "antd";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import Title from "antd/lib/typography/Title";
 import http from "@/lib/http";
 import * as XLSX from "xlsx";
@@ -13,6 +13,7 @@ import { IContractor } from "@/interfaces/contractor";
 import { priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
 import moment from "moment";
+import { apiRoutes } from "@/routes/api";
 
 const breadcrumb = {
   items: [
@@ -36,10 +37,7 @@ const PricingListPage = () => {
   const [pricings, setPricings] = useState([]);
   const [filteredPricingList, setFilteredPricingList] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
-  const navigate = useNavigate();
 
-  const [fileLink, setFileLink] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const contractorId = params.get("id");
@@ -81,16 +79,15 @@ const PricingListPage = () => {
 
       // Step 3: Upload the file
       try {
-        const uploadResponse = await http.post("/upload", formData, {
+        await http.post(`${apiRoutes.files}/upload`, formData, {
           headers: {
             "Content-Type": "multipart/form-data", // Required to indicate file upload
           },
         });
       } catch (error) {
         console.error("Error uploading file:", error);
+        message.error('Có lỗi xảy ra trong quá trình tải file');
       }
-
-      setFileLink("");
 
       const prices = jsonData.map((item: any) => ({
         from_city: item[priceKeys.fromCity],
@@ -110,11 +107,16 @@ const PricingListPage = () => {
       };
 
       // Step 4: Send parsed data to the API
-      const parseResponse = await http.post(`/prices/${contractorId}`, data, {
+      await http.post(`${apiRoutes.prices}/${contractorId}`, data, {
         headers: {
           "Content-Type": "application/json", // Ensure this header is set for JSON data
         },
       });
+
+      setTimeout(() => {
+        window.location.reload()
+      }, 3000)
+      message.success(`Đã tải lên bảng giá excel ${renamedFile.name}`);
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
     }
@@ -142,10 +144,6 @@ const PricingListPage = () => {
     });
   };
 
-  // Simulate the "View" action (open the file in a new tab)
-  const handleViewFile = (fileUrl: string) => {
-    window.open(fileUrl, "_blank");
-  };
 
   const fetchPricings = async () => {
     try {
@@ -193,8 +191,33 @@ const PricingListPage = () => {
     });
   };
 
-  const handleViewPricing = (pricing: any) => {
-    navigate(`/pricings/${pricing.id}/view`);
+  const downloadFile = async (fileName: string) => {
+    try {
+      const response = await http.get(`${apiRoutes.files}/download/${fileName}`, {
+        responseType: "blob",
+      });
+
+      // Create a Blob from the response
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
+      });
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      // Create a temporary link and click it
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = fileName.split("/").pop() || "file"; // Extract filename from path
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      link.remove();
+      window.URL.revokeObjectURL(downloadUrl);
+      message.success(`Đã tải xuống bảng giá excel ${fileName}`);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      message.error("Có lỗi xảy ra trong quá trình tải file, vui lòng thử lại sau.");
+    }
   };
 
   const handleSearch = (searchTerm: string) => {
@@ -208,18 +231,21 @@ const PricingListPage = () => {
     {
       title: "Tên File",
       dataIndex: "file_name",
-      align: "center",
+      align: "left",
       ellipsis: true,
-      render: (_, row) => (
-        <Link to={row.file_name} target="_blank">
-          {row.file_name}
-        </Link>
+      render: (_, row, index) => (
+        <>
+          <a target="_blank" onClick={() => downloadFile(row.file_name)}>
+            {row.file_name}
+          </a>
+          {index === 0 ? " (Mới nhất)" : ""}
+        </>
       ),
     },
     {
       title: "Ngày tạo",
       dataIndex: "created_at",
-      align: "center",
+      align: "left",
       ellipsis: true,
       render: (_, row) => moment(row.created_at).format("DD-MM-YYYY"),
     },
@@ -227,18 +253,18 @@ const PricingListPage = () => {
     {
       title: "Nhà thầu",
       dataIndex: "contractor",
-      align: "center",
+      align: "left",
       ellipsis: true,
       render: (_, row) => <span>{contractor?.name}</span>,
     },
     {
       title: "Hành động",
-      align: "center",
+      align: "left",
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed" onClick={() => handleViewPricing(row)}>
-            Xem
+          <Button type="dashed" onClick={() => downloadFile(row.file_name)}>
+            Tải xuống
           </Button>
           <Button danger onClick={() => handleDeletePricing(row)}>
             Xóa

@@ -31,12 +31,12 @@ export const sidebar = [
     name: "Chi phí",
     icon: <FormOutlined />,
   },
-  {
-    path: webRoutes.prices,
-    key: webRoutes.prices,
-    name: "Bảng giá",
-    icon: <CopyOutlined />,
-  },
+  // {
+  //   path: webRoutes.prices,
+  //   key: webRoutes.prices,
+  //   name: "Bảng giá",
+  //   icon: <CopyOutlined />,
+  // },
   {
     path: webRoutes.salaries,
     key: webRoutes.salaries,
