@@ -75,7 +75,7 @@ const DriverListPage = () => {
   }, [contractors]);
 
   const handleViewContractorPrices = (contractor: IContractor) => {
-    navigate(`${webRoutes.addNewPriceExcel}?id=${contractor.id}`)
+    navigate(`${webRoutes.prices}?id=${contractor.id}`)
   }
 
   // Columns configuration for ProTable

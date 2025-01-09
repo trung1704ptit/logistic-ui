@@ -239,7 +239,6 @@ const ExcelUpload: React.FC = () => {
       {!contractor ? (
         <Card className="text-center">Đang tìm kiếm thông tin nhà thầu.</Card>
       ) : (
-        <>
           <Upload
             name="avatar"
             listType="picture-card"
@@ -254,28 +253,6 @@ const ExcelUpload: React.FC = () => {
           >
             {uploadButton}
           </Upload>
-
-          {fileLink && (
-            <div>
-              <p>File uploaded successfully!</p>
-              <a href={fileLink} target="_blank" rel="noopener noreferrer">
-                Click here to view the file
-              </a>
-            </div>
-          )}
-
-          <ProTable<FileData>
-            columns={columns}
-            dataSource={fakeFileList}
-            rowKey="key"
-            search={false}
-            pagination={false}
-            tableLayout="fixed"
-            bordered
-            scroll={{ x: true }}
-            size="small"
-          />
-        </>
       )}
     </BasePageContainer>
   );
