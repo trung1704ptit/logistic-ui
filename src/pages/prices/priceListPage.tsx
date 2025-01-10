@@ -149,7 +149,6 @@ const PricingListPage = () => {
     try {
       const response = await http.get(`/prices/${contractorId}`);
       if (response.status === 200) {
-        console.log(response.data.data);
         setPricings(response.data.data);
         setFilteredPricingList(response.data.data);
       }
@@ -169,10 +168,10 @@ const PricingListPage = () => {
   const handleDeletePricing = (pricing: any) => {
     Modal.confirm({
       title: "Xác nhận xóa bảng giá",
-      content: `Bạn có chắc muốn xóa bảng giá ${pricing.fileName}?`,
+      content: `Bạn có chắc muốn xóa bảng giá ${pricing.file_name}?`,
       onOk: async () => {
         try {
-          const res = await http.delete(`/pricings/${pricing.id}`);
+          const res = await http.delete(`/prices/${contractor?.id}/${pricing.id}`);
           if (res.status === 204) {
             messageApi.open({
               type: "success",
@@ -222,7 +221,7 @@ const PricingListPage = () => {
 
   const handleSearch = (searchTerm: string) => {
     const filtered = pricings.filter((pricing: any) =>
-      pricing.fileName.toLowerCase().includes(searchTerm.toLowerCase())
+      pricing.file_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredPricingList(filtered);
   };
