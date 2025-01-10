@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Form,
   Input,
@@ -8,6 +8,8 @@ import {
   Select,
   DatePicker,
   Divider,
+  message,
+  Upload,
 } from "antd";
 import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
@@ -17,7 +19,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { District, provinceList } from "@/lib/provinces";
 
 import { searchByLabel } from "@/lib/utils";
-import { contractors, trucks, driverList } from "@/__mocks__";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import dayjs from "dayjs";
+import http from "@/lib/http";
+import { IPrice } from "@/interfaces/price";
+import { apiRoutes } from "@/routes/api";
+import * as XLSX from "xlsx";
+import { priceKeys, priceKeysBlackList } from "@/constants";
+import { omit } from "lodash";
 
 const { TextArea } = Input;
 
@@ -42,15 +52,20 @@ const breadcrumb: BreadcrumbProps = {
 
 const AddOrderForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [selectedContractor, setSelectedContractor] = useState<string | null>(
-    null
-  );
+  const [contractorId, setContractorId] = useState<string>();
+  const [pricings, setPricings] = useState<IPrice[]>([]);
   const [pickupDistricts, setPickupDistricts] = useState<District[]>([]);
   const [deliveryDistricts, setDeliveryDistricts] = useState<District[]>([]);
+  // Access drivers from Redux store
+  const drivers = useSelector((state: RootState) => state.driver.drivers);
+  const contractors = useSelector(
+    (state: RootState) => state.contractor.contractors
+  );
+  const trucks = useSelector((state: RootState) => state.truck.trucks);
   const navigate = useNavigate();
 
   const handleContractorChange = (value: string) => {
-    setSelectedContractor(value);
+    setContractorId(value);
     form.setFieldsValue({ driver: undefined, truck: undefined });
   };
 
@@ -77,6 +92,119 @@ const AddOrderForm: React.FC = () => {
         [field === "pickupProvince" ? "pickupDistrict" : "deliveryDistrict"]:
           undefined,
       });
+    }
+  };
+
+  const fetchPricings = async () => {
+    try {
+      const response = await http.get(`/prices/${contractorId}`);
+      if (response.status === 200) {
+        setPricings(response.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching pricings:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (contractorId) {
+      fetchPricings();
+    }
+  }, [contractorId]);
+
+  // Utility function to parse Excel file locally
+  const parseExcelFile = (file: any): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        try {
+          const ab = e.target.result;
+          const wb = XLSX.read(ab, { type: "array" });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(ws);
+          resolve(jsonData);
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  const handleFileUpload = async (file: any) => {
+    try {
+      const timestamp = new Date().getTime();
+      const formattedDate = new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+        .format(new Date())
+        .replace(/\//g, "_"); // Replace "/" with "_" to get "DD_MM_YYYY"
+
+      // Combine timestamp and formatted date in the filename
+      const originalExtension = file.name.split(".").pop();
+      const newFileName = `${timestamp}_${formattedDate}.${originalExtension}`;
+
+      const renamedFile = new File([file], newFileName, { type: file.type });
+      const jsonData = await parseExcelFile(renamedFile);
+
+      // Step 1: Prepare the file for upload
+      const formData = new FormData();
+      formData.append("file", renamedFile);
+
+      // Step 3: Upload the file
+      try {
+        await http.post(`${apiRoutes.files}/upload`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data", // Required to indicate file upload
+          },
+        });
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        message.error("Có lỗi xảy ra trong quá trình tải file");
+      }
+
+      const prices = jsonData.map((item: any) => ({
+        from_city: item[priceKeys.fromCity],
+        from_district: item[priceKeys.fromDistrict],
+        to_city: item[priceKeys.toCity],
+        to_district: item[priceKeys.toDistrcit],
+        weight_prices: {
+          ...omit(item, priceKeysBlackList),
+        },
+        notes: item[priceKeys.notes],
+      }));
+
+      const data = {
+        contractor_id: contractorId,
+        file_name: newFileName,
+        prices,
+      };
+
+      // Step 4: Send parsed data to the API
+      const pricesRes = await http.post(
+        `${apiRoutes.prices}/${contractorId}`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json", // Ensure this header is set for JSON data
+          },
+        }
+      );
+      fetchPricings();
+
+      message.success(`Đã tải lên bảng giá excel ${renamedFile.name}`);
+
+      if (pricesRes?.data?.data) {
+        form.setFieldsValue({ prices: pricesRes?.data?.data?.id });
+        message.info(`Đang áp dụng bảng giá mới ${renamedFile.name}`);
+      }
+    } catch (error) {
+      message.error("Có lỗi xảy ra trong quá trình tải file");
     }
   };
 
@@ -114,7 +242,12 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item label="Ngày tạo" name="orderDate">
-              <DatePicker size="large" className="w-full" />
+              <DatePicker
+                size="large"
+                className="w-full"
+                format={"DD-MM-YYYY"}
+                defaultValue={dayjs(new Date())}
+              />
             </Form.Item>
           </Col>
 
@@ -134,11 +267,15 @@ const AddOrderForm: React.FC = () => {
               name="driver"
               rules={[{ required: true, message: "Hãy chọn lái xe!" }]}
             >
-              <Select size="large" placeholder="Chọn lái xe" disabled={!selectedContractor}>
-                {selectedContractor &&
-                  driverList.map((driver) => (
+              <Select
+                size="large"
+                placeholder="Chọn lái xe"
+                disabled={!contractorId}
+              >
+                {contractorId &&
+                  drivers.map((driver) => (
                     <Option key={driver.id} value={driver.id}>
-                      {driver.fullName}
+                      {driver.full_name}
                     </Option>
                   ))}
               </Select>
@@ -154,12 +291,52 @@ const AddOrderForm: React.FC = () => {
               <Select
                 size="large"
                 placeholder="Chọn xe tải"
-                disabled={!selectedContractor}
+                disabled={!contractorId}
               >
-                {selectedContractor &&
+                {contractorId &&
                   trucks.map((truck) => (
                     <Option key={truck.id} value={truck.id}>
-                      {truck.capacity}
+                      {truck.license_plate}
+                    </Option>
+                  ))}
+              </Select>
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={
+                <div>
+                  Chọn bảng giá{" "}
+                  {contractorId && (
+                    <Upload
+                      name="avatar"
+                      className="avatar-uploader cursor-pointer"
+                      customRequest={({ file, onSuccess, onError }: any) => {
+                        handleFileUpload(file)
+                          .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
+                          .catch((err) => onError?.(err)); // Handle errors
+                      }}
+                      showUploadList={false}
+                      accept=".xlsx,.xls"
+                    >
+                      <Link to={""}>(Thêm bảng giá khác?)</Link>
+                    </Upload>
+                  )}
+                </div>
+              }
+              name="prices"
+              rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
+            >
+              <Select
+                size="large"
+                placeholder="Chọn Bảng Giá"
+                disabled={!contractorId}
+              >
+                {pricings &&
+                  pricings.map((price) => (
+                    <Option key={price.id} value={price.id}>
+                      {price.file_name}
                     </Option>
                   ))}
               </Select>
