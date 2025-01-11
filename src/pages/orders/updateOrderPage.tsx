@@ -117,7 +117,7 @@ const TruckForm: React.FC = () => {
           <Row gutter={16}>
             <Col xs={24}>
               <Form.Item label="Ghi chú" name="note">
-                <TextArea placeholder="Nhập ghi chú (nếu có)" rows={3} />
+                <TextArea placeholder="Nhập ghi chú (nếu có)" rows={2} />
               </Form.Item>
             </Col>
           </Row>

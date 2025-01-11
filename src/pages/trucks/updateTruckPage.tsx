@@ -176,7 +176,7 @@ const UpdateTruckForm: React.FC = () => {
               <TextArea
                 size="large"
                 placeholder="Nhập ghi chú (nếu có)"
-                rows={4}
+                rows={2}
               />
             </Form.Item>
           </Col>

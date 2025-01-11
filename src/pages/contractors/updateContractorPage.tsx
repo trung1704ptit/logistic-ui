@@ -368,12 +368,12 @@ const ContractorForm: React.FC = () => {
                 name="address"
                 rules={[{ required: true, message: "Hãy nhập địa chỉ!" }]}
               >
-                <Input.TextArea placeholder="Nhập địa chỉ" rows={3} />
+                <Input.TextArea placeholder="Nhập địa chỉ" rows={2} />
               </Form.Item>
             </Col>
             <Col xs={24} sm={12}>
               <Form.Item label="Ghi chú" name="note">
-                <Input.TextArea placeholder="Nhập ghi chú (nếu có)" rows={3} />
+                <Input.TextArea placeholder="Nhập ghi chú (nếu có)" rows={2} />
               </Form.Item>
             </Col>
           </Row>

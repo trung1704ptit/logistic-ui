@@ -28,6 +28,7 @@ import { apiRoutes } from "@/routes/api";
 import * as XLSX from "xlsx";
 import { priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
+import BillTable from "./billTable";
 
 const { TextArea } = Input;
 
@@ -56,7 +57,8 @@ const AddOrderForm: React.FC = () => {
   const [pricings, setPricings] = useState<IPrice[]>([]);
   const [pickupDistricts, setPickupDistricts] = useState<District[]>([]);
   const [deliveryDistricts, setDeliveryDistricts] = useState<District[]>([]);
-  // Access drivers from Redux store
+  const [unitSelected, setUnitSelected] = useState("");
+  const [isReview, setIsReview] = useState(false);
   const drivers = useSelector((state: RootState) => state.driver.drivers);
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
@@ -71,6 +73,7 @@ const AddOrderForm: React.FC = () => {
 
   const handleSubmit = (values: any) => {
     console.log("Submitted values:", values);
+    setIsReview(true);
   };
 
   const handleCancel = () => {
@@ -206,6 +209,10 @@ const AddOrderForm: React.FC = () => {
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
     }
+  };
+
+  const handleUnitSelect = (value: string) => {
+    setUnitSelected(value);
   };
 
   return (
@@ -424,23 +431,109 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item
+              label="Đơn vị tính"
+              name="unit"
+              rules={[{ required: true, message: "Hãy chọn Đơn vị tính!" }]}
+            >
+              <Select
+                size="large"
+                placeholder="Chọn đơn vị tính"
+                disabled={!contractorId}
+                onChange={handleUnitSelect}
+              >
+                <Option key="weight" value="weight">
+                  Theo Tấn
+                </Option>
+                <Option key="volumn" value="volumn">
+                  Theo Khối
+                </Option>
+              </Select>
+            </Form.Item>
+          </Col>
+
+          {unitSelected === "weight" && (
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Số tấn"
+                name="weight"
+                rules={[{ required: true, message: "Hãy nhập số tấn!" }]}
+              >
+                <Input size="large" type="number" />
+              </Form.Item>
+            </Col>
+          )}
+
+          {unitSelected === "volumn" && (
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Số khối"
+                name="volumn"
+                rules={[{ required: true, message: "Hãy nhập số khối!" }]}
+              >
+                <Input size="large" type="number" />
+              </Form.Item>
+            </Col>
+          )}
+
+          <Col xs={24} sm={12}>
+            <Form.Item
               label="Số lượng chuyến"
               name="tripCount"
               rules={[{ required: true, message: "Hãy nhập số lượng chuyến!" }]}
             >
-              <Input size="large" type="number" placeholder="1" />
+              <Input size="large" type="number" placeholder="Ví dụ: 1" />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item label="Cước vận chuyển" name="pointFee">
+              <Input
+                size="large"
+                type="number"
+                placeholder="Nhập Cước vận chuyển"
+               
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item label="Số điểm" name="pointFee">
+              <Input
+                size="large"
+                type="number"
+                placeholder="Nhập số điểm"
+               
+              />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí điểm" name="pointFee">
-              <Input size="large" type="number" placeholder="Nhập phí điểm" />
+              <Input size="large" type="number" placeholder="Nhập phí điểm"  />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item label="Phí thu hồi" name="refund">
+              <Input size="large" type="number"  />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item label="Phí bốc xếp" name="refund">
+              <Input size="large" type="number"   />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item label="Tiền ăn" name="meal">
+              <Input size="large" type="number" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí lưu ca" name="standbyFee">
-              <Input size="large" type="number" placeholder="Nhập phí lưu ca" />
+              <Input size="large" type="number" placeholder="Nhập phí lưu ca"  />
             </Form.Item>
           </Col>
 
@@ -523,10 +616,12 @@ const AddOrderForm: React.FC = () => {
               <TextArea
                 size="large"
                 placeholder="Nhập ghi chú (nếu có)"
-                rows={3}
+                rows={2}
               />
             </Form.Item>
           </Col>
+
+          {isReview && <BillTable />}
 
           <Col xs={24}>
             <Form.Item>
@@ -536,7 +631,7 @@ const AddOrderForm: React.FC = () => {
                   htmlType="submit"
                   icon={<PlusOutlined />}
                 >
-                  Thêm đơn hàng
+                  Tiếp theo
                 </Button>
                 <Button
                   type="default"
