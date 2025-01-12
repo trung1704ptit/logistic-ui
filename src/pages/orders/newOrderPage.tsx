@@ -16,14 +16,13 @@ import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
-import { District, provinceList } from "@/lib/provinces";
 
 import { searchByLabel } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import dayjs from "dayjs";
 import http from "@/lib/http";
-import { IPrice } from "@/interfaces/price";
+import { IPrice, IPriceDetail } from "@/interfaces/price";
 import { apiRoutes } from "@/routes/api";
 import * as XLSX from "xlsx";
 import { priceKeys, priceKeysBlackList } from "@/constants";
@@ -33,6 +32,11 @@ import BillTable from "./billTable";
 const { TextArea } = Input;
 
 const { Option } = Select;
+
+interface ILocationLabels {
+  allDeliveryProvinces: string[];
+  allPickupProvinces: string[];
+}
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -55,14 +59,19 @@ const AddOrderForm: React.FC = () => {
   const [form] = Form.useForm();
   const [contractorId, setContractorId] = useState<string>();
   const [pricings, setPricings] = useState<IPrice[]>([]);
-  const [pickupDistricts, setPickupDistricts] = useState<District[]>([]);
-  const [deliveryDistricts, setDeliveryDistricts] = useState<District[]>([]);
+  const [pickupDistricts, setPickupDistricts] = useState<string[]>([]);
+  const [deliveryDistricts, setDeliveryDistricts] = useState<string[]>([]);
   const [unitSelected, setUnitSelected] = useState("");
   const [isReview, setIsReview] = useState(false);
   const drivers = useSelector((state: RootState) => state.driver.drivers);
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
+  const [selectedPrice, setSelectedPrice] = useState<IPrice>();
+  const [locationLabels, setLocationLabels] = useState<ILocationLabels>({
+    allDeliveryProvinces: [],
+    allPickupProvinces: [],
+  });
   const trucks = useSelector((state: RootState) => state.truck.trucks);
   const navigate = useNavigate();
 
@@ -72,8 +81,33 @@ const AddOrderForm: React.FC = () => {
   };
 
   const handleSubmit = (values: any) => {
-    console.log("Submitted values:", values);
     setIsReview(true);
+  };
+
+  const updateLocationLabels = (data: any) => {
+    setSelectedPrice(data);
+    const allPickupProvinces: string[] = data.price_details.map(
+      (item: IPriceDetail) => item.from_city
+    );
+    const allDeliveryProvinces: string[] = data.price_details.map(
+      (item: IPriceDetail) => item.to_city
+    );
+
+    setLocationLabels({
+      allPickupProvinces: [...new Set(allPickupProvinces)],
+      allDeliveryProvinces: [...new Set(allDeliveryProvinces)],
+    });
+  }
+
+  const handleSelectPrice = async (priceId: string) => {
+    try {
+      const { data } = await http.get(
+        `${apiRoutes.prices}/${contractorId}/${priceId}`
+      );
+      updateLocationLabels(data.data)
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCancel = () => {
@@ -81,20 +115,22 @@ const AddOrderForm: React.FC = () => {
   };
 
   const handleProvinceChange = (value: string, field: string) => {
-    const selectedProvince = provinceList.find(
-      (province) => province.Code === value
-    );
-    if (selectedProvince) {
-      const districts = selectedProvince.District;
-      if (field === "pickup_province") {
-        setPickupDistricts(districts);
-      } else {
-        setDeliveryDistricts(districts);
-      }
-      form.setFieldsValue({
-        [field === "pickup_province" ? "pickup_district" : "delivery_district"]:
-          undefined,
-      });
+    if (field === "pickup_province") {
+      const districts =
+        selectedPrice?.price_details
+          .filter((item) => item.from_city === value)
+          .map((item) => item.from_district) || [];
+
+      setPickupDistricts([...new Set(districts)]);
+      form.setFieldValue("pickup_district", null);
+    } else {
+      const districts =
+        selectedPrice?.price_details
+          .filter((item) => item.to_city === value)
+          .map((item) => item.to_district) || [];
+
+      setDeliveryDistricts([...new Set(districts)]);
+      form.setFieldValue("delivery_district", null);
     }
   };
 
@@ -187,6 +223,8 @@ const AddOrderForm: React.FC = () => {
         file_name: newFileName,
         prices,
       };
+
+      updateLocationLabels({ price_details: prices })
 
       // Step 4: Send parsed data to the API
       const pricesRes = await http.post(
@@ -339,6 +377,7 @@ const AddOrderForm: React.FC = () => {
                 size="large"
                 placeholder="Chọn Bảng Giá"
                 disabled={!contractorId}
+                onChange={handleSelectPrice}
               >
                 {pricings &&
                   pricings.map((price) => (
@@ -367,9 +406,9 @@ const AddOrderForm: React.FC = () => {
                   handleProvinceChange(value, "pickup_province")
                 }
               >
-                {provinceList.map((province) => (
-                  <Option key={province.Code} value={province.Code}>
-                    {province.FullName}
+                {locationLabels.allPickupProvinces.map((province) => (
+                  <Option key={province} value={province}>
+                    {province}
                   </Option>
                 ))}
               </Select>
@@ -383,8 +422,8 @@ const AddOrderForm: React.FC = () => {
                 filterOption={searchByLabel}
               >
                 {pickupDistricts.map((district) => (
-                  <Option key={district.Code} value={district.Code}>
-                    {district.FullName}
+                  <Option key={district} value={district}>
+                    {district}
                   </Option>
                 ))}
               </Select>
@@ -406,9 +445,9 @@ const AddOrderForm: React.FC = () => {
                   handleProvinceChange(value, "delivery_province")
                 }
               >
-                {provinceList.map((province) => (
-                  <Option key={province.Code} value={province.Code}>
-                    {province.FullName}
+                {locationLabels.allDeliveryProvinces.map((province) => (
+                  <Option key={province} value={province}>
+                    {province}
                   </Option>
                 ))}
               </Select>
@@ -421,8 +460,8 @@ const AddOrderForm: React.FC = () => {
                 filterOption={searchByLabel}
               >
                 {deliveryDistricts.map((district) => (
-                  <Option key={district.Code} value={district.Code}>
-                    {district.FullName}
+                  <Option key={district} value={district}>
+                    {district}
                   </Option>
                 ))}
               </Select>
@@ -491,37 +530,31 @@ const AddOrderForm: React.FC = () => {
                 size="large"
                 type="number"
                 placeholder="Nhập Cước vận chuyển"
-               
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Số điểm" name="point_count">
-              <Input
-                size="large"
-                type="number"
-                placeholder="Nhập số điểm"
-               
-              />
+              <Input size="large" type="number" placeholder="Nhập số điểm" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí điểm" name="point_fee">
-              <Input size="large" type="number" placeholder="Nhập phí điểm"  />
+              <Input size="large" type="number" placeholder="Nhập phí điểm" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí thu hồi" name="recovery_fee">
-              <Input size="large" type="number"  />
+              <Input size="large" type="number" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí bốc xếp" name="loading_fee">
-              <Input size="large" type="number"   />
+              <Input size="large" type="number" />
             </Form.Item>
           </Col>
 
@@ -533,7 +566,7 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí lưu ca" name="standby_fee">
-              <Input size="large" type="number" placeholder="Nhập phí lưu ca"  />
+              <Input size="large" type="number" placeholder="Nhập phí lưu ca" />
             </Form.Item>
           </Col>
 

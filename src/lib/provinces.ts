@@ -17,109 +17,109 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "01",
-    "FullName": "Thành phố Hà Nội",
+    "FullName": "Hà Nội",
     "CodeName": "ha_noi",
     "District": [
       {
         "Type": "district",
         "Code": "001",
-        "FullName": "Quận Ba Đình",
+        "FullName": "Ba Đình",
         "CodeName": "ba_dinh"
       },
       {
         "Type": "district",
         "Code": "002",
-        "FullName": "Quận Hoàn Kiếm",
+        "FullName": "Hoàn Kiếm",
         "CodeName": "hoan_kiem"
       },
       {
         "Type": "district",
         "Code": "003",
-        "FullName": "Quận Tây Hồ",
+        "FullName": "Tây Hồ",
         "CodeName": "tay_ho"
       },
       {
         "Type": "district",
         "Code": "004",
-        "FullName": "Quận Long Biên",
+        "FullName": "Long Biên",
         "CodeName": "long_bien"
       },
       {
         "Type": "district",
         "Code": "005",
-        "FullName": "Quận Cầu Giấy",
+        "FullName": "Cầu Giấy",
         "CodeName": "cau_giay"
       },
       {
         "Type": "district",
         "Code": "006",
-        "FullName": "Quận Đống Đa",
+        "FullName": "Đống Đa",
         "CodeName": "dong_da"
       },
       {
         "Type": "district",
         "Code": "007",
-        "FullName": "Quận Hai Bà Trưng",
+        "FullName": "Hai Bà Trưng",
         "CodeName": "hai_ba_trung"
       },
       {
         "Type": "district",
         "Code": "008",
-        "FullName": "Quận Hoàng Mai",
+        "FullName": "Hoàng Mai",
         "CodeName": "hoang_mai"
       },
       {
         "Type": "district",
         "Code": "009",
-        "FullName": "Quận Thanh Xuân",
+        "FullName": "Thanh Xuân",
         "CodeName": "thanh_xuan"
       },
       {
         "Type": "district",
         "Code": "016",
-        "FullName": "Huyện Sóc Sơn",
+        "FullName": "Sóc Sơn",
         "CodeName": "soc_son"
       },
       {
         "Type": "district",
         "Code": "017",
-        "FullName": "Huyện Đông Anh",
+        "FullName": "Đông Anh",
         "CodeName": "dong_anh"
       },
       {
         "Type": "district",
         "Code": "018",
-        "FullName": "Huyện Gia Lâm",
+        "FullName": "Gia Lâm",
         "CodeName": "gia_lam"
       },
       {
         "Type": "district",
         "Code": "019",
-        "FullName": "Quận Nam Từ Liêm",
+        "FullName": "Nam Từ Liêm",
         "CodeName": "nam_tu_liem"
       },
       {
         "Type": "district",
         "Code": "020",
-        "FullName": "Huyện Thanh Trì",
+        "FullName": "Thanh Trì",
         "CodeName": "thanh_tri"
       },
       {
         "Type": "district",
         "Code": "021",
-        "FullName": "Quận Bắc Từ Liêm",
+        "FullName": "Bắc Từ Liêm",
         "CodeName": "bac_tu_liem"
       },
       {
         "Type": "district",
         "Code": "250",
-        "FullName": "Huyện Mê Linh",
+        "FullName": "Mê Linh",
         "CodeName": "me_linh"
       },
       {
         "Type": "district",
         "Code": "268",
-        "FullName": "Quận Hà Đông",
+        "FullName": "Hà Đông",
         "CodeName": "ha_dong"
       },
       {
@@ -131,73 +131,73 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "271",
-        "FullName": "Huyện Ba Vì",
+        "FullName": "Ba Vì",
         "CodeName": "ba_vi"
       },
       {
         "Type": "district",
         "Code": "272",
-        "FullName": "Huyện Phúc Thọ",
+        "FullName": "Phúc Thọ",
         "CodeName": "phuc_tho"
       },
       {
         "Type": "district",
         "Code": "273",
-        "FullName": "Huyện Đan Phượng",
+        "FullName": "Đan Phượng",
         "CodeName": "dan_phuong"
       },
       {
         "Type": "district",
         "Code": "274",
-        "FullName": "Huyện Hoài Đức",
+        "FullName": "Hoài Đức",
         "CodeName": "hoai_duc"
       },
       {
         "Type": "district",
         "Code": "275",
-        "FullName": "Huyện Quốc Oai",
+        "FullName": "Quốc Oai",
         "CodeName": "quoc_oai"
       },
       {
         "Type": "district",
         "Code": "276",
-        "FullName": "Huyện Thạch Thất",
+        "FullName": "Thạch Thất",
         "CodeName": "thach_that"
       },
       {
         "Type": "district",
         "Code": "277",
-        "FullName": "Huyện Chương Mỹ",
+        "FullName": "Chương Mỹ",
         "CodeName": "chuong_my"
       },
       {
         "Type": "district",
         "Code": "278",
-        "FullName": "Huyện Thanh Oai",
+        "FullName": "Thanh Oai",
         "CodeName": "thanh_oai"
       },
       {
         "Type": "district",
         "Code": "279",
-        "FullName": "Huyện Thường Tín",
+        "FullName": "Thường Tín",
         "CodeName": "thuong_tin"
       },
       {
         "Type": "district",
         "Code": "280",
-        "FullName": "Huyện Phú Xuyên",
+        "FullName": "Phú Xuyên",
         "CodeName": "phu_xuyen"
       },
       {
         "Type": "district",
         "Code": "281",
-        "FullName": "Huyện Ứng Hòa",
+        "FullName": "Ứng Hòa",
         "CodeName": "ung_hoa"
       },
       {
         "Type": "district",
         "Code": "282",
-        "FullName": "Huyện Mỹ Đức",
+        "FullName": "Mỹ Đức",
         "CodeName": "my_duc"
       }
     ]
@@ -205,7 +205,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "02",
-    "FullName": "Tỉnh Hà Giang",
+    "FullName": "Hà Giang",
     "CodeName": "ha_giang",
     "District": [
       {
@@ -217,61 +217,61 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "026",
-        "FullName": "Huyện Đồng Văn",
+        "FullName": "Đồng Văn",
         "CodeName": "dong_van"
       },
       {
         "Type": "district",
         "Code": "027",
-        "FullName": "Huyện Mèo Vạc",
+        "FullName": "Mèo Vạc",
         "CodeName": "meo_vac"
       },
       {
         "Type": "district",
         "Code": "028",
-        "FullName": "Huyện Yên Minh",
+        "FullName": "Yên Minh",
         "CodeName": "yen_minh"
       },
       {
         "Type": "district",
         "Code": "029",
-        "FullName": "Huyện Quản Bạ",
+        "FullName": "Quản Bạ",
         "CodeName": "quan_ba"
       },
       {
         "Type": "district",
         "Code": "030",
-        "FullName": "Huyện Vị Xuyên",
+        "FullName": "Vị Xuyên",
         "CodeName": "vi_xuyen"
       },
       {
         "Type": "district",
         "Code": "031",
-        "FullName": "Huyện Bắc Mê",
+        "FullName": "Bắc Mê",
         "CodeName": "bac_me"
       },
       {
         "Type": "district",
         "Code": "032",
-        "FullName": "Huyện Hoàng Su Phì",
+        "FullName": "Hoàng Su Phì",
         "CodeName": "hoang_su_phi"
       },
       {
         "Type": "district",
         "Code": "033",
-        "FullName": "Huyện Xín Mần",
+        "FullName": "Xín Mần",
         "CodeName": "xin_man"
       },
       {
         "Type": "district",
         "Code": "034",
-        "FullName": "Huyện Bắc Quang",
+        "FullName": "Bắc Quang",
         "CodeName": "bac_quang"
       },
       {
         "Type": "district",
         "Code": "035",
-        "FullName": "Huyện Quang Bình",
+        "FullName": "Quang Bình",
         "CodeName": "quang_binh"
       }
     ]
@@ -279,7 +279,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "04",
-    "FullName": "Tỉnh Cao Bằng",
+    "FullName": "Cao Bằng",
     "CodeName": "cao_bang",
     "District": [
       {
@@ -291,55 +291,55 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "042",
-        "FullName": "Huyện Bảo Lâm",
+        "FullName": "Bảo Lâm",
         "CodeName": "bao_lam"
       },
       {
         "Type": "district",
         "Code": "043",
-        "FullName": "Huyện Bảo Lạc",
+        "FullName": "Bảo Lạc",
         "CodeName": "bao_lac"
       },
       {
         "Type": "district",
         "Code": "045",
-        "FullName": "Huyện Hà Quảng",
+        "FullName": "Hà Quảng",
         "CodeName": "ha_quang"
       },
       {
         "Type": "district",
         "Code": "047",
-        "FullName": "Huyện Trùng Khánh",
+        "FullName": "Trùng Khánh",
         "CodeName": "trung_khanh"
       },
       {
         "Type": "district",
         "Code": "048",
-        "FullName": "Huyện Hạ Lang",
+        "FullName": "Hạ Lang",
         "CodeName": "ha_lang"
       },
       {
         "Type": "district",
         "Code": "049",
-        "FullName": "Huyện Quảng Hòa",
+        "FullName": "Quảng Hòa",
         "CodeName": "quang_hoa"
       },
       {
         "Type": "district",
         "Code": "051",
-        "FullName": "Huyện Hoà An",
+        "FullName": "Hoà An",
         "CodeName": "hoa_an"
       },
       {
         "Type": "district",
         "Code": "052",
-        "FullName": "Huyện Nguyên Bình",
+        "FullName": "Nguyên Bình",
         "CodeName": "nguyen_binh"
       },
       {
         "Type": "district",
         "Code": "053",
-        "FullName": "Huyện Thạch An",
+        "FullName": "Thạch An",
         "CodeName": "thach_an"
       }
     ]
@@ -347,7 +347,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "06",
-    "FullName": "Tỉnh Bắc Kạn",
+    "FullName": "Bắc Kạn",
     "CodeName": "bac_kan",
     "District": [
       {
@@ -359,43 +359,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "060",
-        "FullName": "Huyện Pác Nặm",
+        "FullName": "Pác Nặm",
         "CodeName": "pac_nam"
       },
       {
         "Type": "district",
         "Code": "061",
-        "FullName": "Huyện Ba Bể",
+        "FullName": "Ba Bể",
         "CodeName": "ba_be"
       },
       {
         "Type": "district",
         "Code": "062",
-        "FullName": "Huyện Ngân Sơn",
+        "FullName": "Ngân Sơn",
         "CodeName": "ngan_son"
       },
       {
         "Type": "district",
         "Code": "063",
-        "FullName": "Huyện Bạch Thông",
+        "FullName": "Bạch Thông",
         "CodeName": "bach_thong"
       },
       {
         "Type": "district",
         "Code": "064",
-        "FullName": "Huyện Chợ Đồn",
+        "FullName": "Chợ Đồn",
         "CodeName": "cho_don"
       },
       {
         "Type": "district",
         "Code": "065",
-        "FullName": "Huyện Chợ Mới",
+        "FullName": "Chợ Mới",
         "CodeName": "cho_moi"
       },
       {
         "Type": "district",
         "Code": "066",
-        "FullName": "Huyện Na Rì",
+        "FullName": "Na Rì",
         "CodeName": "na_ri"
       }
     ]
@@ -403,7 +403,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "08",
-    "FullName": "Tỉnh Tuyên Quang",
+    "FullName": "Tuyên Quang",
     "CodeName": "tuyen_quang",
     "District": [
       {
@@ -415,37 +415,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "071",
-        "FullName": "Huyện Lâm Bình",
+        "FullName": "Lâm Bình",
         "CodeName": "lam_binh"
       },
       {
         "Type": "district",
         "Code": "072",
-        "FullName": "Huyện Na Hang",
+        "FullName": "Na Hang",
         "CodeName": "na_hang"
       },
       {
         "Type": "district",
         "Code": "073",
-        "FullName": "Huyện Chiêm Hóa",
+        "FullName": "Chiêm Hóa",
         "CodeName": "chiem_hoa"
       },
       {
         "Type": "district",
         "Code": "074",
-        "FullName": "Huyện Hàm Yên",
+        "FullName": "Hàm Yên",
         "CodeName": "ham_yen"
       },
       {
         "Type": "district",
         "Code": "075",
-        "FullName": "Huyện Yên Sơn",
+        "FullName": "Yên Sơn",
         "CodeName": "yen_son"
       },
       {
         "Type": "district",
         "Code": "076",
-        "FullName": "Huyện Sơn Dương",
+        "FullName": "Sơn Dương",
         "CodeName": "son_duong"
       }
     ]
@@ -453,7 +453,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "10",
-    "FullName": "Tỉnh Lào Cai",
+    "FullName": "Lào Cai",
     "CodeName": "lao_cai",
     "District": [
       {
@@ -465,37 +465,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "082",
-        "FullName": "Huyện Bát Xát",
+        "FullName": "Bát Xát",
         "CodeName": "bat_xat"
       },
       {
         "Type": "district",
         "Code": "083",
-        "FullName": "Huyện Mường Khương",
+        "FullName": "Mường Khương",
         "CodeName": "muong_khuong"
       },
       {
         "Type": "district",
         "Code": "084",
-        "FullName": "Huyện Si Ma Cai",
+        "FullName": "Si Ma Cai",
         "CodeName": "si_ma_cai"
       },
       {
         "Type": "district",
         "Code": "085",
-        "FullName": "Huyện Bắc Hà",
+        "FullName": "Bắc Hà",
         "CodeName": "bac_ha"
       },
       {
         "Type": "district",
         "Code": "086",
-        "FullName": "Huyện Bảo Thắng",
+        "FullName": "Bảo Thắng",
         "CodeName": "bao_thang"
       },
       {
         "Type": "district",
         "Code": "087",
-        "FullName": "Huyện Bảo Yên",
+        "FullName": "Bảo Yên",
         "CodeName": "bao_yen"
       },
       {
@@ -507,7 +507,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "089",
-        "FullName": "Huyện Văn Bàn",
+        "FullName": "Văn Bàn",
         "CodeName": "van_ban"
       }
     ]
@@ -515,7 +515,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "11",
-    "FullName": "Tỉnh Điện Biên",
+    "FullName": "Điện Biên",
     "CodeName": "dien_bien",
     "District": [
       {
@@ -533,49 +533,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "096",
-        "FullName": "Huyện Mường Nhé",
+        "FullName": "Mường Nhé",
         "CodeName": "muong_nhe"
       },
       {
         "Type": "district",
         "Code": "097",
-        "FullName": "Huyện Mường Chà",
+        "FullName": "Mường Chà",
         "CodeName": "muong_cha"
       },
       {
         "Type": "district",
         "Code": "098",
-        "FullName": "Huyện Tủa Chùa",
+        "FullName": "Tủa Chùa",
         "CodeName": "tua_chua"
       },
       {
         "Type": "district",
         "Code": "099",
-        "FullName": "Huyện Tuần Giáo",
+        "FullName": "Tuần Giáo",
         "CodeName": "tuan_giao"
       },
       {
         "Type": "district",
         "Code": "100",
-        "FullName": "Huyện Điện Biên",
+        "FullName": "Điện Biên",
         "CodeName": "dien_bien"
       },
       {
         "Type": "district",
         "Code": "101",
-        "FullName": "Huyện Điện Biên Đông",
+        "FullName": "Điện Biên Đông",
         "CodeName": "dien_bien_dong"
       },
       {
         "Type": "district",
         "Code": "102",
-        "FullName": "Huyện Mường Ảng",
+        "FullName": "Mường Ảng",
         "CodeName": "muong_ang"
       },
       {
         "Type": "district",
         "Code": "103",
-        "FullName": "Huyện Nậm Pồ",
+        "FullName": "Nậm Pồ",
         "CodeName": "nam_po"
       }
     ]
@@ -583,7 +583,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "12",
-    "FullName": "Tỉnh Lai Châu",
+    "FullName": "Lai Châu",
     "CodeName": "lai_chau",
     "District": [
       {
@@ -595,43 +595,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "106",
-        "FullName": "Huyện Tam Đường",
+        "FullName": "Tam Đường",
         "CodeName": "tam_duong"
       },
       {
         "Type": "district",
         "Code": "107",
-        "FullName": "Huyện Mường Tè",
+        "FullName": "Mường Tè",
         "CodeName": "muong_te"
       },
       {
         "Type": "district",
         "Code": "108",
-        "FullName": "Huyện Sìn Hồ",
+        "FullName": "Sìn Hồ",
         "CodeName": "sin_ho"
       },
       {
         "Type": "district",
         "Code": "109",
-        "FullName": "Huyện Phong Thổ",
+        "FullName": "Phong Thổ",
         "CodeName": "phong_tho"
       },
       {
         "Type": "district",
         "Code": "110",
-        "FullName": "Huyện Than Uyên",
+        "FullName": "Than Uyên",
         "CodeName": "than_uyen"
       },
       {
         "Type": "district",
         "Code": "111",
-        "FullName": "Huyện Tân Uyên",
+        "FullName": "Tân Uyên",
         "CodeName": "tan_uyen"
       },
       {
         "Type": "district",
         "Code": "112",
-        "FullName": "Huyện Nậm Nhùn",
+        "FullName": "Nậm Nhùn",
         "CodeName": "nam_nhun"
       }
     ]
@@ -639,7 +639,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "14",
-    "FullName": "Tỉnh Sơn La",
+    "FullName": "Sơn La",
     "CodeName": "son_la",
     "District": [
       {
@@ -651,67 +651,67 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "118",
-        "FullName": "Huyện Quỳnh Nhai",
+        "FullName": "Quỳnh Nhai",
         "CodeName": "quynh_nhai"
       },
       {
         "Type": "district",
         "Code": "119",
-        "FullName": "Huyện Thuận Châu",
+        "FullName": "Thuận Châu",
         "CodeName": "thuan_chau"
       },
       {
         "Type": "district",
         "Code": "120",
-        "FullName": "Huyện Mường La",
+        "FullName": "Mường La",
         "CodeName": "muong_la"
       },
       {
         "Type": "district",
         "Code": "121",
-        "FullName": "Huyện Bắc Yên",
+        "FullName": "Bắc Yên",
         "CodeName": "bac_yen"
       },
       {
         "Type": "district",
         "Code": "122",
-        "FullName": "Huyện Phù Yên",
+        "FullName": "Phù Yên",
         "CodeName": "phu_yen"
       },
       {
         "Type": "district",
         "Code": "123",
-        "FullName": "Huyện Mộc Châu",
+        "FullName": "Mộc Châu",
         "CodeName": "moc_chau"
       },
       {
         "Type": "district",
         "Code": "124",
-        "FullName": "Huyện Yên Châu",
+        "FullName": "Yên Châu",
         "CodeName": "yen_chau"
       },
       {
         "Type": "district",
         "Code": "125",
-        "FullName": "Huyện Mai Sơn",
+        "FullName": "Mai Sơn",
         "CodeName": "mai_son"
       },
       {
         "Type": "district",
         "Code": "126",
-        "FullName": "Huyện Sông Mã",
+        "FullName": "Sông Mã",
         "CodeName": "song_ma"
       },
       {
         "Type": "district",
         "Code": "127",
-        "FullName": "Huyện Sốp Cộp",
+        "FullName": "Sốp Cộp",
         "CodeName": "sop_cop"
       },
       {
         "Type": "district",
         "Code": "128",
-        "FullName": "Huyện Vân Hồ",
+        "FullName": "Vân Hồ",
         "CodeName": "van_ho"
       }
     ]
@@ -719,7 +719,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "15",
-    "FullName": "Tỉnh Yên Bái",
+    "FullName": "Yên Bái",
     "CodeName": "yen_bai",
     "District": [
       {
@@ -737,43 +737,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "135",
-        "FullName": "Huyện Lục Yên",
+        "FullName": "Lục Yên",
         "CodeName": "luc_yen"
       },
       {
         "Type": "district",
         "Code": "136",
-        "FullName": "Huyện Văn Yên",
+        "FullName": "Văn Yên",
         "CodeName": "van_yen"
       },
       {
         "Type": "district",
         "Code": "137",
-        "FullName": "Huyện Mù Căng Chải",
+        "FullName": "Mù Căng Chải",
         "CodeName": "mu_cang_chai"
       },
       {
         "Type": "district",
         "Code": "138",
-        "FullName": "Huyện Trấn Yên",
+        "FullName": "Trấn Yên",
         "CodeName": "tran_yen"
       },
       {
         "Type": "district",
         "Code": "139",
-        "FullName": "Huyện Trạm Tấu",
+        "FullName": "Trạm Tấu",
         "CodeName": "tram_tau"
       },
       {
         "Type": "district",
         "Code": "140",
-        "FullName": "Huyện Văn Chấn",
+        "FullName": "Văn Chấn",
         "CodeName": "van_chan"
       },
       {
         "Type": "district",
         "Code": "141",
-        "FullName": "Huyện Yên Bình",
+        "FullName": "Yên Bình",
         "CodeName": "yen_binh"
       }
     ]
@@ -781,7 +781,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "17",
-    "FullName": "Tỉnh Hoà Bình",
+    "FullName": "Hoà Bình",
     "CodeName": "hoa_binh",
     "District": [
       {
@@ -793,55 +793,55 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "150",
-        "FullName": "Huyện Đà Bắc",
+        "FullName": "Đà Bắc",
         "CodeName": "da_bac"
       },
       {
         "Type": "district",
         "Code": "152",
-        "FullName": "Huyện Lương Sơn",
+        "FullName": "Lương Sơn",
         "CodeName": "luong_son"
       },
       {
         "Type": "district",
         "Code": "153",
-        "FullName": "Huyện Kim Bôi",
+        "FullName": "Kim Bôi",
         "CodeName": "kim_boi"
       },
       {
         "Type": "district",
         "Code": "154",
-        "FullName": "Huyện Cao Phong",
+        "FullName": "Cao Phong",
         "CodeName": "cao_phong"
       },
       {
         "Type": "district",
         "Code": "155",
-        "FullName": "Huyện Tân Lạc",
+        "FullName": "Tân Lạc",
         "CodeName": "tan_lac"
       },
       {
         "Type": "district",
         "Code": "156",
-        "FullName": "Huyện Mai Châu",
+        "FullName": "Mai Châu",
         "CodeName": "mai_chau"
       },
       {
         "Type": "district",
         "Code": "157",
-        "FullName": "Huyện Lạc Sơn",
+        "FullName": "Lạc Sơn",
         "CodeName": "lac_son"
       },
       {
         "Type": "district",
         "Code": "158",
-        "FullName": "Huyện Yên Thủy",
+        "FullName": "Yên Thủy",
         "CodeName": "yen_thuy"
       },
       {
         "Type": "district",
         "Code": "159",
-        "FullName": "Huyện Lạc Thủy",
+        "FullName": "Lạc Thủy",
         "CodeName": "lac_thuy"
       }
     ]
@@ -849,7 +849,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "19",
-    "FullName": "Tỉnh Thái Nguyên",
+    "FullName": "Thái Nguyên",
     "CodeName": "thai_nguyen",
     "District": [
       {
@@ -867,31 +867,31 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "167",
-        "FullName": "Huyện Định Hóa",
+        "FullName": "Định Hóa",
         "CodeName": "dinh_hoa"
       },
       {
         "Type": "district",
         "Code": "168",
-        "FullName": "Huyện Phú Lương",
+        "FullName": "Phú Lương",
         "CodeName": "phu_luong"
       },
       {
         "Type": "district",
         "Code": "169",
-        "FullName": "Huyện Đồng Hỷ",
+        "FullName": "Đồng Hỷ",
         "CodeName": "dong_hy"
       },
       {
         "Type": "district",
         "Code": "170",
-        "FullName": "Huyện Võ Nhai",
+        "FullName": "Võ Nhai",
         "CodeName": "vo_nhai"
       },
       {
         "Type": "district",
         "Code": "171",
-        "FullName": "Huyện Đại Từ",
+        "FullName": "Đại Từ",
         "CodeName": "dai_tu"
       },
       {
@@ -903,7 +903,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "173",
-        "FullName": "Huyện Phú Bình",
+        "FullName": "Phú Bình",
         "CodeName": "phu_binh"
       }
     ]
@@ -911,7 +911,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "20",
-    "FullName": "Tỉnh Lạng Sơn",
+    "FullName": "Lạng Sơn",
     "CodeName": "lang_son",
     "District": [
       {
@@ -923,61 +923,61 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "180",
-        "FullName": "Huyện Tràng Định",
+        "FullName": "Tràng Định",
         "CodeName": "trang_dinh"
       },
       {
         "Type": "district",
         "Code": "181",
-        "FullName": "Huyện Bình Gia",
+        "FullName": "Bình Gia",
         "CodeName": "binh_gia"
       },
       {
         "Type": "district",
         "Code": "182",
-        "FullName": "Huyện Văn Lãng",
+        "FullName": "Văn Lãng",
         "CodeName": "van_lang"
       },
       {
         "Type": "district",
         "Code": "183",
-        "FullName": "Huyện Cao Lộc",
+        "FullName": "Cao Lộc",
         "CodeName": "cao_loc"
       },
       {
         "Type": "district",
         "Code": "184",
-        "FullName": "Huyện Văn Quan",
+        "FullName": "Văn Quan",
         "CodeName": "van_quan"
       },
       {
         "Type": "district",
         "Code": "185",
-        "FullName": "Huyện Bắc Sơn",
+        "FullName": "Bắc Sơn",
         "CodeName": "bac_son"
       },
       {
         "Type": "district",
         "Code": "186",
-        "FullName": "Huyện Hữu Lũng",
+        "FullName": "Hữu Lũng",
         "CodeName": "huu_lung"
       },
       {
         "Type": "district",
         "Code": "187",
-        "FullName": "Huyện Chi Lăng",
+        "FullName": "Chi Lăng",
         "CodeName": "chi_lang"
       },
       {
         "Type": "district",
         "Code": "188",
-        "FullName": "Huyện Lộc Bình",
+        "FullName": "Lộc Bình",
         "CodeName": "loc_binh"
       },
       {
         "Type": "district",
         "Code": "189",
-        "FullName": "Huyện Đình Lập",
+        "FullName": "Đình Lập",
         "CodeName": "dinh_lap"
       }
     ]
@@ -985,7 +985,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "22",
-    "FullName": "Tỉnh Quảng Ninh",
+    "FullName": "Quảng Ninh",
     "CodeName": "quang_ninh",
     "District": [
       {
@@ -1015,37 +1015,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "198",
-        "FullName": "Huyện Bình Liêu",
+        "FullName": "Bình Liêu",
         "CodeName": "binh_lieu"
       },
       {
         "Type": "district",
         "Code": "199",
-        "FullName": "Huyện Tiên Yên",
+        "FullName": "Tiên Yên",
         "CodeName": "tien_yen"
       },
       {
         "Type": "district",
         "Code": "200",
-        "FullName": "Huyện Đầm Hà",
+        "FullName": "Đầm Hà",
         "CodeName": "dam_ha"
       },
       {
         "Type": "district",
         "Code": "201",
-        "FullName": "Huyện Hải Hà",
+        "FullName": "Hải Hà",
         "CodeName": "hai_ha"
       },
       {
         "Type": "district",
         "Code": "202",
-        "FullName": "Huyện Ba Chẽ",
+        "FullName": "Ba Chẽ",
         "CodeName": "ba_che"
       },
       {
         "Type": "district",
         "Code": "203",
-        "FullName": "Huyện Vân Đồn",
+        "FullName": "Vân Đồn",
         "CodeName": "van_don"
       },
       {
@@ -1063,7 +1063,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "207",
-        "FullName": "Huyện Cô Tô",
+        "FullName": "Cô Tô",
         "CodeName": "co_to"
       }
     ]
@@ -1071,7 +1071,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "24",
-    "FullName": "Tỉnh Bắc Giang",
+    "FullName": "Bắc Giang",
     "CodeName": "bac_giang",
     "District": [
       {
@@ -1083,43 +1083,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "215",
-        "FullName": "Huyện Yên Thế",
+        "FullName": "Yên Thế",
         "CodeName": "yen_the"
       },
       {
         "Type": "district",
         "Code": "216",
-        "FullName": "Huyện Tân Yên",
+        "FullName": "Tân Yên",
         "CodeName": "tan_yen"
       },
       {
         "Type": "district",
         "Code": "217",
-        "FullName": "Huyện Lạng Giang",
+        "FullName": "Lạng Giang",
         "CodeName": "lang_giang"
       },
       {
         "Type": "district",
         "Code": "218",
-        "FullName": "Huyện Lục Nam",
+        "FullName": "Lục Nam",
         "CodeName": "luc_nam"
       },
       {
         "Type": "district",
         "Code": "219",
-        "FullName": "Huyện Lục Ngạn",
+        "FullName": "Lục Ngạn",
         "CodeName": "luc_ngan"
       },
       {
         "Type": "district",
         "Code": "220",
-        "FullName": "Huyện Sơn Động",
+        "FullName": "Sơn Động",
         "CodeName": "son_dong"
       },
       {
         "Type": "district",
         "Code": "221",
-        "FullName": "Huyện Yên Dũng",
+        "FullName": "Yên Dũng",
         "CodeName": "yen_dung"
       },
       {
@@ -1131,7 +1131,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "223",
-        "FullName": "Huyện Hiệp Hòa",
+        "FullName": "Hiệp Hòa",
         "CodeName": "hiep_hoa"
       }
     ]
@@ -1139,7 +1139,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "25",
-    "FullName": "Tỉnh Phú Thọ",
+    "FullName": "Phú Thọ",
     "CodeName": "phu_tho",
     "District": [
       {
@@ -1157,67 +1157,67 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "230",
-        "FullName": "Huyện Đoan Hùng",
+        "FullName": "Đoan Hùng",
         "CodeName": "doan_hung"
       },
       {
         "Type": "district",
         "Code": "231",
-        "FullName": "Huyện Hạ Hoà",
+        "FullName": "Hạ Hoà",
         "CodeName": "ha_hoa"
       },
       {
         "Type": "district",
         "Code": "232",
-        "FullName": "Huyện Thanh Ba",
+        "FullName": "Thanh Ba",
         "CodeName": "thanh_ba"
       },
       {
         "Type": "district",
         "Code": "233",
-        "FullName": "Huyện Phù Ninh",
+        "FullName": "Phù Ninh",
         "CodeName": "phu_ninh"
       },
       {
         "Type": "district",
         "Code": "234",
-        "FullName": "Huyện Yên Lập",
+        "FullName": "Yên Lập",
         "CodeName": "yen_lap"
       },
       {
         "Type": "district",
         "Code": "235",
-        "FullName": "Huyện Cẩm Khê",
+        "FullName": "Cẩm Khê",
         "CodeName": "cam_khe"
       },
       {
         "Type": "district",
         "Code": "236",
-        "FullName": "Huyện Tam Nông",
+        "FullName": "Tam Nông",
         "CodeName": "tam_nong"
       },
       {
         "Type": "district",
         "Code": "237",
-        "FullName": "Huyện Lâm Thao",
+        "FullName": "Lâm Thao",
         "CodeName": "lam_thao"
       },
       {
         "Type": "district",
         "Code": "238",
-        "FullName": "Huyện Thanh Sơn",
+        "FullName": "Thanh Sơn",
         "CodeName": "thanh_son"
       },
       {
         "Type": "district",
         "Code": "239",
-        "FullName": "Huyện Thanh Thuỷ",
+        "FullName": "Thanh Thuỷ",
         "CodeName": "thanh_thuy"
       },
       {
         "Type": "district",
         "Code": "240",
-        "FullName": "Huyện Tân Sơn",
+        "FullName": "Tân Sơn",
         "CodeName": "tan_son"
       }
     ]
@@ -1225,7 +1225,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "26",
-    "FullName": "Tỉnh Vĩnh Phúc",
+    "FullName": "Vĩnh Phúc",
     "CodeName": "vinh_phuc",
     "District": [
       {
@@ -1243,43 +1243,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "246",
-        "FullName": "Huyện Lập Thạch",
+        "FullName": "Lập Thạch",
         "CodeName": "lap_thach"
       },
       {
         "Type": "district",
         "Code": "247",
-        "FullName": "Huyện Tam Dương",
+        "FullName": "Tam Dương",
         "CodeName": "tam_duong"
       },
       {
         "Type": "district",
         "Code": "248",
-        "FullName": "Huyện Tam Đảo",
+        "FullName": "Tam Đảo",
         "CodeName": "tam_dao"
       },
       {
         "Type": "district",
         "Code": "249",
-        "FullName": "Huyện Bình Xuyên",
+        "FullName": "Bình Xuyên",
         "CodeName": "binh_xuyen"
       },
       {
         "Type": "district",
         "Code": "251",
-        "FullName": "Huyện Yên Lạc",
+        "FullName": "Yên Lạc",
         "CodeName": "yen_lac"
       },
       {
         "Type": "district",
         "Code": "252",
-        "FullName": "Huyện Vĩnh Tường",
+        "FullName": "Vĩnh Tường",
         "CodeName": "vinh_tuong"
       },
       {
         "Type": "district",
         "Code": "253",
-        "FullName": "Huyện Sông Lô",
+        "FullName": "Sông Lô",
         "CodeName": "song_lo"
       }
     ]
@@ -1287,7 +1287,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "27",
-    "FullName": "Tỉnh Bắc Ninh",
+    "FullName": "Bắc Ninh",
     "CodeName": "bac_ninh",
     "District": [
       {
@@ -1299,7 +1299,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "258",
-        "FullName": "Huyện Yên Phong",
+        "FullName": "Yên Phong",
         "CodeName": "yen_phong"
       },
       {
@@ -1311,7 +1311,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "260",
-        "FullName": "Huyện Tiên Du",
+        "FullName": "Tiên Du",
         "CodeName": "tien_du"
       },
       {
@@ -1329,13 +1329,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "263",
-        "FullName": "Huyện Gia Bình",
+        "FullName": "Gia Bình",
         "CodeName": "gia_binh"
       },
       {
         "Type": "district",
         "Code": "264",
-        "FullName": "Huyện Lương Tài",
+        "FullName": "Lương Tài",
         "CodeName": "luong_tai"
       }
     ]
@@ -1343,7 +1343,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "30",
-    "FullName": "Tỉnh Hải Dương",
+    "FullName": "Hải Dương",
     "CodeName": "hai_duong",
     "District": [
       {
@@ -1361,7 +1361,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "291",
-        "FullName": "Huyện Nam Sách",
+        "FullName": "Nam Sách",
         "CodeName": "nam_sach"
       },
       {
@@ -1373,49 +1373,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "293",
-        "FullName": "Huyện Kim Thành",
+        "FullName": "Kim Thành",
         "CodeName": "kim_thanh"
       },
       {
         "Type": "district",
         "Code": "294",
-        "FullName": "Huyện Thanh Hà",
+        "FullName": "Thanh Hà",
         "CodeName": "thanh_ha"
       },
       {
         "Type": "district",
         "Code": "295",
-        "FullName": "Huyện Cẩm Giàng",
+        "FullName": "Cẩm Giàng",
         "CodeName": "cam_giang"
       },
       {
         "Type": "district",
         "Code": "296",
-        "FullName": "Huyện Bình Giang",
+        "FullName": "Bình Giang",
         "CodeName": "binh_giang"
       },
       {
         "Type": "district",
         "Code": "297",
-        "FullName": "Huyện Gia Lộc",
+        "FullName": "Gia Lộc",
         "CodeName": "gia_loc"
       },
       {
         "Type": "district",
         "Code": "298",
-        "FullName": "Huyện Tứ Kỳ",
+        "FullName": "Tứ Kỳ",
         "CodeName": "tu_ky"
       },
       {
         "Type": "district",
         "Code": "299",
-        "FullName": "Huyện Ninh Giang",
+        "FullName": "Ninh Giang",
         "CodeName": "ninh_giang"
       },
       {
         "Type": "district",
         "Code": "300",
-        "FullName": "Huyện Thanh Miện",
+        "FullName": "Thanh Miện",
         "CodeName": "thanh_mien"
       }
     ]
@@ -1429,91 +1429,91 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "303",
-        "FullName": "Quận Hồng Bàng",
+        "FullName": "Hồng Bàng",
         "CodeName": "hong_bang"
       },
       {
         "Type": "district",
         "Code": "304",
-        "FullName": "Quận Ngô Quyền",
+        "FullName": "Ngô Quyền",
         "CodeName": "ngo_quyen"
       },
       {
         "Type": "district",
         "Code": "305",
-        "FullName": "Quận Lê Chân",
+        "FullName": "Lê Chân",
         "CodeName": "le_chan"
       },
       {
         "Type": "district",
         "Code": "306",
-        "FullName": "Quận Hải An",
+        "FullName": "Hải An",
         "CodeName": "hai_an"
       },
       {
         "Type": "district",
         "Code": "307",
-        "FullName": "Quận Kiến An",
+        "FullName": "Kiến An",
         "CodeName": "kien_an"
       },
       {
         "Type": "district",
         "Code": "308",
-        "FullName": "Quận Đồ Sơn",
+        "FullName": "Đồ Sơn",
         "CodeName": "do_son"
       },
       {
         "Type": "district",
         "Code": "309",
-        "FullName": "Quận Dương Kinh",
+        "FullName": "Dương Kinh",
         "CodeName": "duong_kinh"
       },
       {
         "Type": "district",
         "Code": "311",
-        "FullName": "Huyện Thuỷ Nguyên",
+        "FullName": "Thuỷ Nguyên",
         "CodeName": "thuy_nguyen"
       },
       {
         "Type": "district",
         "Code": "312",
-        "FullName": "Huyện An Dương",
+        "FullName": "An Dương",
         "CodeName": "an_duong"
       },
       {
         "Type": "district",
         "Code": "313",
-        "FullName": "Huyện An Lão",
+        "FullName": "An Lão",
         "CodeName": "an_lao"
       },
       {
         "Type": "district",
         "Code": "314",
-        "FullName": "Huyện Kiến Thuỵ",
+        "FullName": "Kiến Thuỵ",
         "CodeName": "kien_thuy"
       },
       {
         "Type": "district",
         "Code": "315",
-        "FullName": "Huyện Tiên Lãng",
+        "FullName": "Tiên Lãng",
         "CodeName": "tien_lang"
       },
       {
         "Type": "district",
         "Code": "316",
-        "FullName": "Huyện Vĩnh Bảo",
+        "FullName": "Vĩnh Bảo",
         "CodeName": "vinh_bao"
       },
       {
         "Type": "district",
         "Code": "317",
-        "FullName": "Huyện Cát Hải",
+        "FullName": "Cát Hải",
         "CodeName": "cat_hai"
       },
       {
         "Type": "district",
         "Code": "318",
-        "FullName": "Huyện Bạch Long Vĩ",
+        "FullName": "Bạch Long Vĩ",
         "CodeName": "bach_long_vi"
       }
     ]
@@ -1521,7 +1521,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "33",
-    "FullName": "Tỉnh Hưng Yên",
+    "FullName": "Hưng Yên",
     "CodeName": "hung_yen",
     "District": [
       {
@@ -1533,19 +1533,19 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "325",
-        "FullName": "Huyện Văn Lâm",
+        "FullName": "Văn Lâm",
         "CodeName": "van_lam"
       },
       {
         "Type": "district",
         "Code": "326",
-        "FullName": "Huyện Văn Giang",
+        "FullName": "Văn Giang",
         "CodeName": "van_giang"
       },
       {
         "Type": "district",
         "Code": "327",
-        "FullName": "Huyện Yên Mỹ",
+        "FullName": "Yên Mỹ",
         "CodeName": "yen_my"
       },
       {
@@ -1557,31 +1557,31 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "329",
-        "FullName": "Huyện Ân Thi",
+        "FullName": "Ân Thi",
         "CodeName": "an_thi"
       },
       {
         "Type": "district",
         "Code": "330",
-        "FullName": "Huyện Khoái Châu",
+        "FullName": "Khoái Châu",
         "CodeName": "khoai_chau"
       },
       {
         "Type": "district",
         "Code": "331",
-        "FullName": "Huyện Kim Động",
+        "FullName": "Kim Động",
         "CodeName": "kim_dong"
       },
       {
         "Type": "district",
         "Code": "332",
-        "FullName": "Huyện Tiên Lữ",
+        "FullName": "Tiên Lữ",
         "CodeName": "tien_lu"
       },
       {
         "Type": "district",
         "Code": "333",
-        "FullName": "Huyện Phù Cừ",
+        "FullName": "Phù Cừ",
         "CodeName": "phu_cu"
       }
     ]
@@ -1589,7 +1589,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "34",
-    "FullName": "Tỉnh Thái Bình",
+    "FullName": "Thái Bình",
     "CodeName": "thai_binh",
     "District": [
       {
@@ -1601,43 +1601,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "338",
-        "FullName": "Huyện Quỳnh Phụ",
+        "FullName": "Quỳnh Phụ",
         "CodeName": "quynh_phu"
       },
       {
         "Type": "district",
         "Code": "339",
-        "FullName": "Huyện Hưng Hà",
+        "FullName": "Hưng Hà",
         "CodeName": "hung_ha"
       },
       {
         "Type": "district",
         "Code": "340",
-        "FullName": "Huyện Đông Hưng",
+        "FullName": "Đông Hưng",
         "CodeName": "dong_hung"
       },
       {
         "Type": "district",
         "Code": "341",
-        "FullName": "Huyện Thái Thụy",
+        "FullName": "Thái Thụy",
         "CodeName": "thai_thuy"
       },
       {
         "Type": "district",
         "Code": "342",
-        "FullName": "Huyện Tiền Hải",
+        "FullName": "Tiền Hải",
         "CodeName": "tien_hai"
       },
       {
         "Type": "district",
         "Code": "343",
-        "FullName": "Huyện Kiến Xương",
+        "FullName": "Kiến Xương",
         "CodeName": "kien_xuong"
       },
       {
         "Type": "district",
         "Code": "344",
-        "FullName": "Huyện Vũ Thư",
+        "FullName": "Vũ Thư",
         "CodeName": "vu_thu"
       }
     ]
@@ -1645,7 +1645,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "35",
-    "FullName": "Tỉnh Hà Nam",
+    "FullName": "Hà Nam",
     "CodeName": "ha_nam",
     "District": [
       {
@@ -1663,25 +1663,25 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "350",
-        "FullName": "Huyện Kim Bảng",
+        "FullName": "Kim Bảng",
         "CodeName": "kim_bang"
       },
       {
         "Type": "district",
         "Code": "351",
-        "FullName": "Huyện Thanh Liêm",
+        "FullName": "Thanh Liêm",
         "CodeName": "thanh_liem"
       },
       {
         "Type": "district",
         "Code": "352",
-        "FullName": "Huyện Bình Lục",
+        "FullName": "Bình Lục",
         "CodeName": "binh_luc"
       },
       {
         "Type": "district",
         "Code": "353",
-        "FullName": "Huyện Lý Nhân",
+        "FullName": "Lý Nhân",
         "CodeName": "ly_nhan"
       }
     ]
@@ -1689,7 +1689,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "36",
-    "FullName": "Tỉnh Nam Định",
+    "FullName": "Nam Định",
     "CodeName": "nam_dinh",
     "District": [
       {
@@ -1701,49 +1701,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "359",
-        "FullName": "Huyện Vụ Bản",
+        "FullName": "Vụ Bản",
         "CodeName": "vu_ban"
       },
       {
         "Type": "district",
         "Code": "360",
-        "FullName": "Huyện Ý Yên",
+        "FullName": "Ý Yên",
         "CodeName": "y_yen"
       },
       {
         "Type": "district",
         "Code": "361",
-        "FullName": "Huyện Nghĩa Hưng",
+        "FullName": "Nghĩa Hưng",
         "CodeName": "nghia_hung"
       },
       {
         "Type": "district",
         "Code": "362",
-        "FullName": "Huyện Nam Trực",
+        "FullName": "Nam Trực",
         "CodeName": "nam_truc"
       },
       {
         "Type": "district",
         "Code": "363",
-        "FullName": "Huyện Trực Ninh",
+        "FullName": "Trực Ninh",
         "CodeName": "truc_ninh"
       },
       {
         "Type": "district",
         "Code": "364",
-        "FullName": "Huyện Xuân Trường",
+        "FullName": "Xuân Trường",
         "CodeName": "xuan_truong"
       },
       {
         "Type": "district",
         "Code": "365",
-        "FullName": "Huyện Giao Thủy",
+        "FullName": "Giao Thủy",
         "CodeName": "giao_thuy"
       },
       {
         "Type": "district",
         "Code": "366",
-        "FullName": "Huyện Hải Hậu",
+        "FullName": "Hải Hậu",
         "CodeName": "hai_hau"
       }
     ]
@@ -1751,7 +1751,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "37",
-    "FullName": "Tỉnh Ninh Bình",
+    "FullName": "Ninh Bình",
     "CodeName": "ninh_binh",
     "District": [
       {
@@ -1769,37 +1769,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "372",
-        "FullName": "Huyện Nho Quan",
+        "FullName": "Nho Quan",
         "CodeName": "nho_quan"
       },
       {
         "Type": "district",
         "Code": "373",
-        "FullName": "Huyện Gia Viễn",
+        "FullName": "Gia Viễn",
         "CodeName": "gia_vien"
       },
       {
         "Type": "district",
         "Code": "374",
-        "FullName": "Huyện Hoa Lư",
+        "FullName": "Hoa Lư",
         "CodeName": "hoa_lu"
       },
       {
         "Type": "district",
         "Code": "375",
-        "FullName": "Huyện Yên Khánh",
+        "FullName": "Yên Khánh",
         "CodeName": "yen_khanh"
       },
       {
         "Type": "district",
         "Code": "376",
-        "FullName": "Huyện Kim Sơn",
+        "FullName": "Kim Sơn",
         "CodeName": "kim_son"
       },
       {
         "Type": "district",
         "Code": "377",
-        "FullName": "Huyện Yên Mô",
+        "FullName": "Yên Mô",
         "CodeName": "yen_mo"
       }
     ]
@@ -1807,7 +1807,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "38",
-    "FullName": "Tỉnh Thanh Hóa",
+    "FullName": "Thanh Hóa",
     "CodeName": "thanh_hoa",
     "District": [
       {
@@ -1831,139 +1831,139 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "384",
-        "FullName": "Huyện Mường Lát",
+        "FullName": "Mường Lát",
         "CodeName": "muong_lat"
       },
       {
         "Type": "district",
         "Code": "385",
-        "FullName": "Huyện Quan Hóa",
+        "FullName": "Quan Hóa",
         "CodeName": "quan_hoa"
       },
       {
         "Type": "district",
         "Code": "386",
-        "FullName": "Huyện Bá Thước",
+        "FullName": "Bá Thước",
         "CodeName": "ba_thuoc"
       },
       {
         "Type": "district",
         "Code": "387",
-        "FullName": "Huyện Quan Sơn",
+        "FullName": "Quan Sơn",
         "CodeName": "quan_son"
       },
       {
         "Type": "district",
         "Code": "388",
-        "FullName": "Huyện Lang Chánh",
+        "FullName": "Lang Chánh",
         "CodeName": "lang_chanh"
       },
       {
         "Type": "district",
         "Code": "389",
-        "FullName": "Huyện Ngọc Lặc",
+        "FullName": "Ngọc Lặc",
         "CodeName": "ngoc_lac"
       },
       {
         "Type": "district",
         "Code": "390",
-        "FullName": "Huyện Cẩm Thủy",
+        "FullName": "Cẩm Thủy",
         "CodeName": "cam_thuy"
       },
       {
         "Type": "district",
         "Code": "391",
-        "FullName": "Huyện Thạch Thành",
+        "FullName": "Thạch Thành",
         "CodeName": "thach_thanh"
       },
       {
         "Type": "district",
         "Code": "392",
-        "FullName": "Huyện Hà Trung",
+        "FullName": "Hà Trung",
         "CodeName": "ha_trung"
       },
       {
         "Type": "district",
         "Code": "393",
-        "FullName": "Huyện Vĩnh Lộc",
+        "FullName": "Vĩnh Lộc",
         "CodeName": "vinh_loc"
       },
       {
         "Type": "district",
         "Code": "394",
-        "FullName": "Huyện Yên Định",
+        "FullName": "Yên Định",
         "CodeName": "yen_dinh"
       },
       {
         "Type": "district",
         "Code": "395",
-        "FullName": "Huyện Thọ Xuân",
+        "FullName": "Thọ Xuân",
         "CodeName": "tho_xuan"
       },
       {
         "Type": "district",
         "Code": "396",
-        "FullName": "Huyện Thường Xuân",
+        "FullName": "Thường Xuân",
         "CodeName": "thuong_xuan"
       },
       {
         "Type": "district",
         "Code": "397",
-        "FullName": "Huyện Triệu Sơn",
+        "FullName": "Triệu Sơn",
         "CodeName": "trieu_son"
       },
       {
         "Type": "district",
         "Code": "398",
-        "FullName": "Huyện Thiệu Hóa",
+        "FullName": "Thiệu Hóa",
         "CodeName": "thieu_hoa"
       },
       {
         "Type": "district",
         "Code": "399",
-        "FullName": "Huyện Hoằng Hóa",
+        "FullName": "Hoằng Hóa",
         "CodeName": "hoang_hoa"
       },
       {
         "Type": "district",
         "Code": "400",
-        "FullName": "Huyện Hậu Lộc",
+        "FullName": "Hậu Lộc",
         "CodeName": "hau_loc"
       },
       {
         "Type": "district",
         "Code": "401",
-        "FullName": "Huyện Nga Sơn",
+        "FullName": "Nga Sơn",
         "CodeName": "nga_son"
       },
       {
         "Type": "district",
         "Code": "402",
-        "FullName": "Huyện Như Xuân",
+        "FullName": "Như Xuân",
         "CodeName": "nhu_xuan"
       },
       {
         "Type": "district",
         "Code": "403",
-        "FullName": "Huyện Như Thanh",
+        "FullName": "Như Thanh",
         "CodeName": "nhu_thanh"
       },
       {
         "Type": "district",
         "Code": "404",
-        "FullName": "Huyện Nông Cống",
+        "FullName": "Nông Cống",
         "CodeName": "nong_cong"
       },
       {
         "Type": "district",
         "Code": "405",
-        "FullName": "Huyện Đông Sơn",
+        "FullName": "Đông Sơn",
         "CodeName": "dong_son"
       },
       {
         "Type": "district",
         "Code": "406",
-        "FullName": "Huyện Quảng Xương",
+        "FullName": "Quảng Xương",
         "CodeName": "quang_xuong"
       },
       {
@@ -1977,7 +1977,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "40",
-    "FullName": "Tỉnh Nghệ An",
+    "FullName": "Nghệ An",
     "CodeName": "nghe_an",
     "District": [
       {
@@ -2001,103 +2001,103 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "415",
-        "FullName": "Huyện Quế Phong",
+        "FullName": "Quế Phong",
         "CodeName": "que_phong"
       },
       {
         "Type": "district",
         "Code": "416",
-        "FullName": "Huyện Quỳ Châu",
+        "FullName": "Quỳ Châu",
         "CodeName": "quy_chau"
       },
       {
         "Type": "district",
         "Code": "417",
-        "FullName": "Huyện Kỳ Sơn",
+        "FullName": "Kỳ Sơn",
         "CodeName": "ky_son"
       },
       {
         "Type": "district",
         "Code": "418",
-        "FullName": "Huyện Tương Dương",
+        "FullName": "Tương Dương",
         "CodeName": "tuong_duong"
       },
       {
         "Type": "district",
         "Code": "419",
-        "FullName": "Huyện Nghĩa Đàn",
+        "FullName": "Nghĩa Đàn",
         "CodeName": "nghia_dan"
       },
       {
         "Type": "district",
         "Code": "420",
-        "FullName": "Huyện Quỳ Hợp",
+        "FullName": "Quỳ Hợp",
         "CodeName": "quy_hop"
       },
       {
         "Type": "district",
         "Code": "421",
-        "FullName": "Huyện Quỳnh Lưu",
+        "FullName": "Quỳnh Lưu",
         "CodeName": "quynh_luu"
       },
       {
         "Type": "district",
         "Code": "422",
-        "FullName": "Huyện Con Cuông",
+        "FullName": "Con Cuông",
         "CodeName": "con_cuong"
       },
       {
         "Type": "district",
         "Code": "423",
-        "FullName": "Huyện Tân Kỳ",
+        "FullName": "Tân Kỳ",
         "CodeName": "tan_ky"
       },
       {
         "Type": "district",
         "Code": "424",
-        "FullName": "Huyện Anh Sơn",
+        "FullName": "Anh Sơn",
         "CodeName": "anh_son"
       },
       {
         "Type": "district",
         "Code": "425",
-        "FullName": "Huyện Diễn Châu",
+        "FullName": "Diễn Châu",
         "CodeName": "dien_chau"
       },
       {
         "Type": "district",
         "Code": "426",
-        "FullName": "Huyện Yên Thành",
+        "FullName": "Yên Thành",
         "CodeName": "yen_thanh"
       },
       {
         "Type": "district",
         "Code": "427",
-        "FullName": "Huyện Đô Lương",
+        "FullName": "Đô Lương",
         "CodeName": "do_luong"
       },
       {
         "Type": "district",
         "Code": "428",
-        "FullName": "Huyện Thanh Chương",
+        "FullName": "Thanh Chương",
         "CodeName": "thanh_chuong"
       },
       {
         "Type": "district",
         "Code": "429",
-        "FullName": "Huyện Nghi Lộc",
+        "FullName": "Nghi Lộc",
         "CodeName": "nghi_loc"
       },
       {
         "Type": "district",
         "Code": "430",
-        "FullName": "Huyện Nam Đàn",
+        "FullName": "Nam Đàn",
         "CodeName": "nam_dan"
       },
       {
         "Type": "district",
         "Code": "431",
-        "FullName": "Huyện Hưng Nguyên",
+        "FullName": "Hưng Nguyên",
         "CodeName": "hung_nguyen"
       },
       {
@@ -2111,7 +2111,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "42",
-    "FullName": "Tỉnh Hà Tĩnh",
+    "FullName": "Hà Tĩnh",
     "CodeName": "ha_tinh",
     "District": [
       {
@@ -2129,61 +2129,61 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "439",
-        "FullName": "Huyện Hương Sơn",
+        "FullName": "Hương Sơn",
         "CodeName": "huong_son"
       },
       {
         "Type": "district",
         "Code": "440",
-        "FullName": "Huyện Đức Thọ",
+        "FullName": "Đức Thọ",
         "CodeName": "duc_tho"
       },
       {
         "Type": "district",
         "Code": "441",
-        "FullName": "Huyện Vũ Quang",
+        "FullName": "Vũ Quang",
         "CodeName": "vu_quang"
       },
       {
         "Type": "district",
         "Code": "442",
-        "FullName": "Huyện Nghi Xuân",
+        "FullName": "Nghi Xuân",
         "CodeName": "nghi_xuan"
       },
       {
         "Type": "district",
         "Code": "443",
-        "FullName": "Huyện Can Lộc",
+        "FullName": "Can Lộc",
         "CodeName": "can_loc"
       },
       {
         "Type": "district",
         "Code": "444",
-        "FullName": "Huyện Hương Khê",
+        "FullName": "Hương Khê",
         "CodeName": "huong_khe"
       },
       {
         "Type": "district",
         "Code": "445",
-        "FullName": "Huyện Thạch Hà",
+        "FullName": "Thạch Hà",
         "CodeName": "thach_ha"
       },
       {
         "Type": "district",
         "Code": "446",
-        "FullName": "Huyện Cẩm Xuyên",
+        "FullName": "Cẩm Xuyên",
         "CodeName": "cam_xuyen"
       },
       {
         "Type": "district",
         "Code": "447",
-        "FullName": "Huyện Kỳ Anh",
+        "FullName": "Kỳ Anh",
         "CodeName": "ky_anh"
       },
       {
         "Type": "district",
         "Code": "448",
-        "FullName": "Huyện Lộc Hà",
+        "FullName": "Lộc Hà",
         "CodeName": "loc_ha"
       },
       {
@@ -2197,7 +2197,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "44",
-    "FullName": "Tỉnh Quảng Bình",
+    "FullName": "Quảng Bình",
     "CodeName": "quang_binh",
     "District": [
       {
@@ -2209,37 +2209,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "452",
-        "FullName": "Huyện Minh Hóa",
+        "FullName": "Minh Hóa",
         "CodeName": "minh_hoa"
       },
       {
         "Type": "district",
         "Code": "453",
-        "FullName": "Huyện Tuyên Hóa",
+        "FullName": "Tuyên Hóa",
         "CodeName": "tuyen_hoa"
       },
       {
         "Type": "district",
         "Code": "454",
-        "FullName": "Huyện Quảng Trạch",
+        "FullName": "Quảng Trạch",
         "CodeName": "quang_trach"
       },
       {
         "Type": "district",
         "Code": "455",
-        "FullName": "Huyện Bố Trạch",
+        "FullName": "Bố Trạch",
         "CodeName": "bo_trach"
       },
       {
         "Type": "district",
         "Code": "456",
-        "FullName": "Huyện Quảng Ninh",
+        "FullName": "Quảng Ninh",
         "CodeName": "quang_ninh"
       },
       {
         "Type": "district",
         "Code": "457",
-        "FullName": "Huyện Lệ Thủy",
+        "FullName": "Lệ Thủy",
         "CodeName": "le_thuy"
       },
       {
@@ -2253,7 +2253,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "45",
-    "FullName": "Tỉnh Quảng Trị",
+    "FullName": "Quảng Trị",
     "CodeName": "quang_tri",
     "District": [
       {
@@ -2271,49 +2271,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "464",
-        "FullName": "Huyện Vĩnh Linh",
+        "FullName": "Vĩnh Linh",
         "CodeName": "vinh_linh"
       },
       {
         "Type": "district",
         "Code": "465",
-        "FullName": "Huyện Hướng Hóa",
+        "FullName": "Hướng Hóa",
         "CodeName": "huong_hoa"
       },
       {
         "Type": "district",
         "Code": "466",
-        "FullName": "Huyện Gio Linh",
+        "FullName": "Gio Linh",
         "CodeName": "gio_linh"
       },
       {
         "Type": "district",
         "Code": "467",
-        "FullName": "Huyện Đa Krông",
+        "FullName": "Đa Krông",
         "CodeName": "da_krong"
       },
       {
         "Type": "district",
         "Code": "468",
-        "FullName": "Huyện Cam Lộ",
+        "FullName": "Cam Lộ",
         "CodeName": "cam_lo"
       },
       {
         "Type": "district",
         "Code": "469",
-        "FullName": "Huyện Triệu Phong",
+        "FullName": "Triệu Phong",
         "CodeName": "trieu_phong"
       },
       {
         "Type": "district",
         "Code": "470",
-        "FullName": "Huyện Hải Lăng",
+        "FullName": "Hải Lăng",
         "CodeName": "hai_lang"
       },
       {
         "Type": "district",
         "Code": "471",
-        "FullName": "Huyện Cồn Cỏ",
+        "FullName": "Cồn Cỏ",
         "CodeName": "con_co"
       }
     ]
@@ -2321,7 +2321,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "46",
-    "FullName": "Tỉnh Thừa Thiên Huế",
+    "FullName": "Thừa Thiên Huế",
     "CodeName": "thua_thien_hue",
     "District": [
       {
@@ -2333,19 +2333,19 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "476",
-        "FullName": "Huyện Phong Điền",
+        "FullName": "Phong Điền",
         "CodeName": "phong_dien"
       },
       {
         "Type": "district",
         "Code": "477",
-        "FullName": "Huyện Quảng Điền",
+        "FullName": "Quảng Điền",
         "CodeName": "quang_dien"
       },
       {
         "Type": "district",
         "Code": "478",
-        "FullName": "Huyện Phú Vang",
+        "FullName": "Phú Vang",
         "CodeName": "phu_vang"
       },
       {
@@ -2363,19 +2363,19 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "481",
-        "FullName": "Huyện A Lưới",
+        "FullName": "A Lưới",
         "CodeName": "a_luoi"
       },
       {
         "Type": "district",
         "Code": "482",
-        "FullName": "Huyện Phú Lộc",
+        "FullName": "Phú Lộc",
         "CodeName": "phu_loc"
       },
       {
         "Type": "district",
         "Code": "483",
-        "FullName": "Huyện Nam Đông",
+        "FullName": "Nam Đông",
         "CodeName": "nam_dong"
       }
     ]
@@ -2389,49 +2389,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "490",
-        "FullName": "Quận Liên Chiểu",
+        "FullName": "Liên Chiểu",
         "CodeName": "lien_chieu"
       },
       {
         "Type": "district",
         "Code": "491",
-        "FullName": "Quận Thanh Khê",
+        "FullName": "Thanh Khê",
         "CodeName": "thanh_khe"
       },
       {
         "Type": "district",
         "Code": "492",
-        "FullName": "Quận Hải Châu",
+        "FullName": "Hải Châu",
         "CodeName": "hai_chau"
       },
       {
         "Type": "district",
         "Code": "493",
-        "FullName": "Quận Sơn Trà",
+        "FullName": "Sơn Trà",
         "CodeName": "son_tra"
       },
       {
         "Type": "district",
         "Code": "494",
-        "FullName": "Quận Ngũ Hành Sơn",
+        "FullName": "Ngũ Hành Sơn",
         "CodeName": "ngu_hanh_son"
       },
       {
         "Type": "district",
         "Code": "495",
-        "FullName": "Quận Cẩm Lệ",
+        "FullName": "Cẩm Lệ",
         "CodeName": "cam_le"
       },
       {
         "Type": "district",
         "Code": "497",
-        "FullName": "Huyện Hòa Vang",
+        "FullName": "Hòa Vang",
         "CodeName": "hoa_vang"
       },
       {
         "Type": "district",
         "Code": "498",
-        "FullName": "Huyện Hoàng Sa",
+        "FullName": "Hoàng Sa",
         "CodeName": "hoang_sa"
       }
     ]
@@ -2439,7 +2439,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "49",
-    "FullName": "Tỉnh Quảng Nam",
+    "FullName": "Quảng Nam",
     "CodeName": "quang_nam",
     "District": [
       {
@@ -2457,19 +2457,19 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "504",
-        "FullName": "Huyện Tây Giang",
+        "FullName": "Tây Giang",
         "CodeName": "tay_giang"
       },
       {
         "Type": "district",
         "Code": "505",
-        "FullName": "Huyện Đông Giang",
+        "FullName": "Đông Giang",
         "CodeName": "dong_giang"
       },
       {
         "Type": "district",
         "Code": "506",
-        "FullName": "Huyện Đại Lộc",
+        "FullName": "Đại Lộc",
         "CodeName": "dai_loc"
       },
       {
@@ -2481,73 +2481,73 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "508",
-        "FullName": "Huyện Duy Xuyên",
+        "FullName": "Duy Xuyên",
         "CodeName": "duy_xuyen"
       },
       {
         "Type": "district",
         "Code": "509",
-        "FullName": "Huyện Quế Sơn",
+        "FullName": "Quế Sơn",
         "CodeName": "que_son"
       },
       {
         "Type": "district",
         "Code": "510",
-        "FullName": "Huyện Nam Giang",
+        "FullName": "Nam Giang",
         "CodeName": "nam_giang"
       },
       {
         "Type": "district",
         "Code": "511",
-        "FullName": "Huyện Phước Sơn",
+        "FullName": "Phước Sơn",
         "CodeName": "phuoc_son"
       },
       {
         "Type": "district",
         "Code": "512",
-        "FullName": "Huyện Hiệp Đức",
+        "FullName": "Hiệp Đức",
         "CodeName": "hiep_duc"
       },
       {
         "Type": "district",
         "Code": "513",
-        "FullName": "Huyện Thăng Bình",
+        "FullName": "Thăng Bình",
         "CodeName": "thang_binh"
       },
       {
         "Type": "district",
         "Code": "514",
-        "FullName": "Huyện Tiên Phước",
+        "FullName": "Tiên Phước",
         "CodeName": "tien_phuoc"
       },
       {
         "Type": "district",
         "Code": "515",
-        "FullName": "Huyện Bắc Trà My",
+        "FullName": "Bắc Trà My",
         "CodeName": "bac_tra_my"
       },
       {
         "Type": "district",
         "Code": "516",
-        "FullName": "Huyện Nam Trà My",
+        "FullName": "Nam Trà My",
         "CodeName": "nam_tra_my"
       },
       {
         "Type": "district",
         "Code": "517",
-        "FullName": "Huyện Núi Thành",
+        "FullName": "Núi Thành",
         "CodeName": "nui_thanh"
       },
       {
         "Type": "district",
         "Code": "518",
-        "FullName": "Huyện Phú Ninh",
+        "FullName": "Phú Ninh",
         "CodeName": "phu_ninh"
       },
       {
         "Type": "district",
         "Code": "519",
-        "FullName": "Huyện Nông Sơn",
+        "FullName": "Nông Sơn",
         "CodeName": "nong_son"
       }
     ]
@@ -2555,7 +2555,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "51",
-    "FullName": "Tỉnh Quảng Ngãi",
+    "FullName": "Quảng Ngãi",
     "CodeName": "quang_ngai",
     "District": [
       {
@@ -2567,55 +2567,55 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "524",
-        "FullName": "Huyện Bình Sơn",
+        "FullName": "Bình Sơn",
         "CodeName": "binh_son"
       },
       {
         "Type": "district",
         "Code": "525",
-        "FullName": "Huyện Trà Bồng",
+        "FullName": "Trà Bồng",
         "CodeName": "tra_bong"
       },
       {
         "Type": "district",
         "Code": "527",
-        "FullName": "Huyện Sơn Tịnh",
+        "FullName": "Sơn Tịnh",
         "CodeName": "son_tinh"
       },
       {
         "Type": "district",
         "Code": "528",
-        "FullName": "Huyện Tư Nghĩa",
+        "FullName": "Tư Nghĩa",
         "CodeName": "tu_nghia"
       },
       {
         "Type": "district",
         "Code": "529",
-        "FullName": "Huyện Sơn Hà",
+        "FullName": "Sơn Hà",
         "CodeName": "son_ha"
       },
       {
         "Type": "district",
         "Code": "530",
-        "FullName": "Huyện Sơn Tây",
+        "FullName": "Sơn Tây",
         "CodeName": "son_tay"
       },
       {
         "Type": "district",
         "Code": "531",
-        "FullName": "Huyện Minh Long",
+        "FullName": "Minh Long",
         "CodeName": "minh_long"
       },
       {
         "Type": "district",
         "Code": "532",
-        "FullName": "Huyện Nghĩa Hành",
+        "FullName": "Nghĩa Hành",
         "CodeName": "nghia_hanh"
       },
       {
         "Type": "district",
         "Code": "533",
-        "FullName": "Huyện Mộ Đức",
+        "FullName": "Mộ Đức",
         "CodeName": "mo_duc"
       },
       {
@@ -2627,13 +2627,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "535",
-        "FullName": "Huyện Ba Tơ",
+        "FullName": "Ba Tơ",
         "CodeName": "ba_to"
       },
       {
         "Type": "district",
         "Code": "536",
-        "FullName": "Huyện Lý Sơn",
+        "FullName": "Lý Sơn",
         "CodeName": "ly_son"
       }
     ]
@@ -2641,7 +2641,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "52",
-    "FullName": "Tỉnh Bình Định",
+    "FullName": "Bình Định",
     "CodeName": "binh_dinh",
     "District": [
       {
@@ -2653,7 +2653,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "542",
-        "FullName": "Huyện An Lão",
+        "FullName": "An Lão",
         "CodeName": "an_lao"
       },
       {
@@ -2665,31 +2665,31 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "544",
-        "FullName": "Huyện Hoài Ân",
+        "FullName": "Hoài Ân",
         "CodeName": "hoai_an"
       },
       {
         "Type": "district",
         "Code": "545",
-        "FullName": "Huyện Phù Mỹ",
+        "FullName": "Phù Mỹ",
         "CodeName": "phu_my"
       },
       {
         "Type": "district",
         "Code": "546",
-        "FullName": "Huyện Vĩnh Thạnh",
+        "FullName": "Vĩnh Thạnh",
         "CodeName": "vinh_thanh"
       },
       {
         "Type": "district",
         "Code": "547",
-        "FullName": "Huyện Tây Sơn",
+        "FullName": "Tây Sơn",
         "CodeName": "tay_son"
       },
       {
         "Type": "district",
         "Code": "548",
-        "FullName": "Huyện Phù Cát",
+        "FullName": "Phù Cát",
         "CodeName": "phu_cat"
       },
       {
@@ -2701,13 +2701,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "550",
-        "FullName": "Huyện Tuy Phước",
+        "FullName": "Tuy Phước",
         "CodeName": "tuy_phuoc"
       },
       {
         "Type": "district",
         "Code": "551",
-        "FullName": "Huyện Vân Canh",
+        "FullName": "Vân Canh",
         "CodeName": "van_canh"
       }
     ]
@@ -2715,7 +2715,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "54",
-    "FullName": "Tỉnh Phú Yên",
+    "FullName": "Phú Yên",
     "CodeName": "phu_yen",
     "District": [
       {
@@ -2733,37 +2733,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "558",
-        "FullName": "Huyện Đồng Xuân",
+        "FullName": "Đồng Xuân",
         "CodeName": "dong_xuan"
       },
       {
         "Type": "district",
         "Code": "559",
-        "FullName": "Huyện Tuy An",
+        "FullName": "Tuy An",
         "CodeName": "tuy_an"
       },
       {
         "Type": "district",
         "Code": "560",
-        "FullName": "Huyện Sơn Hòa",
+        "FullName": "Sơn Hòa",
         "CodeName": "son_hoa"
       },
       {
         "Type": "district",
         "Code": "561",
-        "FullName": "Huyện Sông Hinh",
+        "FullName": "Sông Hinh",
         "CodeName": "song_hinh"
       },
       {
         "Type": "district",
         "Code": "562",
-        "FullName": "Huyện Tây Hoà",
+        "FullName": "Tây Hoà",
         "CodeName": "tay_hoa"
       },
       {
         "Type": "district",
         "Code": "563",
-        "FullName": "Huyện Phú Hoà",
+        "FullName": "Phú Hoà",
         "CodeName": "phu_hoa"
       },
       {
@@ -2777,7 +2777,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "56",
-    "FullName": "Tỉnh Khánh Hòa",
+    "FullName": "Khánh Hòa",
     "CodeName": "khanh_hoa",
     "District": [
       {
@@ -2795,13 +2795,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "570",
-        "FullName": "Huyện Cam Lâm",
+        "FullName": "Cam Lâm",
         "CodeName": "cam_lam"
       },
       {
         "Type": "district",
         "Code": "571",
-        "FullName": "Huyện Vạn Ninh",
+        "FullName": "Vạn Ninh",
         "CodeName": "van_ninh"
       },
       {
@@ -2813,25 +2813,25 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "573",
-        "FullName": "Huyện Khánh Vĩnh",
+        "FullName": "Khánh Vĩnh",
         "CodeName": "khanh_vinh"
       },
       {
         "Type": "district",
         "Code": "574",
-        "FullName": "Huyện Diên Khánh",
+        "FullName": "Diên Khánh",
         "CodeName": "dien_khanh"
       },
       {
         "Type": "district",
         "Code": "575",
-        "FullName": "Huyện Khánh Sơn",
+        "FullName": "Khánh Sơn",
         "CodeName": "khanh_son"
       },
       {
         "Type": "district",
         "Code": "576",
-        "FullName": "Huyện Trường Sa",
+        "FullName": "Trường Sa",
         "CodeName": "truong_sa"
       }
     ]
@@ -2839,7 +2839,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "58",
-    "FullName": "Tỉnh Ninh Thuận",
+    "FullName": "Ninh Thuận",
     "CodeName": "ninh_thuan",
     "District": [
       {
@@ -2851,37 +2851,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "584",
-        "FullName": "Huyện Bác Ái",
+        "FullName": "Bác Ái",
         "CodeName": "bac_ai"
       },
       {
         "Type": "district",
         "Code": "585",
-        "FullName": "Huyện Ninh Sơn",
+        "FullName": "Ninh Sơn",
         "CodeName": "ninh_son"
       },
       {
         "Type": "district",
         "Code": "586",
-        "FullName": "Huyện Ninh Hải",
+        "FullName": "Ninh Hải",
         "CodeName": "ninh_hai"
       },
       {
         "Type": "district",
         "Code": "587",
-        "FullName": "Huyện Ninh Phước",
+        "FullName": "Ninh Phước",
         "CodeName": "ninh_phuoc"
       },
       {
         "Type": "district",
         "Code": "588",
-        "FullName": "Huyện Thuận Bắc",
+        "FullName": "Thuận Bắc",
         "CodeName": "thuan_bac"
       },
       {
         "Type": "district",
         "Code": "589",
-        "FullName": "Huyện Thuận Nam",
+        "FullName": "Thuận Nam",
         "CodeName": "thuan_nam"
       }
     ]
@@ -2889,7 +2889,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "60",
-    "FullName": "Tỉnh Bình Thuận",
+    "FullName": "Bình Thuận",
     "CodeName": "binh_thuan",
     "District": [
       {
@@ -2907,49 +2907,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "595",
-        "FullName": "Huyện Tuy Phong",
+        "FullName": "Tuy Phong",
         "CodeName": "tuy_phong"
       },
       {
         "Type": "district",
         "Code": "596",
-        "FullName": "Huyện Bắc Bình",
+        "FullName": "Bắc Bình",
         "CodeName": "bac_binh"
       },
       {
         "Type": "district",
         "Code": "597",
-        "FullName": "Huyện Hàm Thuận Bắc",
+        "FullName": "Hàm Thuận Bắc",
         "CodeName": "ham_thuan_bac"
       },
       {
         "Type": "district",
         "Code": "598",
-        "FullName": "Huyện Hàm Thuận Nam",
+        "FullName": "Hàm Thuận Nam",
         "CodeName": "ham_thuan_nam"
       },
       {
         "Type": "district",
         "Code": "599",
-        "FullName": "Huyện Tánh Linh",
+        "FullName": "Tánh Linh",
         "CodeName": "tanh_linh"
       },
       {
         "Type": "district",
         "Code": "600",
-        "FullName": "Huyện Đức Linh",
+        "FullName": "Đức Linh",
         "CodeName": "duc_linh"
       },
       {
         "Type": "district",
         "Code": "601",
-        "FullName": "Huyện Hàm Tân",
+        "FullName": "Hàm Tân",
         "CodeName": "ham_tan"
       },
       {
         "Type": "district",
         "Code": "602",
-        "FullName": "Huyện Phú Quí",
+        "FullName": "Phú Quí",
         "CodeName": "phu_qui"
       }
     ]
@@ -2957,13 +2957,13 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "62",
-    "FullName": "Tỉnh Kon Tum",
+    "FullName": "Kon Tum",
     "CodeName": "kon_tum",
     "District": [
       {
         "Type": "district",
         "Code": "615",
-        "FullName": "Huyện Đắk Hà",
+        "FullName": "Đắk Hà",
         "CodeName": "dak_ha"
       },
       {
@@ -2975,49 +2975,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "610",
-        "FullName": "Huyện Đắk Glei",
+        "FullName": "Đắk Glei",
         "CodeName": "dak_glei"
       },
       {
         "Type": "district",
         "Code": "611",
-        "FullName": "Huyện Ngọc Hồi",
+        "FullName": "Ngọc Hồi",
         "CodeName": "ngoc_hoi"
       },
       {
         "Type": "district",
         "Code": "612",
-        "FullName": "Huyện Đắk Tô",
+        "FullName": "Đắk Tô",
         "CodeName": "dak_to"
       },
       {
         "Type": "district",
         "Code": "613",
-        "FullName": "Huyện Kon Plông",
+        "FullName": "Kon Plông",
         "CodeName": "kon_plong"
       },
       {
         "Type": "district",
         "Code": "614",
-        "FullName": "Huyện Kon Rẫy",
+        "FullName": "Kon Rẫy",
         "CodeName": "kon_ray"
       },
       {
         "Type": "district",
         "Code": "616",
-        "FullName": "Huyện Sa Thầy",
+        "FullName": "Sa Thầy",
         "CodeName": "sa_thay"
       },
       {
         "Type": "district",
         "Code": "617",
-        "FullName": "Huyện Tu Mơ Rông",
+        "FullName": "Tu Mơ Rông",
         "CodeName": "tu_mo_rong"
       },
       {
         "Type": "district",
         "Code": "618",
-        "FullName": "Huyện Ia H' Drai",
+        "FullName": "Ia H' Drai",
         "CodeName": "ia_h_drai"
       }
     ]
@@ -3025,7 +3025,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "64",
-    "FullName": "Tỉnh Gia Lai",
+    "FullName": "Gia Lai",
     "CodeName": "gia_lai",
     "District": [
       {
@@ -3049,85 +3049,85 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "625",
-        "FullName": "Huyện KBang",
+        "FullName": "KBang",
         "CodeName": "kbang"
       },
       {
         "Type": "district",
         "Code": "626",
-        "FullName": "Huyện Đăk Đoa",
+        "FullName": "Đăk Đoa",
         "CodeName": "dak_doa"
       },
       {
         "Type": "district",
         "Code": "627",
-        "FullName": "Huyện Chư Păh",
+        "FullName": "Chư Păh",
         "CodeName": "chu_pah"
       },
       {
         "Type": "district",
         "Code": "628",
-        "FullName": "Huyện Ia Grai",
+        "FullName": "Ia Grai",
         "CodeName": "ia_grai"
       },
       {
         "Type": "district",
         "Code": "629",
-        "FullName": "Huyện Mang Yang",
+        "FullName": "Mang Yang",
         "CodeName": "mang_yang"
       },
       {
         "Type": "district",
         "Code": "630",
-        "FullName": "Huyện Kông Chro",
+        "FullName": "Kông Chro",
         "CodeName": "kong_chro"
       },
       {
         "Type": "district",
         "Code": "631",
-        "FullName": "Huyện Đức Cơ",
+        "FullName": "Đức Cơ",
         "CodeName": "duc_co"
       },
       {
         "Type": "district",
         "Code": "632",
-        "FullName": "Huyện Chư Prông",
+        "FullName": "Chư Prông",
         "CodeName": "chu_prong"
       },
       {
         "Type": "district",
         "Code": "633",
-        "FullName": "Huyện Chư Sê",
+        "FullName": "Chư Sê",
         "CodeName": "chu_se"
       },
       {
         "Type": "district",
         "Code": "634",
-        "FullName": "Huyện Đăk Pơ",
+        "FullName": "Đăk Pơ",
         "CodeName": "dak_po"
       },
       {
         "Type": "district",
         "Code": "635",
-        "FullName": "Huyện Ia Pa",
+        "FullName": "Ia Pa",
         "CodeName": "ia_pa"
       },
       {
         "Type": "district",
         "Code": "637",
-        "FullName": "Huyện Krông Pa",
+        "FullName": "Krông Pa",
         "CodeName": "krong_pa"
       },
       {
         "Type": "district",
         "Code": "638",
-        "FullName": "Huyện Phú Thiện",
+        "FullName": "Phú Thiện",
         "CodeName": "phu_thien"
       },
       {
         "Type": "district",
         "Code": "639",
-        "FullName": "Huyện Chư Pưh",
+        "FullName": "Chư Pưh",
         "CodeName": "chu_puh"
       }
     ]
@@ -3135,7 +3135,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "66",
-    "FullName": "Tỉnh Đắk Lắk",
+    "FullName": "Đắk Lắk",
     "CodeName": "dak_lak",
     "District": [
       {
@@ -3153,79 +3153,79 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "645",
-        "FullName": "Huyện Ea H'leo",
+        "FullName": "Ea H'leo",
         "CodeName": "ea_hleo"
       },
       {
         "Type": "district",
         "Code": "646",
-        "FullName": "Huyện Ea Súp",
+        "FullName": "Ea Súp",
         "CodeName": "ea_sup"
       },
       {
         "Type": "district",
         "Code": "647",
-        "FullName": "Huyện Buôn Đôn",
+        "FullName": "Buôn Đôn",
         "CodeName": "buon_don"
       },
       {
         "Type": "district",
         "Code": "648",
-        "FullName": "Huyện Cư M'gar",
+        "FullName": "Cư M'gar",
         "CodeName": "cu_mgar"
       },
       {
         "Type": "district",
         "Code": "649",
-        "FullName": "Huyện Krông Búk",
+        "FullName": "Krông Búk",
         "CodeName": "krong_buk"
       },
       {
         "Type": "district",
         "Code": "650",
-        "FullName": "Huyện Krông Năng",
+        "FullName": "Krông Năng",
         "CodeName": "krong_nang"
       },
       {
         "Type": "district",
         "Code": "651",
-        "FullName": "Huyện Ea Kar",
+        "FullName": "Ea Kar",
         "CodeName": "ea_kar"
       },
       {
         "Type": "district",
         "Code": "652",
-        "FullName": "Huyện M'Đrắk",
+        "FullName": "M'Đrắk",
         "CodeName": "mdrak"
       },
       {
         "Type": "district",
         "Code": "653",
-        "FullName": "Huyện Krông Bông",
+        "FullName": "Krông Bông",
         "CodeName": "krong_bong"
       },
       {
         "Type": "district",
         "Code": "654",
-        "FullName": "Huyện Krông Pắc",
+        "FullName": "Krông Pắc",
         "CodeName": "krong_pac"
       },
       {
         "Type": "district",
         "Code": "655",
-        "FullName": "Huyện Krông A Na",
+        "FullName": "Krông A Na",
         "CodeName": "krong_a_na"
       },
       {
         "Type": "district",
         "Code": "656",
-        "FullName": "Huyện Lắk",
+        "FullName": "Lắk",
         "CodeName": "lak"
       },
       {
         "Type": "district",
         "Code": "657",
-        "FullName": "Huyện Cư Kuin",
+        "FullName": "Cư Kuin",
         "CodeName": "cu_kuin"
       }
     ]
@@ -3233,7 +3233,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "67",
-    "FullName": "Tỉnh Đắk Nông",
+    "FullName": "Đắk Nông",
     "CodeName": "dak_nong",
     "District": [
       {
@@ -3245,43 +3245,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "661",
-        "FullName": "Huyện Đăk Glong",
+        "FullName": "Đăk Glong",
         "CodeName": "dak_glong"
       },
       {
         "Type": "district",
         "Code": "662",
-        "FullName": "Huyện Cư Jút",
+        "FullName": "Cư Jút",
         "CodeName": "cu_jut"
       },
       {
         "Type": "district",
         "Code": "663",
-        "FullName": "Huyện Đắk Mil",
+        "FullName": "Đắk Mil",
         "CodeName": "dak_mil"
       },
       {
         "Type": "district",
         "Code": "664",
-        "FullName": "Huyện Krông Nô",
+        "FullName": "Krông Nô",
         "CodeName": "krong_no"
       },
       {
         "Type": "district",
         "Code": "665",
-        "FullName": "Huyện Đắk Song",
+        "FullName": "Đắk Song",
         "CodeName": "dak_song"
       },
       {
         "Type": "district",
         "Code": "666",
-        "FullName": "Huyện Đắk R'Lấp",
+        "FullName": "Đắk R'Lấp",
         "CodeName": "dak_rlap"
       },
       {
         "Type": "district",
         "Code": "667",
-        "FullName": "Huyện Tuy Đức",
+        "FullName": "Tuy Đức",
         "CodeName": "tuy_duc"
       }
     ]
@@ -3289,7 +3289,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "68",
-    "FullName": "Tỉnh Lâm Đồng",
+    "FullName": "Lâm Đồng",
     "CodeName": "lam_dong",
     "District": [
       {
@@ -3307,61 +3307,61 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "674",
-        "FullName": "Huyện Đam Rông",
+        "FullName": "Đam Rông",
         "CodeName": "dam_rong"
       },
       {
         "Type": "district",
         "Code": "675",
-        "FullName": "Huyện Lạc Dương",
+        "FullName": "Lạc Dương",
         "CodeName": "lac_duong"
       },
       {
         "Type": "district",
         "Code": "676",
-        "FullName": "Huyện Lâm Hà",
+        "FullName": "Lâm Hà",
         "CodeName": "lam_ha"
       },
       {
         "Type": "district",
         "Code": "677",
-        "FullName": "Huyện Đơn Dương",
+        "FullName": "Đơn Dương",
         "CodeName": "don_duong"
       },
       {
         "Type": "district",
         "Code": "678",
-        "FullName": "Huyện Đức Trọng",
+        "FullName": "Đức Trọng",
         "CodeName": "duc_trong"
       },
       {
         "Type": "district",
         "Code": "679",
-        "FullName": "Huyện Di Linh",
+        "FullName": "Di Linh",
         "CodeName": "di_linh"
       },
       {
         "Type": "district",
         "Code": "680",
-        "FullName": "Huyện Bảo Lâm",
+        "FullName": "Bảo Lâm",
         "CodeName": "bao_lam"
       },
       {
         "Type": "district",
         "Code": "681",
-        "FullName": "Huyện Đạ Huoai",
+        "FullName": "Đạ Huoai",
         "CodeName": "da_huoai"
       },
       {
         "Type": "district",
         "Code": "682",
-        "FullName": "Huyện Đạ Tẻh",
+        "FullName": "Đạ Tẻh",
         "CodeName": "da_teh"
       },
       {
         "Type": "district",
         "Code": "683",
-        "FullName": "Huyện Cát Tiên",
+        "FullName": "Cát Tiên",
         "CodeName": "cat_tien"
       }
     ]
@@ -3369,7 +3369,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "70",
-    "FullName": "Tỉnh Bình Phước",
+    "FullName": "Bình Phước",
     "CodeName": "binh_phuoc",
     "District": [
       {
@@ -3393,37 +3393,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "691",
-        "FullName": "Huyện Bù Gia Mập",
+        "FullName": "Bù Gia Mập",
         "CodeName": "bu_gia_map"
       },
       {
         "Type": "district",
         "Code": "692",
-        "FullName": "Huyện Lộc Ninh",
+        "FullName": "Lộc Ninh",
         "CodeName": "loc_ninh"
       },
       {
         "Type": "district",
         "Code": "693",
-        "FullName": "Huyện Bù Đốp",
+        "FullName": "Bù Đốp",
         "CodeName": "bu_dop"
       },
       {
         "Type": "district",
         "Code": "694",
-        "FullName": "Huyện Hớn Quản",
+        "FullName": "Hớn Quản",
         "CodeName": "hon_quan"
       },
       {
         "Type": "district",
         "Code": "695",
-        "FullName": "Huyện Đồng Phú",
+        "FullName": "Đồng Phú",
         "CodeName": "dong_phu"
       },
       {
         "Type": "district",
         "Code": "696",
-        "FullName": "Huyện Bù Đăng",
+        "FullName": "Bù Đăng",
         "CodeName": "bu_dang"
       },
       {
@@ -3435,7 +3435,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "698",
-        "FullName": "Huyện Phú Riềng",
+        "FullName": "Phú Riềng",
         "CodeName": "phu_rieng"
       }
     ]
@@ -3443,7 +3443,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "72",
-    "FullName": "Tỉnh Tây Ninh",
+    "FullName": "Tây Ninh",
     "CodeName": "tay_ninh",
     "District": [
       {
@@ -3455,25 +3455,25 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "705",
-        "FullName": "Huyện Tân Biên",
+        "FullName": "Tân Biên",
         "CodeName": "tan_bien"
       },
       {
         "Type": "district",
         "Code": "706",
-        "FullName": "Huyện Tân Châu",
+        "FullName": "Tân Châu",
         "CodeName": "tan_chau"
       },
       {
         "Type": "district",
         "Code": "707",
-        "FullName": "Huyện Dương Minh Châu",
+        "FullName": "Dương Minh Châu",
         "CodeName": "duong_minh_chau"
       },
       {
         "Type": "district",
         "Code": "708",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       },
       {
@@ -3485,13 +3485,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "710",
-        "FullName": "Huyện Gò Dầu",
+        "FullName": "Gò Dầu",
         "CodeName": "go_dau"
       },
       {
         "Type": "district",
         "Code": "711",
-        "FullName": "Huyện Bến Cầu",
+        "FullName": "Bến Cầu",
         "CodeName": "ben_cau"
       },
       {
@@ -3505,7 +3505,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "74",
-    "FullName": "Tỉnh Bình Dương",
+    "FullName": "Bình Dương",
     "CodeName": "binh_duong",
     "District": [
       {
@@ -3517,13 +3517,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "719",
-        "FullName": "Huyện Bàu Bàng",
+        "FullName": "Bàu Bàng",
         "CodeName": "bau_bang"
       },
       {
         "Type": "district",
         "Code": "720",
-        "FullName": "Huyện Dầu Tiếng",
+        "FullName": "Dầu Tiếng",
         "CodeName": "dau_tieng"
       },
       {
@@ -3535,7 +3535,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "722",
-        "FullName": "Huyện Phú Giáo",
+        "FullName": "Phú Giáo",
         "CodeName": "phu_giao"
       },
       {
@@ -3559,7 +3559,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "726",
-        "FullName": "Huyện Bắc Tân Uyên",
+        "FullName": "Bắc Tân Uyên",
         "CodeName": "bac_tan_uyen"
       }
     ]
@@ -3567,7 +3567,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "75",
-    "FullName": "Tỉnh Đồng Nai",
+    "FullName": "Đồng Nai",
     "CodeName": "dong_nai",
     "District": [
       {
@@ -3585,55 +3585,55 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "734",
-        "FullName": "Huyện Tân Phú",
+        "FullName": "Tân Phú",
         "CodeName": "tan_phu"
       },
       {
         "Type": "district",
         "Code": "735",
-        "FullName": "Huyện Vĩnh Cửu",
+        "FullName": "Vĩnh Cửu",
         "CodeName": "vinh_cuu"
       },
       {
         "Type": "district",
         "Code": "736",
-        "FullName": "Huyện Định Quán",
+        "FullName": "Định Quán",
         "CodeName": "dinh_quan"
       },
       {
         "Type": "district",
         "Code": "737",
-        "FullName": "Huyện Trảng Bom",
+        "FullName": "Trảng Bom",
         "CodeName": "trang_bom"
       },
       {
         "Type": "district",
         "Code": "738",
-        "FullName": "Huyện Thống Nhất",
+        "FullName": "Thống Nhất",
         "CodeName": "thong_nhat"
       },
       {
         "Type": "district",
         "Code": "739",
-        "FullName": "Huyện Cẩm Mỹ",
+        "FullName": "Cẩm Mỹ",
         "CodeName": "cam_my"
       },
       {
         "Type": "district",
         "Code": "740",
-        "FullName": "Huyện Long Thành",
+        "FullName": "Long Thành",
         "CodeName": "long_thanh"
       },
       {
         "Type": "district",
         "Code": "741",
-        "FullName": "Huyện Xuân Lộc",
+        "FullName": "Xuân Lộc",
         "CodeName": "xuan_loc"
       },
       {
         "Type": "district",
         "Code": "742",
-        "FullName": "Huyện Nhơn Trạch",
+        "FullName": "Nhơn Trạch",
         "CodeName": "nhon_trach"
       }
     ]
@@ -3641,7 +3641,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "77",
-    "FullName": "Tỉnh Bà Rịa - Vũng Tàu",
+    "FullName": "Bà Rịa - Vũng Tàu",
     "CodeName": "ba_ria_vung_tau",
     "District": [
       {
@@ -3659,25 +3659,25 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "750",
-        "FullName": "Huyện Châu Đức",
+        "FullName": "Châu Đức",
         "CodeName": "chau_duc"
       },
       {
         "Type": "district",
         "Code": "751",
-        "FullName": "Huyện Xuyên Mộc",
+        "FullName": "Xuyên Mộc",
         "CodeName": "xuyen_moc"
       },
       {
         "Type": "district",
         "Code": "752",
-        "FullName": "Huyện Long Điền",
+        "FullName": "Long Điền",
         "CodeName": "long_dien"
       },
       {
         "Type": "district",
         "Code": "753",
-        "FullName": "Huyện Đất Đỏ",
+        "FullName": "Đất Đỏ",
         "CodeName": "dat_do"
       },
       {
@@ -3689,7 +3689,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "755",
-        "FullName": "Huyện Côn Đảo",
+        "FullName": "Côn Đảo",
         "CodeName": "con_dao"
       }
     ]
@@ -3703,43 +3703,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "760",
-        "FullName": "Quận 1",
+        "FullName": "1",
         "CodeName": "1"
       },
       {
         "Type": "district",
         "Code": "761",
-        "FullName": "Quận 12",
+        "FullName": "12",
         "CodeName": "12"
       },
       {
         "Type": "district",
         "Code": "764",
-        "FullName": "Quận Gò Vấp",
+        "FullName": "Gò Vấp",
         "CodeName": "go_vap"
       },
       {
         "Type": "district",
         "Code": "765",
-        "FullName": "Quận Bình Thạnh",
+        "FullName": "Bình Thạnh",
         "CodeName": "binh_thanh"
       },
       {
         "Type": "district",
         "Code": "766",
-        "FullName": "Quận Tân Bình",
+        "FullName": "Tân Bình",
         "CodeName": "tan_binh"
       },
       {
         "Type": "district",
         "Code": "767",
-        "FullName": "Quận Tân Phú",
+        "FullName": "Tân Phú",
         "CodeName": "tan_phu"
       },
       {
         "Type": "district",
         "Code": "768",
-        "FullName": "Quận Phú Nhuận",
+        "FullName": "Phú Nhuận",
         "CodeName": "phu_nhuan"
       },
       {
@@ -3751,85 +3751,85 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "770",
-        "FullName": "Quận 3",
+        "FullName": "3",
         "CodeName": "3"
       },
       {
         "Type": "district",
         "Code": "771",
-        "FullName": "Quận 10",
+        "FullName": "10",
         "CodeName": "10"
       },
       {
         "Type": "district",
         "Code": "772",
-        "FullName": "Quận 11",
+        "FullName": "11",
         "CodeName": "11"
       },
       {
         "Type": "district",
         "Code": "773",
-        "FullName": "Quận 4",
+        "FullName": "4",
         "CodeName": "4"
       },
       {
         "Type": "district",
         "Code": "774",
-        "FullName": "Quận 5",
+        "FullName": "5",
         "CodeName": "5"
       },
       {
         "Type": "district",
         "Code": "775",
-        "FullName": "Quận 6",
+        "FullName": "6",
         "CodeName": "6"
       },
       {
         "Type": "district",
         "Code": "776",
-        "FullName": "Quận 8",
+        "FullName": "8",
         "CodeName": "8"
       },
       {
         "Type": "district",
         "Code": "777",
-        "FullName": "Quận Bình Tân",
+        "FullName": "Bình Tân",
         "CodeName": "binh_tan"
       },
       {
         "Type": "district",
         "Code": "778",
-        "FullName": "Quận 7",
+        "FullName": "7",
         "CodeName": "7"
       },
       {
         "Type": "district",
         "Code": "783",
-        "FullName": "Huyện Củ Chi",
+        "FullName": "Củ Chi",
         "CodeName": "cu_chi"
       },
       {
         "Type": "district",
         "Code": "784",
-        "FullName": "Huyện Hóc Môn",
+        "FullName": "Hóc Môn",
         "CodeName": "hoc_mon"
       },
       {
         "Type": "district",
         "Code": "785",
-        "FullName": "Huyện Bình Chánh",
+        "FullName": "Bình Chánh",
         "CodeName": "binh_chanh"
       },
       {
         "Type": "district",
         "Code": "786",
-        "FullName": "Huyện Nhà Bè",
+        "FullName": "Nhà Bè",
         "CodeName": "nha_be"
       },
       {
         "Type": "district",
         "Code": "787",
-        "FullName": "Huyện Cần Giờ",
+        "FullName": "Cần Giờ",
         "CodeName": "can_gio"
       }
     ]
@@ -3837,7 +3837,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "80",
-    "FullName": "Tỉnh Long An",
+    "FullName": "Long An",
     "CodeName": "long_an",
     "District": [
       {
@@ -3855,79 +3855,79 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "796",
-        "FullName": "Huyện Tân Hưng",
+        "FullName": "Tân Hưng",
         "CodeName": "tan_hung"
       },
       {
         "Type": "district",
         "Code": "797",
-        "FullName": "Huyện Vĩnh Hưng",
+        "FullName": "Vĩnh Hưng",
         "CodeName": "vinh_hung"
       },
       {
         "Type": "district",
         "Code": "798",
-        "FullName": "Huyện Mộc Hóa",
+        "FullName": "Mộc Hóa",
         "CodeName": "moc_hoa"
       },
       {
         "Type": "district",
         "Code": "799",
-        "FullName": "Huyện Tân Thạnh",
+        "FullName": "Tân Thạnh",
         "CodeName": "tan_thanh"
       },
       {
         "Type": "district",
         "Code": "800",
-        "FullName": "Huyện Thạnh Hóa",
+        "FullName": "Thạnh Hóa",
         "CodeName": "thanh_hoa"
       },
       {
         "Type": "district",
         "Code": "801",
-        "FullName": "Huyện Đức Huệ",
+        "FullName": "Đức Huệ",
         "CodeName": "duc_hue"
       },
       {
         "Type": "district",
         "Code": "802",
-        "FullName": "Huyện Đức Hòa",
+        "FullName": "Đức Hòa",
         "CodeName": "duc_hoa"
       },
       {
         "Type": "district",
         "Code": "803",
-        "FullName": "Huyện Bến Lức",
+        "FullName": "Bến Lức",
         "CodeName": "ben_luc"
       },
       {
         "Type": "district",
         "Code": "804",
-        "FullName": "Huyện Thủ Thừa",
+        "FullName": "Thủ Thừa",
         "CodeName": "thu_thua"
       },
       {
         "Type": "district",
         "Code": "805",
-        "FullName": "Huyện Tân Trụ",
+        "FullName": "Tân Trụ",
         "CodeName": "tan_tru"
       },
       {
         "Type": "district",
         "Code": "806",
-        "FullName": "Huyện Cần Đước",
+        "FullName": "Cần Đước",
         "CodeName": "can_duoc"
       },
       {
         "Type": "district",
         "Code": "807",
-        "FullName": "Huyện Cần Giuộc",
+        "FullName": "Cần Giuộc",
         "CodeName": "can_giuoc"
       },
       {
         "Type": "district",
         "Code": "808",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       }
     ]
@@ -3935,7 +3935,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "82",
-    "FullName": "Tỉnh Tiền Giang",
+    "FullName": "Tiền Giang",
     "CodeName": "tien_giang",
     "District": [
       {
@@ -3959,49 +3959,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "818",
-        "FullName": "Huyện Tân Phước",
+        "FullName": "Tân Phước",
         "CodeName": "tan_phuoc"
       },
       {
         "Type": "district",
         "Code": "819",
-        "FullName": "Huyện Cái Bè",
+        "FullName": "Cái Bè",
         "CodeName": "cai_be"
       },
       {
         "Type": "district",
         "Code": "820",
-        "FullName": "Huyện Cai Lậy",
+        "FullName": "Cai Lậy",
         "CodeName": "cai_lay"
       },
       {
         "Type": "district",
         "Code": "821",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       },
       {
         "Type": "district",
         "Code": "822",
-        "FullName": "Huyện Chợ Gạo",
+        "FullName": "Chợ Gạo",
         "CodeName": "cho_gao"
       },
       {
         "Type": "district",
         "Code": "823",
-        "FullName": "Huyện Gò Công Tây",
+        "FullName": "Gò Công Tây",
         "CodeName": "go_cong_tay"
       },
       {
         "Type": "district",
         "Code": "824",
-        "FullName": "Huyện Gò Công Đông",
+        "FullName": "Gò Công Đông",
         "CodeName": "go_cong_dong"
       },
       {
         "Type": "district",
         "Code": "825",
-        "FullName": "Huyện Tân Phú Đông",
+        "FullName": "Tân Phú Đông",
         "CodeName": "tan_phu_dong"
       }
     ]
@@ -4009,7 +4009,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "83",
-    "FullName": "Tỉnh Bến Tre",
+    "FullName": "Bến Tre",
     "CodeName": "ben_tre",
     "District": [
       {
@@ -4021,49 +4021,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "831",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       },
       {
         "Type": "district",
         "Code": "832",
-        "FullName": "Huyện Chợ Lách",
+        "FullName": "Chợ Lách",
         "CodeName": "cho_lach"
       },
       {
         "Type": "district",
         "Code": "833",
-        "FullName": "Huyện Mỏ Cày Nam",
+        "FullName": "Mỏ Cày Nam",
         "CodeName": "mo_cay_nam"
       },
       {
         "Type": "district",
         "Code": "834",
-        "FullName": "Huyện Giồng Trôm",
+        "FullName": "Giồng Trôm",
         "CodeName": "giong_trom"
       },
       {
         "Type": "district",
         "Code": "835",
-        "FullName": "Huyện Bình Đại",
+        "FullName": "Bình Đại",
         "CodeName": "binh_dai"
       },
       {
         "Type": "district",
         "Code": "836",
-        "FullName": "Huyện Ba Tri",
+        "FullName": "Ba Tri",
         "CodeName": "ba_tri"
       },
       {
         "Type": "district",
         "Code": "837",
-        "FullName": "Huyện Thạnh Phú",
+        "FullName": "Thạnh Phú",
         "CodeName": "thanh_phu"
       },
       {
         "Type": "district",
         "Code": "838",
-        "FullName": "Huyện Mỏ Cày Bắc",
+        "FullName": "Mỏ Cày Bắc",
         "CodeName": "mo_cay_bac"
       }
     ]
@@ -4071,7 +4071,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "84",
-    "FullName": "Tỉnh Trà Vinh",
+    "FullName": "Trà Vinh",
     "CodeName": "tra_vinh",
     "District": [
       {
@@ -4083,43 +4083,43 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "844",
-        "FullName": "Huyện Càng Long",
+        "FullName": "Càng Long",
         "CodeName": "cang_long"
       },
       {
         "Type": "district",
         "Code": "845",
-        "FullName": "Huyện Cầu Kè",
+        "FullName": "Cầu Kè",
         "CodeName": "cau_ke"
       },
       {
         "Type": "district",
         "Code": "846",
-        "FullName": "Huyện Tiểu Cần",
+        "FullName": "Tiểu Cần",
         "CodeName": "tieu_can"
       },
       {
         "Type": "district",
         "Code": "847",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       },
       {
         "Type": "district",
         "Code": "848",
-        "FullName": "Huyện Cầu Ngang",
+        "FullName": "Cầu Ngang",
         "CodeName": "cau_ngang"
       },
       {
         "Type": "district",
         "Code": "849",
-        "FullName": "Huyện Trà Cú",
+        "FullName": "Trà Cú",
         "CodeName": "tra_cu"
       },
       {
         "Type": "district",
         "Code": "850",
-        "FullName": "Huyện Duyên Hải",
+        "FullName": "Duyên Hải",
         "CodeName": "duyen_hai"
       },
       {
@@ -4133,7 +4133,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "86",
-    "FullName": "Tỉnh Vĩnh Long",
+    "FullName": "Vĩnh Long",
     "CodeName": "vinh_long",
     "District": [
       {
@@ -4145,25 +4145,25 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "857",
-        "FullName": "Huyện Long Hồ",
+        "FullName": "Long Hồ",
         "CodeName": "long_ho"
       },
       {
         "Type": "district",
         "Code": "858",
-        "FullName": "Huyện Mang Thít",
+        "FullName": "Mang Thít",
         "CodeName": "mang_thit"
       },
       {
         "Type": "district",
         "Code": "859",
-        "FullName": "Huyện Vũng Liêm",
+        "FullName": "Vũng Liêm",
         "CodeName": "vung_liem"
       },
       {
         "Type": "district",
         "Code": "860",
-        "FullName": "Huyện Tam Bình",
+        "FullName": "Tam Bình",
         "CodeName": "tam_binh"
       },
       {
@@ -4175,13 +4175,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "862",
-        "FullName": "Huyện Trà Ôn",
+        "FullName": "Trà Ôn",
         "CodeName": "tra_on"
       },
       {
         "Type": "district",
         "Code": "863",
-        "FullName": "Huyện Bình Tân",
+        "FullName": "Bình Tân",
         "CodeName": "binh_tan"
       }
     ]
@@ -4189,7 +4189,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "87",
-    "FullName": "Tỉnh Đồng Tháp",
+    "FullName": "Đồng Tháp",
     "CodeName": "dong_thap",
     "District": [
       {
@@ -4213,55 +4213,55 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "869",
-        "FullName": "Huyện Tân Hồng",
+        "FullName": "Tân Hồng",
         "CodeName": "tan_hong"
       },
       {
         "Type": "district",
         "Code": "870",
-        "FullName": "Huyện Hồng Ngự",
+        "FullName": "Hồng Ngự",
         "CodeName": "hong_ngu"
       },
       {
         "Type": "district",
         "Code": "871",
-        "FullName": "Huyện Tam Nông",
+        "FullName": "Tam Nông",
         "CodeName": "tam_nong"
       },
       {
         "Type": "district",
         "Code": "872",
-        "FullName": "Huyện Tháp Mười",
+        "FullName": "Tháp Mười",
         "CodeName": "thap_muoi"
       },
       {
         "Type": "district",
         "Code": "873",
-        "FullName": "Huyện Cao Lãnh",
+        "FullName": "Cao Lãnh",
         "CodeName": "cao_lanh"
       },
       {
         "Type": "district",
         "Code": "874",
-        "FullName": "Huyện Thanh Bình",
+        "FullName": "Thanh Bình",
         "CodeName": "thanh_binh"
       },
       {
         "Type": "district",
         "Code": "875",
-        "FullName": "Huyện Lấp Vò",
+        "FullName": "Lấp Vò",
         "CodeName": "lap_vo"
       },
       {
         "Type": "district",
         "Code": "876",
-        "FullName": "Huyện Lai Vung",
+        "FullName": "Lai Vung",
         "CodeName": "lai_vung"
       },
       {
         "Type": "district",
         "Code": "877",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       }
     ]
@@ -4269,7 +4269,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "89",
-    "FullName": "Tỉnh An Giang",
+    "FullName": "An Giang",
     "CodeName": "an_giang",
     "District": [
       {
@@ -4287,7 +4287,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "886",
-        "FullName": "Huyện An Phú",
+        "FullName": "An Phú",
         "CodeName": "an_phu"
       },
       {
@@ -4299,13 +4299,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "888",
-        "FullName": "Huyện Phú Tân",
+        "FullName": "Phú Tân",
         "CodeName": "phu_tan"
       },
       {
         "Type": "district",
         "Code": "889",
-        "FullName": "Huyện Châu Phú",
+        "FullName": "Châu Phú",
         "CodeName": "chau_phu"
       },
       {
@@ -4317,25 +4317,25 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "891",
-        "FullName": "Huyện Tri Tôn",
+        "FullName": "Tri Tôn",
         "CodeName": "tri_ton"
       },
       {
         "Type": "district",
         "Code": "892",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       },
       {
         "Type": "district",
         "Code": "893",
-        "FullName": "Huyện Chợ Mới",
+        "FullName": "Chợ Mới",
         "CodeName": "cho_moi"
       },
       {
         "Type": "district",
         "Code": "894",
-        "FullName": "Huyện Thoại Sơn",
+        "FullName": "Thoại Sơn",
         "CodeName": "thoai_son"
       }
     ]
@@ -4343,7 +4343,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "91",
-    "FullName": "Tỉnh Kiên Giang",
+    "FullName": "Kiên Giang",
     "CodeName": "kien_giang",
     "District": [
       {
@@ -4361,55 +4361,55 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "902",
-        "FullName": "Huyện Kiên Lương",
+        "FullName": "Kiên Lương",
         "CodeName": "kien_luong"
       },
       {
         "Type": "district",
         "Code": "903",
-        "FullName": "Huyện Hòn Đất",
+        "FullName": "Hòn Đất",
         "CodeName": "hon_dat"
       },
       {
         "Type": "district",
         "Code": "904",
-        "FullName": "Huyện Tân Hiệp",
+        "FullName": "Tân Hiệp",
         "CodeName": "tan_hiep"
       },
       {
         "Type": "district",
         "Code": "905",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       },
       {
         "Type": "district",
         "Code": "906",
-        "FullName": "Huyện Giồng Riềng",
+        "FullName": "Giồng Riềng",
         "CodeName": "giong_rieng"
       },
       {
         "Type": "district",
         "Code": "907",
-        "FullName": "Huyện Gò Quao",
+        "FullName": "Gò Quao",
         "CodeName": "go_quao"
       },
       {
         "Type": "district",
         "Code": "908",
-        "FullName": "Huyện An Biên",
+        "FullName": "An Biên",
         "CodeName": "an_bien"
       },
       {
         "Type": "district",
         "Code": "909",
-        "FullName": "Huyện An Minh",
+        "FullName": "An Minh",
         "CodeName": "an_minh"
       },
       {
         "Type": "district",
         "Code": "910",
-        "FullName": "Huyện Vĩnh Thuận",
+        "FullName": "Vĩnh Thuận",
         "CodeName": "vinh_thuan"
       },
       {
@@ -4421,19 +4421,19 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "912",
-        "FullName": "Huyện Kiên Hải",
+        "FullName": "Kiên Hải",
         "CodeName": "kien_hai"
       },
       {
         "Type": "district",
         "Code": "913",
-        "FullName": "Huyện U Minh Thượng",
+        "FullName": "U Minh Thượng",
         "CodeName": "u_minh_thuong"
       },
       {
         "Type": "district",
         "Code": "914",
-        "FullName": "Huyện Giang Thành",
+        "FullName": "Giang Thành",
         "CodeName": "giang_thanh"
       }
     ]
@@ -4447,55 +4447,55 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "916",
-        "FullName": "Quận Ninh Kiều",
+        "FullName": "Ninh Kiều",
         "CodeName": "ninh_kieu"
       },
       {
         "Type": "district",
         "Code": "917",
-        "FullName": "Quận Ô Môn",
+        "FullName": "Ô Môn",
         "CodeName": "o_mon"
       },
       {
         "Type": "district",
         "Code": "918",
-        "FullName": "Quận Bình Thuỷ",
+        "FullName": "Bình Thuỷ",
         "CodeName": "binh_thuy"
       },
       {
         "Type": "district",
         "Code": "919",
-        "FullName": "Quận Cái Răng",
+        "FullName": "Cái Răng",
         "CodeName": "cai_rang"
       },
       {
         "Type": "district",
         "Code": "923",
-        "FullName": "Quận Thốt Nốt",
+        "FullName": "Thốt Nốt",
         "CodeName": "thot_not"
       },
       {
         "Type": "district",
         "Code": "924",
-        "FullName": "Huyện Vĩnh Thạnh",
+        "FullName": "Vĩnh Thạnh",
         "CodeName": "vinh_thanh"
       },
       {
         "Type": "district",
         "Code": "925",
-        "FullName": "Huyện Cờ Đỏ",
+        "FullName": "Cờ Đỏ",
         "CodeName": "co_do"
       },
       {
         "Type": "district",
         "Code": "926",
-        "FullName": "Huyện Phong Điền",
+        "FullName": "Phong Điền",
         "CodeName": "phong_dien"
       },
       {
         "Type": "district",
         "Code": "927",
-        "FullName": "Huyện Thới Lai",
+        "FullName": "Thới Lai",
         "CodeName": "thoi_lai"
       }
     ]
@@ -4503,7 +4503,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "93",
-    "FullName": "Tỉnh Hậu Giang",
+    "FullName": "Hậu Giang",
     "CodeName": "hau_giang",
     "District": [
       {
@@ -4521,31 +4521,31 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "932",
-        "FullName": "Huyện Châu Thành A",
+        "FullName": "Châu Thành A",
         "CodeName": "chau_thanh_a"
       },
       {
         "Type": "district",
         "Code": "933",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       },
       {
         "Type": "district",
         "Code": "934",
-        "FullName": "Huyện Phụng Hiệp",
+        "FullName": "Phụng Hiệp",
         "CodeName": "phung_hiep"
       },
       {
         "Type": "district",
         "Code": "935",
-        "FullName": "Huyện Vị Thuỷ",
+        "FullName": "Vị Thuỷ",
         "CodeName": "vi_thuy"
       },
       {
         "Type": "district",
         "Code": "936",
-        "FullName": "Huyện Long Mỹ",
+        "FullName": "Long Mỹ",
         "CodeName": "long_my"
       },
       {
@@ -4559,7 +4559,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "94",
-    "FullName": "Tỉnh Sóc Trăng",
+    "FullName": "Sóc Trăng",
     "CodeName": "soc_trang",
     "District": [
       {
@@ -4571,37 +4571,37 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "942",
-        "FullName": "Huyện Châu Thành",
+        "FullName": "Châu Thành",
         "CodeName": "chau_thanh"
       },
       {
         "Type": "district",
         "Code": "943",
-        "FullName": "Huyện Kế Sách",
+        "FullName": "Kế Sách",
         "CodeName": "ke_sach"
       },
       {
         "Type": "district",
         "Code": "944",
-        "FullName": "Huyện Mỹ Tú",
+        "FullName": "Mỹ Tú",
         "CodeName": "my_tu"
       },
       {
         "Type": "district",
         "Code": "945",
-        "FullName": "Huyện Cù Lao Dung",
+        "FullName": "Cù Lao Dung",
         "CodeName": "cu_lao_dung"
       },
       {
         "Type": "district",
         "Code": "946",
-        "FullName": "Huyện Long Phú",
+        "FullName": "Long Phú",
         "CodeName": "long_phu"
       },
       {
         "Type": "district",
         "Code": "947",
-        "FullName": "Huyện Mỹ Xuyên",
+        "FullName": "Mỹ Xuyên",
         "CodeName": "my_xuyen"
       },
       {
@@ -4613,7 +4613,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "949",
-        "FullName": "Huyện Thạnh Trị",
+        "FullName": "Thạnh Trị",
         "CodeName": "thanh_tri"
       },
       {
@@ -4625,7 +4625,7 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "951",
-        "FullName": "Huyện Trần Đề",
+        "FullName": "Trần Đề",
         "CodeName": "tran_de"
       }
     ]
@@ -4633,7 +4633,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "95",
-    "FullName": "Tỉnh Bạc Liêu",
+    "FullName": "Bạc Liêu",
     "CodeName": "bac_lieu",
     "District": [
       {
@@ -4645,19 +4645,19 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "956",
-        "FullName": "Huyện Hồng Dân",
+        "FullName": "Hồng Dân",
         "CodeName": "hong_dan"
       },
       {
         "Type": "district",
         "Code": "957",
-        "FullName": "Huyện Phước Long",
+        "FullName": "Phước Long",
         "CodeName": "phuoc_long"
       },
       {
         "Type": "district",
         "Code": "958",
-        "FullName": "Huyện Vĩnh Lợi",
+        "FullName": "Vĩnh Lợi",
         "CodeName": "vinh_loi"
       },
       {
@@ -4669,13 +4669,13 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "960",
-        "FullName": "Huyện Đông Hải",
+        "FullName": "Đông Hải",
         "CodeName": "dong_hai"
       },
       {
         "Type": "district",
         "Code": "961",
-        "FullName": "Huyện Hoà Bình",
+        "FullName": "Hoà Bình",
         "CodeName": "hoa_binh"
       }
     ]
@@ -4683,7 +4683,7 @@ export const provinceList: Province[] = [
   {
     "Type": "province",
     "Code": "96",
-    "FullName": "Tỉnh Cà Mau",
+    "FullName": "Cà Mau",
     "CodeName": "ca_mau",
     "District": [
       {
@@ -4695,49 +4695,49 @@ export const provinceList: Province[] = [
       {
         "Type": "district",
         "Code": "966",
-        "FullName": "Huyện U Minh",
+        "FullName": "U Minh",
         "CodeName": "u_minh"
       },
       {
         "Type": "district",
         "Code": "967",
-        "FullName": "Huyện Thới Bình",
+        "FullName": "Thới Bình",
         "CodeName": "thoi_binh"
       },
       {
         "Type": "district",
         "Code": "968",
-        "FullName": "Huyện Trần Văn Thời",
+        "FullName": "Trần Văn Thời",
         "CodeName": "tran_van_thoi"
       },
       {
         "Type": "district",
         "Code": "969",
-        "FullName": "Huyện Cái Nước",
+        "FullName": "Cái Nước",
         "CodeName": "cai_nuoc"
       },
       {
         "Type": "district",
         "Code": "970",
-        "FullName": "Huyện Đầm Dơi",
+        "FullName": "Đầm Dơi",
         "CodeName": "dam_doi"
       },
       {
         "Type": "district",
         "Code": "971",
-        "FullName": "Huyện Năm Căn",
+        "FullName": "Năm Căn",
         "CodeName": "nam_can"
       },
       {
         "Type": "district",
         "Code": "972",
-        "FullName": "Huyện Phú Tân",
+        "FullName": "Phú Tân",
         "CodeName": "phu_tan"
       },
       {
         "Type": "district",
         "Code": "973",
-        "FullName": "Huyện Ngọc Hiển",
+        "FullName": "Ngọc Hiển",
         "CodeName": "ngoc_hien"
       }
     ]
