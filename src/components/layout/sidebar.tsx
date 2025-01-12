@@ -38,8 +38,8 @@ export const sidebar = [
   //   icon: <CopyOutlined />,
   // },
   {
-    path: webRoutes.salaries,
-    key: webRoutes.salaries,
+    path: webRoutes.payslip,
+    key: webRoutes.payslip,
     name: "Bảng lương",
     icon: <DollarOutlined />,
   },

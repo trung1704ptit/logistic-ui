@@ -26,7 +26,7 @@ export const webRoutes = {
   updateTruck: '/trucks/update',
 
   settings: '/settings',
-  salaries: '/salaries',
+  payslip: '/payslip',
   reports: '/reports',    
   expenses: '/expenses',
 

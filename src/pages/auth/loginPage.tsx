@@ -47,8 +47,10 @@ const LoginPage = () => {
       })
       .then((response) => {
         const admin: Admin = {
-          token: response?.data?.access_token,
+          access_token: response?.data?.access_token,
+          refresh_token: response?.data?.refresh_token,
         };
+        console.log({ admin })
         dispatch(login(admin));
       })
       .catch((error) => {
@@ -74,14 +76,6 @@ const LoginPage = () => {
         onFinish={onSubmit}
         layout={'vertical'}
         requiredMark={false}
-        initialValues={
-          import.meta.env.VITE_DEMO_MODE === 'true'
-            ? {
-                email: 'eve.holt@reqres.in',
-                password: 'password',
-              }
-            : {}
-        }
       >
         <div>
           <Form.Item

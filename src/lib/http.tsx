@@ -1,7 +1,7 @@
 import { Store } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "@/store";
-import { logout } from "@/store/slices/adminSlice";
+import { logout, login } from "@/store/slices/adminSlice";
 
 let store: Store;
 
@@ -19,10 +19,27 @@ const http = axios.create({
   },
 });
 
+// A variable to track the refresh token request status
+let isRefreshing = false;
+// A queue to hold requests while the token is being refreshed
+let requestQueue: Array<(token: string) => void> = [];
+
+// Function to process queued requests
+const processQueue = (error: any, token: string | null = null) => {
+  requestQueue.forEach((promise) => {
+    if (token) {
+      promise(token);
+    } else {
+      promise(error);
+    }
+  });
+  requestQueue = [];
+};
+
 http.interceptors.request.use(
   (config) => {
     const state: RootState = store.getState();
-    const apiToken = state.admin?.token;
+    const apiToken = state.admin?.access_token;
 
     if (apiToken) {
       config.headers.Authorization = `Bearer ${apiToken}`;
@@ -38,10 +55,54 @@ http.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
-    if (error?.response?.status === 401) {
-      store.dispatch(logout());
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error?.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+
+        try {
+          const state: RootState = store.getState();
+          const refreshToken = state.admin?.refresh_token;
+
+          const refreshResponse = await defaultHttp.post(
+            `${http.defaults.baseURL}/auth/refresh`,
+            { refresh_token: refreshToken }
+          );
+
+          const accessToken = refreshResponse.data.access_token;
+          store.dispatch(
+            login({ access_token: accessToken, refresh_token: refreshToken })
+          );
+
+          isRefreshing = false;
+          processQueue(null, accessToken);
+
+          return http(originalRequest);
+        } catch (refreshError) {
+          isRefreshing = false;
+          processQueue(refreshError, null);
+          store.dispatch(logout());
+          return Promise.reject(refreshError);
+        }
+      }
+
+      // Queue the current request while waiting for the token to refresh
+      return new Promise((resolve, reject) => {
+        requestQueue.push((token: string | null) => {
+          if (token) {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            resolve(http(originalRequest));
+          } else {
+            reject(error);
+          }
+        });
+      });
     }
+
     return Promise.reject(error);
   }
 );

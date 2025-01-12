@@ -40,7 +40,7 @@ const UpdateTruckPage = loadable(() => import('@/pages/trucks/updateTruckPage'),
 const ReportPage = loadable(() => import('@/pages/reports/reportPage'), {
   fallback: fallbackElement,
 });
-const SalaryPage  = loadable(() => import('@/pages/salaries/salaryPage'), {
+const PayslipPage  = loadable(() => import('@/pages/payslips/payslipPage'), {
   fallback: fallbackElement,
 });
 
@@ -49,17 +49,17 @@ const PriceListPage  = loadable(() => import('@/pages/prices/priceListPage'), {
   fallback: fallbackElement,
 });
 
-const AddPricePage  = loadable(() => import('@/pages/prices/addPricePage'), {
-  fallback: fallbackElement,
-});
+// const AddPricePage  = loadable(() => import('@/pages/prices/'), {
+//   fallback: fallbackElement,
+// });
 
-const UpdatePricePage  = loadable(() => import('@/pages/prices/updatePricePage'), {
-  fallback: fallbackElement,
-});
+// const UpdatePricePage  = loadable(() => import('@/pages/prices/updatePricePage'), {
+//   fallback: fallbackElement,
+// });
 
-const AddPriceExcelPage  = loadable(() => import('@/pages/prices/addPriceExcelPage'), {
-  fallback: fallbackElement,
-});
+// const AddPriceExcelPage  = loadable(() => import('@/pages/prices/addPriceExcelPage'), {
+//   fallback: fallbackElement,
+// });
 
 
 // -----------------------
@@ -168,8 +168,8 @@ export const browserRouter = createBrowserRouter([
         element: <ReportPage />,
       },
       {
-        path: webRoutes.salaries,
-        element: <SalaryPage />,
+        path: webRoutes.payslip,
+        element: <PayslipPage />,
       },
       {
         path: webRoutes.settings,
@@ -179,18 +179,18 @@ export const browserRouter = createBrowserRouter([
         path: webRoutes.prices,
         element: <PriceListPage/>,
       },
-      {
-        path: webRoutes.addNewPrice,
-        element: <AddPricePage/>,
-      },
-      {
-        path: webRoutes.addNewPriceExcel,
-        element: <AddPriceExcelPage/>,
-      },
-      {
-        path: webRoutes.updatePrice,
-        element: <UpdatePricePage/>,
-      },
+      // {
+      //   path: webRoutes.addNewPrice,
+      //   element: <AddPricePage/>,
+      // },
+      // {
+      //   path: webRoutes.addNewPriceExcel,
+      //   element: <AddPriceExcelPage/>,
+      // },
+      // {
+      //   path: webRoutes.updatePrice,
+      //   element: <UpdatePricePage/>,
+      // },
       {
         path: webRoutes.users,
         element: <UserListPage />,
