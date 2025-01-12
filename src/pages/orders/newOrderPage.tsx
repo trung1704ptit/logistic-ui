@@ -403,7 +403,7 @@ const AddOrderForm: React.FC = () => {
                 placeholder="Chọn tỉnh/thành phố"
                 filterOption={searchByLabel}
                 onChange={(value) =>
-                  handleProvinceChange(value, "deliveryProvince")
+                  handleProvinceChange(value, "delivery_province")
                 }
               >
                 {provinceList.map((province) => (
@@ -413,7 +413,7 @@ const AddOrderForm: React.FC = () => {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item name="delivery_pistrict">
+            <Form.Item name="delivery_district">
               <Select
                 size="large"
                 placeholder="Chọn quận/huyện"
@@ -486,7 +486,7 @@ const AddOrderForm: React.FC = () => {
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Cước vận chuyển" name="pointFee">
+            <Form.Item label="Cước vận chuyển" name="freight_charge">
               <Input
                 size="large"
                 type="number"
