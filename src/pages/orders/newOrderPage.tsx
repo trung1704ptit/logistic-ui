@@ -86,13 +86,13 @@ const AddOrderForm: React.FC = () => {
     );
     if (selectedProvince) {
       const districts = selectedProvince.District;
-      if (field === "pickupProvince") {
+      if (field === "pickup_province") {
         setPickupDistricts(districts);
       } else {
         setDeliveryDistricts(districts);
       }
       form.setFieldsValue({
-        [field === "pickupProvince" ? "pickupDistrict" : "deliveryDistrict"]:
+        [field === "pickup_province" ? "pickup_district" : "delivery_district"]:
           undefined,
       });
     }
@@ -248,7 +248,7 @@ const AddOrderForm: React.FC = () => {
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Ngày tạo" name="orderDate">
+            <Form.Item label="Ngày tạo" name="order_time">
               <DatePicker
                 size="large"
                 className="w-full"
@@ -261,7 +261,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Tên công ty"
-              name="companyName"
+              name="company_name"
               rules={[{ required: true, message: "Hãy nhập tên công ty!" }]}
             >
               <Input size="large" placeholder="Nhập tên công ty" />
@@ -355,7 +355,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Điểm đóng hàng"
-              name="pickupProvince"
+              name="pickup_province"
               rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
             >
               <Select
@@ -364,7 +364,7 @@ const AddOrderForm: React.FC = () => {
                 filterOption={searchByLabel}
                 showSearch
                 onChange={(value) =>
-                  handleProvinceChange(value, "pickupProvince")
+                  handleProvinceChange(value, "pickup_province")
                 }
               >
                 {provinceList.map((province) => (
@@ -375,7 +375,7 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
 
-            <Form.Item name="pickupDistrict">
+            <Form.Item name="pickup_district">
               <Select
                 size="large"
                 placeholder="Chọn quận/huyện"
@@ -394,7 +394,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Điểm trả hàng"
-              name="deliveryProvince"
+              name="delivery_province"
               rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
             >
               <Select
@@ -413,7 +413,7 @@ const AddOrderForm: React.FC = () => {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item name="deliveryDistrict">
+            <Form.Item name="delivery_pistrict">
               <Select
                 size="large"
                 placeholder="Chọn quận/huyện"
@@ -478,7 +478,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Số lượng chuyến"
-              name="tripCount"
+              name="trip_count"
               rules={[{ required: true, message: "Hãy nhập số lượng chuyến!" }]}
             >
               <Input size="large" type="number" placeholder="Ví dụ: 1" />
@@ -497,7 +497,7 @@ const AddOrderForm: React.FC = () => {
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Số điểm" name="pointFee">
+            <Form.Item label="Số điểm" name="point_count">
               <Input
                 size="large"
                 type="number"
@@ -508,44 +508,44 @@ const AddOrderForm: React.FC = () => {
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Phí điểm" name="pointFee">
+            <Form.Item label="Phí điểm" name="point_fee">
               <Input size="large" type="number" placeholder="Nhập phí điểm"  />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Phí thu hồi" name="refund">
+            <Form.Item label="Phí thu hồi" name="recovery_fee">
               <Input size="large" type="number"  />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Phí bốc xếp" name="refund">
+            <Form.Item label="Phí bốc xếp" name="loading_fee">
               <Input size="large" type="number"   />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Tiền ăn" name="meal">
+            <Form.Item label="Tiền ăn" name="meal_fee">
               <Input size="large" type="number" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Phí lưu ca" name="standbyFee">
+            <Form.Item label="Phí lưu ca" name="standby_fee">
               <Input size="large" type="number" placeholder="Nhập phí lưu ca"  />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Vé bãi" name="parkingFee">
+            <Form.Item label="Vé bãi" name="parking_fee">
               <Input size="large" type="number" placeholder="Nhập vé bãi" />
             </Form.Item>
           </Col>
 
           <Col xs={24}>
             <Form.Item>
-              <Form.List name="otherFees">
+              <Form.List name="other_fees">
                 {(fields, { add, remove }) => (
                   <>
                     {fields.map(({ key, name, ...restField }) => (
