@@ -101,7 +101,6 @@ const AddTruckForm: React.FC = () => {
             <Form.Item
               label="Dài (m)"
               name="length"
-              rules={[{ required: true, message: "Hãy nhập chiều dài!" }]}
             >
               <Input size="large" placeholder="Nhập chiều dài" />
             </Form.Item>
@@ -110,7 +109,6 @@ const AddTruckForm: React.FC = () => {
             <Form.Item
               label="Rộng (m)"
               name="width"
-              rules={[{ required: true, message: "Hãy nhập chiều rộng!" }]}
             >
               <Input size="large" placeholder="Nhập chiều rộng" />
             </Form.Item>
@@ -119,7 +117,6 @@ const AddTruckForm: React.FC = () => {
             <Form.Item
               label="Cao (m)"
               name="height"
-              rules={[{ required: true, message: "Hãy nhập chiều cao!" }]}
             >
               <Input size="large" placeholder="Nhập chiều cao" />
             </Form.Item>
@@ -128,7 +125,6 @@ const AddTruckForm: React.FC = () => {
             <Form.Item
               label="Mét khối"
               name="volume"
-              rules={[{ required: true, message: "Hãy nhập thể tích!" }]}
             >
               <Input size="large" placeholder="Nhập thể tích (m³)" />
             </Form.Item>
@@ -137,7 +133,6 @@ const AddTruckForm: React.FC = () => {
             <Form.Item
               label="Thương hiệu xe"
               name="brand"
-              rules={[{ required: true, message: "Hãy nhập Thương hiệu xe!" }]}
             >
               <Input size="large" placeholder="Ví dụ Huyndai" />
             </Form.Item>

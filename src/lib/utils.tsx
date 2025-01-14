@@ -1,6 +1,7 @@
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import dayjs from "dayjs";
+import { SHORT_KEYS } from "@/constants";
 
 export enum NotificationType {
   ERROR = "error",
@@ -82,3 +83,23 @@ export const removeKeysInPrice = () => {
     "Tỉnh đóng hàng",
   ];
 };
+
+export function findPrice(data: any, keyInput: string) {
+  console.log(data, keyInput)
+  if (data && keyInput) {
+    // Parse the weight key input
+    const weight = parseFloat(keyInput.replace(SHORT_KEYS.ton, ""));
+
+    // Iterate through the data to find the matching range
+    for (const range of Object.keys(data)) {
+      const [min, max] = range
+        .split("-")
+        .map((str) => parseFloat(str.replace(SHORT_KEYS.ton, "")));
+      if (weight >= min && weight <= max) {
+        return data[range]; // Return the price for the matching range
+      }
+    }
+  }
+
+  return 0;
+}

@@ -27,3 +27,9 @@ export const priceKeysBlackList = [
   priceKeys.toDistrcit,
   priceKeys.numOfOrder
 ];
+
+
+export const SHORT_KEYS = {
+  ton: "T",
+  volumn: "K"
+}
