@@ -27,7 +27,8 @@ import { apiRoutes } from "@/routes/api";
 import * as XLSX from "xlsx";
 import { priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
-import BillTable from "./billTable";
+import { AiOutlineExport } from "react-icons/ai";
+import ReviewTable from "./reviewTable";
 
 const { TextArea } = Input;
 
@@ -62,7 +63,7 @@ const AddOrderForm: React.FC = () => {
   const [pickupDistricts, setPickupDistricts] = useState<string[]>([]);
   const [deliveryDistricts, setDeliveryDistricts] = useState<string[]>([]);
   const [unitSelected, setUnitSelected] = useState("");
-  const [isReview, setIsReview] = useState(false);
+  const [isReview, setIsReview] = useState(true);
   const drivers = useSelector((state: RootState) => state.driver.drivers);
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
@@ -81,6 +82,7 @@ const AddOrderForm: React.FC = () => {
   };
 
   const handleSubmit = (values: any) => {
+    console.log(values);
     setIsReview(true);
   };
 
@@ -297,7 +299,10 @@ const AddOrderForm: React.FC = () => {
         onFinish={handleSubmit}
         style={{ maxWidth: 800, margin: "0 auto" }}
         initialValues={{
-          tripCount: 1,
+          trip_count: 1,
+          trip_salary: 0,
+          order_time: dayjs(new Date()),
+          unit: "weight",
         }}
       >
         <Row gutter={[8, 8]}>
@@ -327,7 +332,6 @@ const AddOrderForm: React.FC = () => {
                 size="large"
                 className="w-full"
                 format={"DD-MM-YYYY"}
-                defaultValue={dayjs(new Date())}
               />
             </Form.Item>
           </Col>
@@ -518,7 +522,6 @@ const AddOrderForm: React.FC = () => {
                 placeholder="Chọn đơn vị tính"
                 disabled={!contractorId}
                 onChange={handleUnitSelect}
-                defaultValue="weight"
               >
                 <Option key="weight" value="weight">
                   Theo Tấn
@@ -556,7 +559,8 @@ const AddOrderForm: React.FC = () => {
             <Form.Item label="Lương chuyến" name="trip_salary">
               <Input
                 size="large"
-                type="number" min={0}
+                type="number"
+                min={0}
                 placeholder="Nhập lương chuyến"
               />
             </Form.Item>
@@ -566,7 +570,8 @@ const AddOrderForm: React.FC = () => {
             <Form.Item label="Lương theo ngày" name="daily_salary">
               <Input
                 size="large"
-                type="number" min={0}
+                type="number"
+                min={0}
                 placeholder="Nhập Lương theo ngày"
               />
             </Form.Item>
@@ -574,13 +579,23 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item label="Số điểm" name="point_count">
-              <Input size="large" type="number" min={0} placeholder="Nhập số điểm" />
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập số điểm"
+              />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Lương điểm" name="point_salary">
-              <Input size="large" type="number" min={0} placeholder="Nhập lương điểm" />
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập lương điểm"
+              />
             </Form.Item>
           </Col>
 
@@ -604,13 +619,23 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí lưu ca" name="standby_fee">
-              <Input size="large" type="number" min={0} placeholder="Nhập phí lưu ca" />
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập phí lưu ca"
+              />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Vé bãi" name="parking_fee">
-              <Input size="large" type="number" min={0} placeholder="Nhập vé bãi" />
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập vé bãi"
+              />
             </Form.Item>
           </Col>
 
@@ -618,7 +643,8 @@ const AddOrderForm: React.FC = () => {
             <Form.Item label="Đổ dầu ngoài" name="driver_refill_oil_fee">
               <Input
                 size="large"
-                type="number" min={0}
+                type="number"
+                min={0}
                 placeholder="Nhập phí đổ dầu ngoài"
               />
             </Form.Item>
@@ -626,13 +652,23 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item label="Chi dầu" name="refill_oil_fee">
-              <Input size="large" type="number" min={0} placeholder="Nhập chi dầu" />
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập chi dầu"
+              />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Thu cước" name="charge_fee">
-              <Input size="large" type="number" min={0} placeholder="Nhập thu cước" />
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập thu cước"
+              />
             </Form.Item>
           </Col>
 
@@ -655,7 +691,7 @@ const AddOrderForm: React.FC = () => {
                               },
                             ]}
                           >
-                            <Input size="large" placeholder="Tên chi phí" />
+                            <Input size="large" placeholder="Nhập tiền chi" />
                           </Form.Item>
                         </Col>
                         <Col md={8}>
@@ -671,7 +707,8 @@ const AddOrderForm: React.FC = () => {
                           >
                             <Input
                               size="large"
-                              type="number" min={0}
+                              type="number"
+                              min={0}
                               placeholder="Số tiền"
                             />
                           </Form.Item>
@@ -695,7 +732,7 @@ const AddOrderForm: React.FC = () => {
                         size="large"
                         style={{ marginTop: 16 }}
                       >
-                        + Thêm chi phí khác
+                        + Thêm tiền lương khác
                       </Button>
                     </Form.Item>
                   </>
@@ -714,7 +751,13 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {isReview && <BillTable />}
+          {isReview && (
+            <ReviewTable
+              // formData={form.getFieldsValue()}
+              isReview={isReview}
+              onClose={() => setIsReview(false)}
+            />
+          )}
 
           <Col xs={24}>
             <Form.Item>
@@ -722,7 +765,7 @@ const AddOrderForm: React.FC = () => {
                 <Button
                   type="primary"
                   htmlType="submit"
-                  icon={<PlusOutlined />}
+                  icon={<AiOutlineExport />}
                 >
                   Tiếp theo
                 </Button>
