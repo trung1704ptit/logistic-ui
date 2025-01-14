@@ -536,7 +536,7 @@ const AddOrderForm: React.FC = () => {
                 label="Số tấn thực của hàng (Nếu có)"
                 name="package_weight"
               >
-                <Input size="large" type="number" />
+                <Input size="large" type="number" min={0} />
               </Form.Item>
             </Col>
           )}
@@ -547,7 +547,7 @@ const AddOrderForm: React.FC = () => {
                 label="Số khối thực của hàng (Nếu có)"
                 name="package_volumn"
               >
-                <Input size="large" type="number" />
+                <Input size="large" type="number" min={0} />
               </Form.Item>
             </Col>
           )}
@@ -556,7 +556,7 @@ const AddOrderForm: React.FC = () => {
             <Form.Item label="Lương chuyến" name="trip_salary">
               <Input
                 size="large"
-                type="number"
+                type="number" min={0}
                 placeholder="Nhập lương chuyến"
               />
             </Form.Item>
@@ -566,7 +566,7 @@ const AddOrderForm: React.FC = () => {
             <Form.Item label="Lương theo ngày" name="daily_salary">
               <Input
                 size="large"
-                type="number"
+                type="number" min={0}
                 placeholder="Nhập Lương theo ngày"
               />
             </Form.Item>
@@ -574,43 +574,43 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item label="Số điểm" name="point_count">
-              <Input size="large" type="number" placeholder="Nhập số điểm" />
+              <Input size="large" type="number" min={0} placeholder="Nhập số điểm" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Lương điểm" name="point_salary">
-              <Input size="large" type="number" placeholder="Nhập lương điểm" />
+              <Input size="large" type="number" min={0} placeholder="Nhập lương điểm" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí thu hồi" name="recovery_fee">
-              <Input size="large" type="number" />
+              <Input size="large" type="number" min={0} />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Lương bốc xếp" name="loading_fee">
-              <Input size="large" type="number" />
+              <Input size="large" type="number" min={0} />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Tiền ăn" name="meal_fee">
-              <Input size="large" type="number" />
+              <Input size="large" type="number" min={0} />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Phí lưu ca" name="standby_fee">
-              <Input size="large" type="number" placeholder="Nhập phí lưu ca" />
+              <Input size="large" type="number" min={0} placeholder="Nhập phí lưu ca" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Vé bãi" name="parking_fee">
-              <Input size="large" type="number" placeholder="Nhập vé bãi" />
+              <Input size="large" type="number" min={0} placeholder="Nhập vé bãi" />
             </Form.Item>
           </Col>
 
@@ -618,7 +618,7 @@ const AddOrderForm: React.FC = () => {
             <Form.Item label="Đổ dầu ngoài" name="driver_refill_oil_fee">
               <Input
                 size="large"
-                type="number"
+                type="number" min={0}
                 placeholder="Nhập phí đổ dầu ngoài"
               />
             </Form.Item>
@@ -626,13 +626,13 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item label="Chi dầu" name="refill_oil_fee">
-              <Input size="large" type="number" placeholder="Nhập chi dầu" />
+              <Input size="large" type="number" min={0} placeholder="Nhập chi dầu" />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
             <Form.Item label="Thu cước" name="charge_fee">
-              <Input size="large" type="number" placeholder="Nhập thu cước" />
+              <Input size="large" type="number" min={0} placeholder="Nhập thu cước" />
             </Form.Item>
           </Col>
 
@@ -671,7 +671,7 @@ const AddOrderForm: React.FC = () => {
                           >
                             <Input
                               size="large"
-                              type="number"
+                              type="number" min={0}
                               placeholder="Số tiền"
                             />
                           </Form.Item>

@@ -31,7 +31,7 @@ const AboutPage = () => {
               v{packageVersion}
             </p>
             <h1 className="font-display text-3xl tracking-tight text-slate-900">
-              Thọ Anh Logistic
+              Vận Tải T&T
             </h1>
           </header>
           <div>
