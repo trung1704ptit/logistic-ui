@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 import dayjs from "dayjs";
 import { SHORT_KEYS } from "@/constants";
+import { pick } from "lodash";
 
 export enum NotificationType {
   ERROR = "error",
@@ -85,7 +86,7 @@ export const removeKeysInPrice = () => {
 };
 
 export function findPrice(data: any, keyInput: string) {
-  console.log(data, keyInput)
+  console.log(data, keyInput);
   if (data && keyInput) {
     // Parse the weight key input
     const weight = parseFloat(keyInput.replace(SHORT_KEYS.ton, ""));
@@ -101,5 +102,23 @@ export function findPrice(data: any, keyInput: string) {
     }
   }
 
+  return 0;
+}
+
+export function getTotalOrder(data: any) {
+  if (data) {
+    console.log(data);
+    return (
+      (data.trip_salary ?? 0) +
+      (data.daily_salary ?? 0) +
+      (data.point_salary ?? 0) +
+      (data.recovery_fee ?? 0) +
+      (data.loading_fee ?? 0) +
+      (data.meal_fee ?? 0) +
+      (data.standby_fee ?? 0) +
+      (data.parking_fee ?? 0) +
+      (data.outside_oil_fee ?? 0)
+    );
+  }
   return 0;
 }

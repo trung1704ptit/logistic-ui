@@ -11,7 +11,7 @@ import {
   message,
   Upload,
 } from "antd";
-import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
+import { CloseOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
@@ -31,7 +31,6 @@ import { AiOutlineExport } from "react-icons/ai";
 import ReviewTable from "./reviewTable";
 
 const { TextArea } = Input;
-
 const { Option } = Select;
 
 interface ILocationLabels {
@@ -63,7 +62,7 @@ const AddOrderForm: React.FC = () => {
   const [pickupDistricts, setPickupDistricts] = useState<string[]>([]);
   const [deliveryDistricts, setDeliveryDistricts] = useState<string[]>([]);
   const [unitSelected, setUnitSelected] = useState("");
-  const [isReview, setIsReview] = useState(true);
+  const [isReview, setIsReview] = useState(false);
   const drivers = useSelector((state: RootState) => state.driver.drivers);
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
@@ -539,7 +538,12 @@ const AddOrderForm: React.FC = () => {
                 label="Số tấn thực của hàng (Nếu có)"
                 name="package_weight"
               >
-                <Input size="large" type="number" min={0} />
+                <Input
+                  size="large"
+                  type="number"
+                  min={0}
+                  onWheel={(e) => e.currentTarget.blur()}
+                />
               </Form.Item>
             </Col>
           )}
@@ -550,194 +554,213 @@ const AddOrderForm: React.FC = () => {
                 label="Số khối thực của hàng (Nếu có)"
                 name="package_volumn"
               >
-                <Input size="large" type="number" min={0} />
+                <Input
+                  size="large"
+                  type="number"
+                  min={0}
+                  onWheel={(e) => e.currentTarget.blur()}
+                />
               </Form.Item>
             </Col>
           )}
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Lương chuyến" name="trip_salary">
+            <Form.Item
+              label="Lương chuyến"
+              name="trip_salary"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
                 placeholder="Nhập lương chuyến"
+                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Lương theo ngày" name="daily_salary">
+            <Form.Item
+              label="Lương theo ngày"
+              name="daily_salary"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
                 placeholder="Nhập Lương theo ngày"
+                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Số điểm" name="point_count">
+            <Form.Item
+              label="Số điểm"
+              name="point_count"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
                 placeholder="Nhập số điểm"
+                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Lương điểm" name="point_salary">
+            <Form.Item
+              label="Lương điểm"
+              name="point_salary"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
                 placeholder="Nhập lương điểm"
+                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Phí thu hồi" name="recovery_fee">
-              <Input size="large" type="number" min={0} />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={12}>
-            <Form.Item label="Lương bốc xếp" name="loading_fee">
-              <Input size="large" type="number" min={0} />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={12}>
-            <Form.Item label="Tiền ăn" name="meal_fee">
-              <Input size="large" type="number" min={0} />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={12}>
-            <Form.Item label="Phí lưu ca" name="standby_fee">
+            <Form.Item
+              label="Phí thu hồi"
+              name="recovery_fee"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
-                placeholder="Nhập phí lưu ca"
+                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Vé bãi" name="parking_fee">
+            <Form.Item
+              label="Lương bốc xếp"
+              name="loading_fee"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                onWheel={(e) => e.currentTarget.blur()}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Tiền ăn"
+              name="meal_fee"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
+              <Input size="large" type="number" min={0} onWheel={(e) => e.currentTarget.blur()} />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Vé bãi"
+              name="parking_fee"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
                 placeholder="Nhập vé bãi"
+                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Đổ dầu ngoài" name="driver_refill_oil_fee">
+            <Form.Item
+              label="Tiền lưu ca"
+              name="standby_fee"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập phí lưu ca"
+                onWheel={(e) => e.currentTarget.blur()}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Chi khác"
+              name="other_salary"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập Chi khác"
+                onWheel={(e) => e.currentTarget.blur()}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Đổ dầu ngoài"
+              name="outside_oil_fee"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
                 placeholder="Nhập phí đổ dầu ngoài"
+                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Chi dầu" name="refill_oil_fee">
+            <Form.Item
+              label="Chi dầu"
+              name="oil_fee"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
                 placeholder="Nhập chi dầu"
+                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} sm={12}>
-            <Form.Item label="Thu cước" name="charge_fee">
+            <Form.Item
+              label="Thu cước"
+              name="charge_fee"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
               <Input
                 size="large"
                 type="number"
                 min={0}
                 placeholder="Nhập thu cước"
+                onWheel={(e) => e.currentTarget.blur()}
               />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24}>
-            <Form.Item>
-              <Form.List name="other_fees">
-                {(fields, { add, remove }) => (
-                  <>
-                    {fields.map(({ key, name, ...restField }) => (
-                      <Row key={key} gutter={[8, 8]}>
-                        <Col md={8}>
-                          <Form.Item
-                            {...restField}
-                            name={[name, "name"]}
-                            className="mb-0"
-                            rules={[
-                              {
-                                required: true,
-                                message: "Vui lòng nhập tên chi phí!",
-                              },
-                            ]}
-                          >
-                            <Input size="large" placeholder="Nhập tiền chi" />
-                          </Form.Item>
-                        </Col>
-                        <Col md={8}>
-                          <Form.Item
-                            {...restField}
-                            name={[name, "value"]}
-                            rules={[
-                              {
-                                required: true,
-                                message: "Vui lòng nhập giá trị!",
-                              },
-                            ]}
-                          >
-                            <Input
-                              size="large"
-                              type="number"
-                              min={0}
-                              placeholder="Số tiền"
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col md={2}>
-                          <Button
-                            type="link"
-                            danger
-                            onClick={() => remove(name)}
-                          >
-                            Xóa
-                          </Button>
-                        </Col>
-                      </Row>
-                    ))}
-                    <Form.Item>
-                      <Button
-                        type="dashed"
-                        onClick={() => add()}
-                        block
-                        size="large"
-                        style={{ marginTop: 16 }}
-                      >
-                        + Thêm tiền lương khác
-                      </Button>
-                    </Form.Item>
-                  </>
-                )}
-              </Form.List>
             </Form.Item>
           </Col>
 
@@ -753,7 +776,7 @@ const AddOrderForm: React.FC = () => {
 
           {isReview && (
             <ReviewTable
-              // formData={form.getFieldsValue()}
+              formData={form.getFieldsValue()}
               isReview={isReview}
               onClose={() => setIsReview(false)}
             />
@@ -786,3 +809,73 @@ const AddOrderForm: React.FC = () => {
 };
 
 export default AddOrderForm;
+
+// for dynamic input
+/* <Col xs={24}>
+    <Form.Item>
+      <Form.List name="other_fees">
+        {(fields, { add, remove }) => (
+          <>
+            {fields.map(({ key, name, ...restField }) => (
+              <Row key={key} gutter={[8, 8]}>
+                <Col md={8}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "name"]}
+                    className="mb-0"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập tên chi phí!",
+                      },
+                    ]}
+                  >
+                    <Input size="large" placeholder="Nhập tiền chi" />
+                  </Form.Item>
+                </Col>
+                <Col md={8}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "value"]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập giá trị!",
+                      },
+                    ]}
+                  >
+                    <Input
+                      size="large"
+                      type="number"
+                      min={0}
+                      placeholder="Số tiền"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col md={2}>
+                  <Button
+                    type="link"
+                    danger
+                    onClick={() => remove(name)}
+                  >
+                    Xóa
+                  </Button>
+                </Col>
+              </Row>
+            ))}
+            <Form.Item>
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                block
+                size="large"
+                style={{ marginTop: 16 }}
+              >
+                + Thêm tiền lương khác
+              </Button>
+            </Form.Item>
+          </>
+        )}
+      </Form.List>
+    </Form.Item>
+  </Col> */

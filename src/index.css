@@ -36,6 +36,26 @@ p {
   opacity: 60%;
 }
 
+/* Disable the spinner arrows for input type number */
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+  -webkit-appearance: none;  /* Chrome, Safari, Edge */
+  appearance: none;          /* Standard */
+}
+
+/* Disable scroll for input type number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  appearance: none !important;
+  margin: 0;
+}
+
+/* Prevent mouse wheel scrolling */
+input[type="number"]:focus {
+  outline: none; /* Optional: Remove the focus outline */
+  overscroll-behavior: contain; /* Stops the scroll from bubbling */
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
