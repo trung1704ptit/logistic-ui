@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
+import http from "@/lib/http";
+import { apiRoutes } from "@/routes/api";
 
 // Fake data for trucks
 const trucks = [
@@ -18,7 +20,7 @@ const trucks = [
     volume: "37.5 m³",
     type: "Nội bộ",
     contractor: "",
-    note: "Xe mới bảo dưỡng."
+    note: "Xe mới bảo dưỡng.",
   },
   {
     id: "truck2",
@@ -28,7 +30,7 @@ const trucks = [
     volume: "25 m³",
     type: "Nhà thầu",
     contractor: "Nhà thầu A",
-    note: "Sử dụng cho dự án X."
+    note: "Sử dụng cho dự án X.",
   },
   {
     id: "truck3",
@@ -38,14 +40,16 @@ const trucks = [
     volume: "63 m³",
     type: "Nội bộ",
     contractor: "",
-    note: "Chỉ sử dụng trong nội bộ."
-  }
+    note: "Chỉ sử dụng trong nội bộ.",
+  },
 ];
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [filteredTruckList, setFilteredTruckList] = useState(trucks);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEditTruck = (truck: any) => {
     navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
@@ -62,16 +66,39 @@ const TruckListPage = () => {
   };
 
   const handleSearchTruck = (searchTerm: string) => {
-    const normalizedSearchTerm = removeVietnameseTones(searchTerm.toLowerCase());
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTerm.toLowerCase()
+    );
 
     const filtered = trucks.filter((truck: any) =>
       Object.keys(truck).some((key) =>
-        removeVietnameseTones(String(truck[key])).toLowerCase().includes(normalizedSearchTerm)
+        removeVietnameseTones(String(truck[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
       )
     );
 
     setFilteredTruckList(filtered);
   };
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      const res = await http.get(apiRoutes.orders);
+      if (res && res.data) {
+        console.log("data:", res.data.data)
+        setData(res.data.data)
+      }
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const columns: ProColumns[] = [
     {
@@ -136,12 +163,20 @@ const TruckListPage = () => {
   ];
 
   return (
-    <BasePageContainer breadcrumb={{
-      items: [
-        { key: webRoutes.dashboard, title: <Link to={webRoutes.dashboard}>Trang chủ</Link> },
-        { key: webRoutes.trucks, title: <Link to={webRoutes.trucks}>đơn hàng</Link> },
-      ],
-    }}>
+    <BasePageContainer
+      breadcrumb={{
+        items: [
+          {
+            key: webRoutes.dashboard,
+            title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
+          },
+          {
+            key: webRoutes.trucks,
+            title: <Link to={webRoutes.trucks}>đơn hàng</Link>,
+          },
+        ],
+      }}
+    >
       <ProTable
         columns={columns}
         cardBordered={false}
@@ -157,10 +192,12 @@ const TruckListPage = () => {
                   setSearchTerm(value);
                   handleSearchTruck(value);
                 }}
-                style={{ minWidth: '10%' }}
+                style={{ minWidth: "10%" }}
               />
               <Link to={webRoutes.addNewOrder}>
-                <Button type="primary" icon={<PlusOutlined />}>Thêm đơn hàng</Button>
+                <Button type="primary" icon={<PlusOutlined />}>
+                  Thêm đơn hàng
+                </Button>
               </Link>
             </Space>
           ),
@@ -183,7 +220,7 @@ const TruckListPage = () => {
             data,
             success: true,
             total: filteredTruckList.length,
-          } as RequestData<typeof trucks[0]>;
+          } as RequestData<(typeof trucks)[0]>;
         }}
         dataSource={filteredTruckList}
         dateFormatter="string"

@@ -10,4 +10,5 @@ export const apiRoutes = {
   drivers: `${BACKEND_API_URL}/drivers`,
   files: `${BACKEND_API_URL}/files`,
   prices: `${BACKEND_API_URL}/prices`,
+  orders: `${BACKEND_API_URL}/orders`,
 };

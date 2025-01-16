@@ -1,0 +1,29 @@
+export interface IOrder {
+  contractor_id: string;
+  order_time: string;
+  company_name: string;
+  driver_id: string;
+  truck_id: string;
+  price_id: string;
+  pickup_province: string;
+  pickup_district?: string;
+  delivery_province: string;
+  delivery_district?: string;
+  unit: string;
+  package_weight?: number;
+  package_volumn?: number;
+  trip_salary: number;
+  daily_salary: number;
+  point_count: number;
+  point_salary: number;
+  recovery_fee: number;
+  loading_salary: number;
+  meal_fee: number;
+  standby_fee: number;
+  parking_fee: number;
+  outside_oil_fee: number;
+  oil_fee: number;
+  charge_fee: number;
+  other_salary: number;
+  notes?: string;
+}

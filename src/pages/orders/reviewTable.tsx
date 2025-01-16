@@ -4,47 +4,25 @@ import {
   Modal,
   List,
   Button,
+  message,
 } from "antd";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { getTotalOrder } from "@/lib/utils";
+import { IOrder } from "@/interfaces/order";
+import http from "@/lib/http";
+import { apiRoutes } from "@/routes/api";
+import dayjs from 'dayjs';
+import { webRoutes } from "@/routes/web";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
-
 
 interface ReviewProps {
   isReview: boolean;
   onClose: () => void;
-  formData: {
-    contractor: string;
-    order_time: string;
-    company_name: string;
-    driver: string;
-    truck: string;
-    prices: string;
-    pickup_province: string;
-    pickup_district?: string;
-    delivery_province: string;
-    delivery_district?: string;
-    unit: string;
-    package_weight?: number;
-    package_volumn?: number;
-    trip_salary: number;
-    daily_salary: number;
-    point_count: number;
-    point_salary: number;
-    recovery_fee: number;
-    loading_fee: number;
-    meal_fee: number;
-    standby_fee: number;
-    parking_fee: number;
-    outside_oil_fee: number;
-    oil_fee: number;
-    charge_fee: number;
-    other_salary: number;
-    note?: string;
-  };
+  formData: IOrder
 }
 
 const ReviewComponent: React.FC<ReviewProps> = ({
@@ -58,6 +36,10 @@ const ReviewComponent: React.FC<ReviewProps> = ({
   const trucks = useSelector((state: RootState) => state.truck.trucks);
   const drivers = useSelector((state: RootState) => state.driver.drivers);
   const [data, setData] = useState<any>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
+  
 
   useEffect(() => {
     setData(formData);
@@ -67,15 +49,15 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     { name: "Ngày tạo", value: moment(data.order_time).format("DD-MM-YYYY") },
     {
       name: "Nhà thầu",
-      value: contractors.find((item) => item.id === data.contractor)?.name,
+      value: contractors.find((item) => item.id === data.contractor_id)?.name,
     },
     {
       name: "Xe tải",
-      value: trucks.find((item) => item.id === data.truck)?.license_plate,
+      value: trucks.find((item) => item.id === data.truck_id)?.license_plate,
     },
     {
       name: "Tài xế",
-      value: drivers.find((item) => item.id === data.driver)?.full_name,
+      value: drivers.find((item) => item.id === data.driver_id)?.full_name,
     },
     { name: "Nhãn hàng", value: data.company_name },
     {
@@ -102,6 +84,27 @@ const ReviewComponent: React.FC<ReviewProps> = ({
 
   const conclusion = [{ name: "Tổng cộng", value: getTotalOrder(data) }];
 
+  const handleSave = async () => {
+    try {
+      const payload = {
+        ...data,
+        order_time: dayjs(data.order_time)
+      };
+      setIsLoading(true);
+      setIsError(false);
+      const res = await http.post(apiRoutes.orders, payload);
+      if (res && res.data) {
+        message.success("Đã tạo đơn hàng thành công");
+        navigate(webRoutes.orders);
+      }
+    } catch (error) {
+      setIsError(true);
+      message.error("Có lỗi xảy ra, vui lòng thử lại sau");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <Modal
       title="Xem lại Đơn hàng"
@@ -113,7 +116,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
         <Button key="cancel" onClick={onClose}>
           Thoát
         </Button>,
-        <Button key="submit" type="primary" onClick={onClose}>
+        <Button key="submit" type="primary" onClick={handleSave} disabled={isLoading}>
           Lưu lại
         </Button>,
       ]}

@@ -77,7 +77,7 @@ const AddOrderForm: React.FC = () => {
 
   const handleSelectContractor = (value: string) => {
     setContractorId(value);
-    form.setFieldsValue({ driver: undefined, truck: undefined });
+    form.setFieldsValue({ driver_id: undefined, truck_id: undefined });
   };
 
   const handleSubmit = (values: any) => {
@@ -137,8 +137,8 @@ const AddOrderForm: React.FC = () => {
   };
 
   const handleDistrictChange = () => {
-    const truckId = form.getFieldValue("truck");
-    const priceId = form.getFieldValue("prices");
+    const truckId = form.getFieldValue("truck_id");
+    const priceId = form.getFieldValue("price_id");
     const pickupProvince = form.getFieldValue("pickup_province");
     const pickupDistrict = form.getFieldValue("pickup_district");
     const deliveryProvince = form.getFieldValue("delivery_province");
@@ -152,7 +152,7 @@ const AddOrderForm: React.FC = () => {
       deliveryDistrict
     ) {
       const selectedTruck = trucks.find(
-        (item) => item.id === form.getFieldValue("truck")
+        (item) => item.id === form.getFieldValue("truck_id")
       );
       const singlePriceRow = selectedPriceTable?.price_details.find(
         (item) =>
@@ -308,7 +308,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Nhà thầu"
-              name="contractor"
+              name="contractor_id"
               rules={[{ required: true, message: "Hãy chọn nhà thầu!" }]}
             >
               <Select
@@ -348,7 +348,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Lái xe"
-              name="driver"
+              name="driver_id"
               rules={[{ required: true, message: "Hãy chọn lái xe!" }]}
             >
               <Select
@@ -369,7 +369,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Chọn xe tải"
-              name="truck"
+              name="truck_id"
               rules={[{ required: true, message: "Hãy chọn xe tải!" }]}
             >
               <Select
@@ -410,7 +410,7 @@ const AddOrderForm: React.FC = () => {
                   )}
                 </div>
               }
-              name="prices"
+              name="price_id"
               rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
             >
               <Select
@@ -646,7 +646,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Lương bốc xếp"
-              name="loading_fee"
+              name="loading_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
               <Input
@@ -664,7 +664,12 @@ const AddOrderForm: React.FC = () => {
               name="meal_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input size="large" type="number" min={0} onWheel={(e) => e.currentTarget.blur()} />
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                onWheel={(e) => e.currentTarget.blur()}
+              />
             </Form.Item>
           </Col>
 
@@ -765,7 +770,7 @@ const AddOrderForm: React.FC = () => {
           </Col>
 
           <Col xs={24}>
-            <Form.Item label="Ghi chú" name="note">
+            <Form.Item label="Ghi chú" name="notes">
               <TextArea
                 size="large"
                 placeholder="Nhập ghi chú (nếu có)"
