@@ -25,5 +25,6 @@ export interface IOrder {
   oil_fee: number;
   charge_fee: number;
   other_salary: number;
+  total_salary: number;
   notes?: string;
 }

@@ -9,53 +9,30 @@ import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
-
-// Fake data for trucks
-const trucks = [
-  {
-    id: "truck1",
-    plateNumber: "79C-12345",
-    capacity: "15 tấn",
-    dimensions: "6m x 2.5m x 2.5m",
-    volume: "37.5 m³",
-    type: "Nội bộ",
-    contractor: "",
-    note: "Xe mới bảo dưỡng.",
-  },
-  {
-    id: "truck2",
-    plateNumber: "81C-67890",
-    capacity: "10 tấn",
-    dimensions: "5m x 2.5m x 2m",
-    volume: "25 m³",
-    type: "Nhà thầu",
-    contractor: "Nhà thầu A",
-    note: "Sử dụng cho dự án X.",
-  },
-  {
-    id: "truck3",
-    plateNumber: "72C-11223",
-    capacity: "20 tấn",
-    dimensions: "7m x 3m x 3m",
-    volume: "63 m³",
-    type: "Nội bộ",
-    contractor: "",
-    note: "Chỉ sử dụng trong nội bộ.",
-  },
-];
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import moment from "moment";
+import OrderDetails from "./orderDetails";
+import { IOrder } from "@/interfaces/order";
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const [filteredTruckList, setFilteredTruckList] = useState(trucks);
+  const [filteredData, setFilteredData] = useState([]);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [orderDetail, setOrderDetail] = useState<IOrder>();
+  // const trucks = useSelector((state: RootState) => state.truck.trucks);
+  // const contractors = useSelector(
+  //   (state: RootState) => state.contractor.contractors
+  // );
+  // const drivers = useSelector((state: RootState) => state.driver.drivers);
 
-  const handleEditTruck = (truck: any) => {
+  const handleViewOrder = (truck: any) => {
     navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
   };
 
-  const handleDeleteTruck = (truck: any) => {
+  const handleDeleteOrder = (truck: any) => {
     Modal.confirm({
       title: "Xác nhận xóa đơn hàng",
       content: `Bạn có chắc muốn xóa đơn hàng ${truck.plateNumber}?`,
@@ -65,12 +42,12 @@ const TruckListPage = () => {
     });
   };
 
-  const handleSearchTruck = (searchTerm: string) => {
+  const handleSearch = (searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
       searchTerm.toLowerCase()
     );
 
-    const filtered = trucks.filter((truck: any) =>
+    const filtered = data.filter((truck: any) =>
       Object.keys(truck).some((key) =>
         removeVietnameseTones(String(truck[key]))
           .toLowerCase()
@@ -78,7 +55,7 @@ const TruckListPage = () => {
       )
     );
 
-    setFilteredTruckList(filtered);
+    setFilteredData(filtered);
   };
 
   const fetchOrders = async () => {
@@ -86,11 +63,12 @@ const TruckListPage = () => {
       setIsLoading(true);
       const res = await http.get(apiRoutes.orders);
       if (res && res.data) {
-        console.log("data:", res.data.data)
-        setData(res.data.data)
+        console.log(res.data.data);
+        setData(res.data.data);
+        setFilteredData(res.data.data);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -102,46 +80,60 @@ const TruckListPage = () => {
 
   const columns: ProColumns[] = [
     {
-      title: "Biển Kiểm Soát",
-      dataIndex: "plateNumber",
+      title: "Thời gian",
+      dataIndex: "order_time",
       sorter: false,
       align: "center",
       ellipsis: true,
+      render: (_, row) => <>{moment(row?.order_time).format("DD-MM-YYYY")}</>,
     },
     {
-      title: "Tải Trọng",
-      dataIndex: "capacity",
+      title: "Tài xế",
+      dataIndex: "driver_id",
       sorter: false,
       align: "center",
       ellipsis: true,
+      render: (_, row) => <>{row?.driver?.full_name}</>,
     },
     {
-      title: "Kích Thước",
-      dataIndex: "dimensions",
+      title: "Nhà thầu",
+      dataIndex: "contractor_id",
+      sorter: false,
+      align: "center",
+      render: (_, row) => <>{row?.contractor?.name}</>,
+    },
+    {
+      title: "Xe tải",
+      dataIndex: "truck_id",
+      sorter: false,
+      align: "center",
+      render: (_, row) => (
+        <>
+          {row?.truck?.license_plate} - {row?.truck?.capacity}T
+        </>
+      ),
+    },
+    {
+      title: "Nhãn hàng",
+      dataIndex: "company_name",
       sorter: false,
       align: "center",
     },
     {
-      title: "Thể Tích",
-      dataIndex: "volume",
+      title: "Điểm lấy",
+      dataIndex: "pickup_province",
       sorter: false,
       align: "center",
     },
     {
-      title: "Loại Xe",
-      dataIndex: "type",
+      title: "Điểm giao",
+      dataIndex: "delivery_province",
       sorter: false,
       align: "center",
     },
     {
-      title: "Nhà Thầu",
-      dataIndex: "contractor",
-      sorter: false,
-      align: "center",
-    },
-    {
-      title: "Ghi Chú",
-      dataIndex: "note",
+      title: "Tổng lương",
+      dataIndex: "total_salary",
       sorter: false,
       align: "center",
     },
@@ -151,10 +143,10 @@ const TruckListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed" onClick={() => handleEditTruck(row)}>
-            Xem Chi Tiết
+          <Button type="dashed" onClick={() => setOrderDetail(row)}>
+            Chi tiết
           </Button>
-          <Button danger onClick={() => handleDeleteTruck(row)}>
+          <Button danger onClick={() => handleDeleteOrder(row)}>
             Xóa
           </Button>
         </Space>
@@ -171,12 +163,19 @@ const TruckListPage = () => {
             title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
           },
           {
-            key: webRoutes.trucks,
-            title: <Link to={webRoutes.trucks}>đơn hàng</Link>,
+            key: webRoutes.orders,
+            title: <Link to={webRoutes.orders}>Đơn hàng</Link>,
           },
         ],
       }}
     >
+      {orderDetail && (
+        <OrderDetails
+          data={orderDetail}
+          isReadOnly={true}
+          onClose={() => setOrderDetail(undefined)}
+        />
+      )}
       <ProTable
         columns={columns}
         cardBordered={false}
@@ -190,7 +189,7 @@ const TruckListPage = () => {
                 onChange={(e) => {
                   const value = e.target.value;
                   setSearchTerm(value);
-                  handleSearchTruck(value);
+                  handleSearch(value);
                 }}
                 style={{ minWidth: "10%" }}
               />
@@ -212,17 +211,17 @@ const TruckListPage = () => {
           pageSize: 30,
         }}
         request={async (params) => {
-          const data = filteredTruckList.slice(
+          const data = filteredData.slice(
             ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
             (params?.current ?? 1) * (params?.pageSize ?? 10)
           );
           return {
             data,
             success: true,
-            total: filteredTruckList.length,
-          } as RequestData<(typeof trucks)[0]>;
+            total: filteredData.length,
+          } as RequestData<(typeof data)[0]>;
         }}
-        dataSource={filteredTruckList}
+        dataSource={filteredData}
         dateFormatter="string"
         rowKey="id"
         search={false}

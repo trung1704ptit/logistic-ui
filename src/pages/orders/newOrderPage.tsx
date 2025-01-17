@@ -28,7 +28,7 @@ import * as XLSX from "xlsx";
 import { priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
 import { AiOutlineExport } from "react-icons/ai";
-import ReviewTable from "./reviewTable";
+import OrderDetails from "./orderDetails";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -780,9 +780,9 @@ const AddOrderForm: React.FC = () => {
           </Col>
 
           {isReview && (
-            <ReviewTable
-              formData={form.getFieldsValue()}
-              isReview={isReview}
+            <OrderDetails
+              data={form.getFieldsValue()}
+              isReadOnly={false}
               onClose={() => setIsReview(false)}
             />
           )}

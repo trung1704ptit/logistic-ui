@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Typography,
-  Modal,
-  List,
-  Button,
-  message,
-} from "antd";
+import { Typography, Modal, List, Button, message } from "antd";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -13,21 +7,21 @@ import { getTotalOrder } from "@/lib/utils";
 import { IOrder } from "@/interfaces/order";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import { webRoutes } from "@/routes/web";
 import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
 interface ReviewProps {
-  isReview: boolean;
+  isReadOnly: boolean;
   onClose: () => void;
-  formData: IOrder
+  data: IOrder;
 }
 
 const ReviewComponent: React.FC<ReviewProps> = ({
-  formData,
-  isReview,
+  data,
+  isReadOnly,
   onClose,
 }) => {
   const contractors = useSelector(
@@ -35,15 +29,13 @@ const ReviewComponent: React.FC<ReviewProps> = ({
   );
   const trucks = useSelector((state: RootState) => state.truck.trucks);
   const drivers = useSelector((state: RootState) => state.driver.drivers);
-  const [data, setData] = useState<any>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
-  
 
-  useEffect(() => {
-    setData(formData);
-  }, [formData]);
+  if (!data) {
+    return null;
+  }
 
   const feeData = [
     { name: "Ngày tạo", value: moment(data.order_time).format("DD-MM-YYYY") },
@@ -73,7 +65,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     { name: "Số điểm", value: data.point_count },
     { name: "Lương điểm", value: data.point_salary },
     { name: "Phí thu hồi", value: data.recovery_fee },
-    { name: "Lương bốc xếp", value: data.loading_fee },
+    { name: "Lương bốc xếp", value: data.loading_salary },
     { name: "Tiền ăn", value: data.meal_fee },
     { name: "Phí lưu ca", value: data.standby_fee },
     { name: "Vé bãi", value: data.parking_fee },
@@ -81,14 +73,15 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     { name: "Chi dầu", value: data.oil_fee },
     { name: "Thu cước", value: data.charge_fee },
   ];
-
-  const conclusion = [{ name: "Tổng cộng", value: getTotalOrder(data) }];
+  const total = data.total_salary || getTotalOrder(data);
+  const conclusion = [{ name: "Tổng cộng", value: total }];
 
   const handleSave = async () => {
     try {
       const payload = {
         ...data,
-        order_time: dayjs(data.order_time)
+        order_time: dayjs(data.order_time),
+        total_salary: total,
       };
       setIsLoading(true);
       setIsError(false);
@@ -103,22 +96,39 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Modal
       title="Xem lại Đơn hàng"
       centered
-      open={isReview}
+      open={true}
       onOk={onClose}
       onCancel={onClose}
       footer={[
         <Button key="cancel" onClick={onClose}>
           Thoát
         </Button>,
-        <Button key="submit" type="primary" onClick={handleSave} disabled={isLoading}>
-          Lưu lại
-        </Button>,
+
+        !isReadOnly ? (
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleSave}
+            disabled={isLoading}
+          >
+            Lưu lại
+          </Button>
+        ) : (
+          <Button
+            key="submit"
+            type="primary"
+            onClick={handleSave}
+            disabled={isLoading}
+          >
+            Sửa
+          </Button>
+        ),
       ]}
     >
       <div>
