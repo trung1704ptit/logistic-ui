@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button, Table, Row, Col, Spin, Space, Form } from "antd";
+import { Select, Button, Row, Col, Spin, Space, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IDriver } from "@/interfaces/driver";
 import { IPayslip } from "@/interfaces/payslip";
 import { webRoutes } from "@/routes/web";
 import BasePageContainer from "@/components/layout/pageContainer";
-
-// interface PayslipAdminProps {
-//   fetchPayslip: (
-//     year: number,
-//     month: number,
-//     driverId: string,
-//     contractorId: string
-//   ) => Promise<IPayslip>; // Function to fetch payslip data
-// }
+import { apiRoutes } from "@/routes/api";
+import http from "@/lib/http";
+import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
+import { IOrder } from "@/interfaces/order";
 
 const breadcrumb = {
   items: [
@@ -29,6 +24,58 @@ const breadcrumb = {
   ],
 };
 
+interface IForm {
+  month: number;
+  year: number;
+  contractor_id: string;
+  drivers: string[];
+}
+
+function summarizeByDriverId(data: IOrder[]) {
+  const summary: any = {};
+
+  data.forEach((entry) => {
+    const { driver_id, driver, ...fields } = entry;
+
+    if (!summary[driver_id]) {
+      summary[driver_id] = {
+        driver_id,
+        driver,
+        total_trips: 0,
+        trip_salary: 0,
+        daily_salary: 0,
+        point_salary: 0,
+        meal_fee: 0,
+        standby_fee: 0,
+        parking_fee: 0,
+        loading_salary: 0,
+        recovery_fee: 0,
+        other_salary: 0,
+        outside_oil_fee: 0,
+        total_salary: 0,
+        charge_fee: 0,
+      };
+    }
+
+    summary[driver_id].total_trips += 1;
+    summary[driver_id].trip_salary += fields.trip_salary || 0;
+    summary[driver_id].meal_fee += fields.meal_fee || 0;
+    summary[driver_id].parking_fee += fields.parking_fee || 0;
+    summary[driver_id].daily_salary += fields.daily_salary || 0;
+    summary[driver_id].point_salary += fields.point_salary || 0;
+    summary[driver_id].standby_fee += fields.standby_fee || 0;
+    summary[driver_id].loading_salary += fields.loading_salary || 0;
+    summary[driver_id].recovery_fee += fields.recovery_fee || 0;
+    summary[driver_id].other_salary += fields.other_salary || 0;
+    summary[driver_id].outside_oil_fee += fields.outside_oil_fee || 0;
+    summary[driver_id].total_salary += fields.total_salary || 0;
+    summary[driver_id].charge_fee += fields.charge_fee || 0;
+
+  });
+
+  return Object.values(summary);
+}
+
 const PayslipAdmin: React.FC = () => {
   const dispatch = useDispatch();
   const [form] = Form.useForm();
@@ -39,8 +86,6 @@ const PayslipAdmin: React.FC = () => {
   );
   const drivers = useSelector((state: RootState) => state.driver.drivers);
 
-  const [selectedYear, setSelectedYear] = useState<number | null>(2025);
-  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [selectedContractor, setSelectedContractor] = useState<string | null>(
     null
   );
@@ -48,6 +93,8 @@ const PayslipAdmin: React.FC = () => {
   const [filteredDrivers, setFilteredDrivers] = useState<IDriver[]>([]);
   const [payslipData, setPayslipData] = useState<IPayslip | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState([]);
 
   // Handle contractor selection and filter drivers based on the contractor
   useEffect(() => {
@@ -61,32 +108,129 @@ const PayslipAdmin: React.FC = () => {
     }
   }, [selectedContractor, drivers]);
 
-  // Handler for fetching payslip data based on selected criteria
-  const handleFetchPayslip = async () => {
-    if (selectedYear && selectedMonth && selectedDriver && selectedContractor) {
-      setLoading(true);
-      try {
-        // const data = await fetchPayslip(selectedYear, selectedMonth, selectedDriver, selectedContractor);
-        // setPayslipData(data);
-      } catch (error) {
-        console.error("Error fetching payslip:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      console.log(values);
-      // handleFetchPayslip(values); // Pass the form values to your handler
+      setIsLoading(true);
+      const res = await http.get(
+        `${apiRoutes.orders}?year=${values.year}&month=${values.month}`
+      );
+      if (res && res.data) {
+        console.log(res.data.data);
+        const sumarizedData: any = summarizeByDriverId(res.data.data)
+        console.log("sumarizedData:", sumarizedData)
+        setData(sumarizedData);
+      }
     } catch (error) {
-      console.error("Validation Failed:", error);
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const currentYear = new Date().getFullYear();
+
+    const columns: ProColumns[] = [
+      {
+        title: "Tài xế",
+        dataIndex: "driver_id",
+        sorter: false,
+        align: "center",
+        ellipsis: true,
+        render: (_, row) => <>{row.driver.full_name}</>,
+      },
+      {
+        title: "Số chuyến",
+        dataIndex: "total_trips",
+        sorter: false,
+        align: "center",
+        ellipsis: true,
+      },
+      {
+        title: "Lương điểm",
+        dataIndex: "point_salary",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Lương chuyến",
+        dataIndex: "trip_salary",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Tiền ăn",
+        dataIndex: "meal_fee",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Lương theo ngày",
+        dataIndex: "daily_salary",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Thưởng KPI",
+        dataIndex: "delivery_province",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Lương bốc xếp",
+        dataIndex: "loading_salary",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Vé",
+        dataIndex: "parking_fee",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Lưu ca",
+        dataIndex: "standby_fee",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Chi khác",
+        dataIndex: "other_salary",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Đổ dầu ngoài",
+        dataIndex: "outside_oil_fee",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Chi dầu",
+        dataIndex: "oil_fee",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Thu cước",
+        dataIndex: "charge_fee",
+        sorter: false,
+        align: "center",
+      },
+      {
+        title: "Hành động",
+        align: "center",
+        key: "actions",
+        render: (_, row) => (
+          <Space>
+            <Button type="dashed">
+              Chi tiết
+            </Button>
+          </Space>
+        ),
+      },
+    ];
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -123,7 +267,7 @@ const PayslipAdmin: React.FC = () => {
               <Select placeholder="Chọn tháng" style={{ width: "100%" }}>
                 {Array.from({ length: 12 }, (_, i) => (
                   <Select.Option key={i + 1} value={i + 1}>
-                    {i + 1}
+                    Tháng {i + 1}
                   </Select.Option>
                 ))}
               </Select>
@@ -172,34 +316,36 @@ const PayslipAdmin: React.FC = () => {
           </Col>
         </Row>
         <Space>
-          <Button
-            type="primary"
-            onClick={handleSubmit}
-          >
+          <Button type="primary" onClick={handleSubmit}>
             Tổng hợp lương
           </Button>
-          <Button
-            type="dashed"
-            onClick={handleSubmit}
-            disabled
-          >
+          <Button type="dashed" onClick={handleSubmit} disabled>
             Tải xuống Excel
           </Button>
         </Space>
       </Form>
-      {loading ? (
-        <Spin size="large" style={{ display: "block", marginTop: 20 }} />
+      {isLoading ? (
+        <Spin style={{ display: "block", marginTop: 20 }} />
       ) : (
-        payslipData && (
-          <Table
-            dataSource={[payslipData]}
-            columns={[
-              { title: "Item", dataIndex: "item" },
-              { title: "Amount", dataIndex: "amount" },
-            ]}
-            rowKey="item"
-            style={{ marginTop: 20 }}
-          />
+        data && (
+          <ProTable
+          columns={columns}
+          cardBordered={false}
+          bordered={true}
+          showSorterTooltip={false}
+          scroll={{ x: true }}
+          tableLayout={"fixed"}
+          rowSelection={false}
+          pagination={{
+            showQuickJumper: true,
+            pageSize: 20,
+          }}
+          dataSource={data}
+          dateFormatter="string"
+          rowKey="id"
+          search={false}
+          size="small"
+        />
         )
       )}
     </BasePageContainer>
