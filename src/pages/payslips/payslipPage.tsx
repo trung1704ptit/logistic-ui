@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button, Table, Row, Col, Spin, Space } from "antd";
+import { Select, Button, Table, Row, Col, Spin, Space, Form } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IDriver } from "@/interfaces/driver";
@@ -31,6 +31,7 @@ const breadcrumb = {
 
 const PayslipAdmin: React.FC = () => {
   const dispatch = useDispatch();
+  const [form] = Form.useForm();
 
   // Get contractors and drivers from Redux state
   const contractors = useSelector(
@@ -54,8 +55,9 @@ const PayslipAdmin: React.FC = () => {
       const filtered = drivers.filter(
         (driver) => driver.contractor_id === selectedContractor
       );
+
       setFilteredDrivers(filtered);
-      setSelectedDriver(null); // Reset selected driver when contractor changes
+      setSelectedDriver(null);
     }
   }, [selectedContractor, drivers]);
 
@@ -74,101 +76,117 @@ const PayslipAdmin: React.FC = () => {
     }
   };
 
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      console.log(values);
+      // handleFetchPayslip(values); // Pass the form values to your handler
+    } catch (error) {
+      console.error("Validation Failed:", error);
+    }
+  };
+
+  const currentYear = new Date().getFullYear();
+
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
-      <Row gutter={16}>
-        <Col span={6}>
-          <Select
-            placeholder="Select Year"
-            value={selectedYear}
-            onChange={(value) => setSelectedYear(value)}
-            style={{ width: "100%" }}
-          >
-            {Array.from({ length: 10 }, (_, i) => {
-              const year = new Date().getFullYear() - i;
-              return (
-                <Select.Option key={year} value={year}>
-                  {year}
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ year: currentYear, drivers: "*" }}
+      >
+        <Row gutter={16}>
+          <Col span={6}>
+            <Form.Item
+              label="Năm"
+              name="year"
+              rules={[{ required: true, message: "Vui lòng chọn năm" }]}
+            >
+              <Select placeholder="Chọn năm" style={{ width: "100%" }}>
+                {Array.from({ length: 5 }, (_, i) => {
+                  const year = currentYear - i;
+                  return (
+                    <Select.Option key={year} value={year}>
+                      {year}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              label="Tháng"
+              name="month"
+              rules={[{ required: true, message: "Vui lòng chọn tháng" }]}
+            >
+              <Select placeholder="Chọn tháng" style={{ width: "100%" }}>
+                {Array.from({ length: 12 }, (_, i) => (
+                  <Select.Option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              label="Nhà Thầu"
+              name="contractor_id"
+              rules={[{ required: true, message: "Vui lòng chọn nhà thầu" }]}
+            >
+              <Select
+                placeholder="Chọn nhà thầu"
+                style={{ width: "100%" }}
+                onChange={(val) => setSelectedContractor(val)}
+              >
+                {contractors.map((contractor) => (
+                  <Select.Option key={contractor.id} value={contractor.id}>
+                    {contractor.name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              label="Tài Xế"
+              name="drivers"
+              rules={[{ required: true, message: "Vui lòng chọn tài xế" }]}
+            >
+              <Select
+                mode="multiple"
+                placeholder="Chọn tài xế"
+                style={{ width: "100%" }}
+              >
+                <Select.Option key={"*"} value={"*"}>
+                  Tất cả
                 </Select.Option>
-              );
-            })}
-          </Select>
-        </Col>
-        <Col span={6}>
-          <Select
-            placeholder="Select Month"
-            value={selectedMonth}
-            onChange={(value) => setSelectedMonth(value)}
-            style={{ width: "100%" }}
+                {filteredDrivers.map((driver) => (
+                  <Select.Option key={driver.id} value={driver.id}>
+                    {driver.full_name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
+        <Space>
+          <Button
+            type="primary"
+            onClick={handleSubmit}
           >
-            {Array.from({ length: 12 }, (_, i) => (
-              <Select.Option key={i + 1} value={i + 1}>
-                {i + 1}
-              </Select.Option>
-            ))}
-          </Select>
-        </Col>
-        <Col span={6}>
-          <Select
-            placeholder="Select Contractor"
-            value={selectedContractor}
-            onChange={(value) => setSelectedContractor(value)}
-            style={{ width: "100%" }}
+            Tổng hợp lương
+          </Button>
+          <Button
+            type="dashed"
+            onClick={handleSubmit}
+            disabled
           >
-            {contractors.map((contractor) => (
-              <Select.Option key={contractor.id} value={contractor.id}>
-                {contractor.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Col>
-        <Col span={6}>
-          <Select
-            placeholder="Select Driver"
-            value={selectedDriver}
-            onChange={(value) => setSelectedDriver(value)}
-            style={{ width: "100%" }}
-            disabled={!selectedContractor} // Disable driver select if no contractor is selected
-          >
-            {filteredDrivers.map((driver) => (
-              <Select.Option key={driver.id} value={driver.id}>
-                {driver.full_name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Col>
-      </Row>
-
-      <Space>
-        <Button
-          type="primary"
-          onClick={handleFetchPayslip}
-          style={{ marginTop: 16 }}
-          disabled={
-            !selectedYear ||
-            !selectedMonth ||
-            !selectedDriver ||
-            !selectedContractor
-          }
-        >
-          Xem lương
-        </Button>
-
-        <Button
-          type="dashed"
-          onClick={handleFetchPayslip}
-          style={{ marginTop: 16 }}
-          disabled={
-            !selectedYear ||
-            !selectedMonth ||
-            !selectedDriver ||
-            !selectedContractor
-          }
-        >
-          Tải xuống Excel
-        </Button>
-      </Space>
-
+            Tải xuống Excel
+          </Button>
+        </Space>
+      </Form>
       {loading ? (
         <Spin size="large" style={{ display: "block", marginTop: 20 }} />
       ) : (

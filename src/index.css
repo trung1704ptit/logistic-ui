@@ -56,6 +56,13 @@ input[type="number"]:focus {
   overscroll-behavior: contain; /* Stops the scroll from bubbling */
 }
 
+.ant-table-cell {
+  padding: 3px !important;
+}
+button.ant-btn-primary {
+  box-shadow: none;
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;

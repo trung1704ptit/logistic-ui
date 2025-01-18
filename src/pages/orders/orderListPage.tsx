@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
-import { Button, Input, Space, Modal, message } from "antd";
+import { Button, Input, Space, Modal, message, Select } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
@@ -22,6 +22,11 @@ const TruckListPage = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [orderDetail, setOrderDetail] = useState<IOrder>();
+  const d = new Date();
+  const [datetime, setDatetime] = useState({
+    month: d.getMonth() + 1,
+    year: d.getFullYear(),
+  });
   // const trucks = useSelector((state: RootState) => state.truck.trucks);
   // const contractors = useSelector(
   //   (state: RootState) => state.contractor.contractors
@@ -35,13 +40,13 @@ const TruckListPage = () => {
   const handleDeleteOrder = (order: any) => {
     Modal.confirm({
       title: "Xác nhận xóa đơn hàng",
-      content: 'Bạn có chắc muốn xóa đơn hàng?',
+      content: "Bạn có chắc muốn xóa đơn hàng?",
       onOk: async () => {
         try {
           const res = await http.delete(`${apiRoutes.orders}/${order.id}`);
           if (res.status === 204) {
-            message.success("Xóa thành công");
-            fetchOrders();
+            message.success("Xóa đơn hàng thành công");
+            fetchOrders(datetime.month, datetime.year);
           }
         } catch (error) {
           console.error("Error deleting contractor:", error);
@@ -67,10 +72,12 @@ const TruckListPage = () => {
     setFilteredData(filtered);
   };
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (month: number, year: number) => {
     try {
       setIsLoading(true);
-      const res = await http.get(apiRoutes.orders);
+      const res = await http.get(
+        `${apiRoutes.orders}?year=${year}&month=${month}`
+      );
       if (res && res.data) {
         console.log(res.data.data);
         setData(res.data.data);
@@ -84,8 +91,8 @@ const TruckListPage = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    fetchOrders(datetime.month, datetime.year);
+  }, [datetime]);
 
   const columns: ProColumns[] = [
     {
@@ -163,6 +170,13 @@ const TruckListPage = () => {
     },
   ];
 
+  const handleChangeDatetime = (type: string, val: number) => {
+    setDatetime({
+      ...datetime,
+      [type]: val
+    })
+  }
+
   return (
     <BasePageContainer
       breadcrumb={{
@@ -189,7 +203,38 @@ const TruckListPage = () => {
         columns={columns}
         cardBordered={false}
         cardProps={{
-          title: <Title level={5}>Danh sách đơn hàng</Title>,
+          title: (
+            <Space>
+              <span>Danh sách đơn hàng</span>
+              <Select
+                placeholder="Tháng"
+                className="w-[100px]"
+                defaultValue={datetime.month}
+                onChange={val => handleChangeDatetime("month", val)}
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <Select.Option key={i + 1} value={i + 1}>
+                    Tháng {i + 1}
+                  </Select.Option>
+                ))}
+              </Select>
+              <Select
+                placeholder="Năm"
+                className="w-[100px]"
+                defaultValue={datetime.year}
+                onChange={val => handleChangeDatetime("year", val)}
+              >
+                {Array.from({ length: 5 }, (_, i) => {
+                  const year = d.getFullYear() - i;
+                  return (
+                    <Select.Option key={year} value={year}>
+                      {year}
+                    </Select.Option>
+                  );
+                })}
+              </Select>
+            </Space>
+          ),
           extra: (
             <Space>
               <Input

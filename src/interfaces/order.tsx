@@ -1,4 +1,9 @@
+import { IContractor } from "./contractor";
+import { IDriver } from "./driver";
+import { ITruck } from "./truck";
+
 export interface IOrder {
+  id?: string;
   contractor_id: string;
   order_time: string;
   company_name: string;
@@ -27,4 +32,7 @@ export interface IOrder {
   other_salary: number;
   total_salary: number;
   notes?: string;
+  contractor?: IContractor;
+  driver?: IDriver
+  truck?: ITruck
 }

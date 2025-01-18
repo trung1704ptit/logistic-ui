@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import dayjs from "dayjs";
 import { SHORT_KEYS } from "@/constants";
 import { pick } from "lodash";
+import { IOrder } from "@/interfaces/order";
 
 export enum NotificationType {
   ERROR = "error",
@@ -105,19 +106,20 @@ export function findPrice(data: any, keyInput: string) {
   return 0;
 }
 
-export function getTotalOrder(data: any) {
+export function getTotalOrder(data: IOrder) {
   if (data) {
     console.log(data);
     return (
-      (data.trip_salary ?? 0) +
-      (data.daily_salary ?? 0) +
-      (data.point_salary ?? 0) +
-      (data.recovery_fee ?? 0) +
-      (data.loading_fee ?? 0) +
-      (data.meal_fee ?? 0) +
-      (data.standby_fee ?? 0) +
-      (data.parking_fee ?? 0) +
-      (data.outside_oil_fee ?? 0)
+      data.trip_salary +
+      data.daily_salary +
+      data.point_salary +
+      data.loading_salary +
+      data.recovery_fee +
+      data.other_salary +
+      data.meal_fee +
+      data.standby_fee +
+      data.parking_fee +
+      data.outside_oil_fee
     );
   }
   return 0;
