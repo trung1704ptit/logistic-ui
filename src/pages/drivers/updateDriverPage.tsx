@@ -67,6 +67,7 @@ const EditDriverForm: React.FC = () => {
         license_number: driver.license_number,
         license_expiry: dayjs(driver.license_expiry),
         contractor_id: driver.contractor_id,
+        fixed_salary: driver.fixed_salary,
         note: driver.note,
       });
     } else {
@@ -85,7 +86,7 @@ const EditDriverForm: React.FC = () => {
         navigate(webRoutes.drivers);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setIsError(true);
     } finally {
       setIsLoading(false);
@@ -194,6 +195,19 @@ const EditDriverForm: React.FC = () => {
                   </Option>
                 ))}
               </Select>
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item label="Lương cứng (Nếu có)" name="fixed_salary"  normalize={(value) => (value ? Number(value) : value)}>
+              <Input
+                size="large"
+                type="number"
+                placeholder="Nhập lương cứng nếu có"
+                defaultValue={0}
+                min={0}
+                onWheel={(e) => e.currentTarget.blur()} 
+              />
             </Form.Item>
           </Col>
           <Col xs={24}>

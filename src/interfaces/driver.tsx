@@ -15,4 +15,5 @@ export interface IDriver {
   created_at: string; // Date string in 'YYYY-MM-DD' format
   updated_at: string; // Date string in 'YYYY-MM-DD' format
   contractor?: IContractor; // Optional association with Contractor (if needed)
+  fixed_salary: number;
 }

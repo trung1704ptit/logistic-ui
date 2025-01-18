@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
-import { Button, Input, Space, Modal } from "antd";
+import { Button, Input, Space, Modal, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
@@ -28,16 +28,25 @@ const TruckListPage = () => {
   // );
   // const drivers = useSelector((state: RootState) => state.driver.drivers);
 
-  const handleViewOrder = (truck: any) => {
-    navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
+  const handleViewOrder = (order: any) => {
+    navigate(`${webRoutes.updateTruck}?id=${order.id}`);
   };
 
-  const handleDeleteOrder = (truck: any) => {
+  const handleDeleteOrder = (order: any) => {
     Modal.confirm({
       title: "Xác nhận xóa đơn hàng",
-      content: `Bạn có chắc muốn xóa đơn hàng ${truck.plateNumber}?`,
-      onOk: () => {
-        console.log("Deleted truck:", truck);
+      content: 'Bạn có chắc muốn xóa đơn hàng?',
+      onOk: async () => {
+        try {
+          const res = await http.delete(`${apiRoutes.orders}/${order.id}`);
+          if (res.status === 204) {
+            message.success("Xóa thành công");
+            fetchOrders();
+          }
+        } catch (error) {
+          console.error("Error deleting contractor:", error);
+          message.error("Có lỗi xảy ra, vui lòng thử lại sau");
+        }
       },
     });
   };

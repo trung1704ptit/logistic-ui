@@ -20,9 +20,7 @@ const DriverListPage = () => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   // Access drivers from Redux store
-  const drivers = useSelector(
-    (state: RootState) => state.driver.drivers
-  );
+  const drivers = useSelector((state: RootState) => state.driver.drivers);
 
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
@@ -87,13 +85,13 @@ const DriverListPage = () => {
       sorter: false,
       align: "center",
     },
-    {
-      title: "Ngày Cấp",
-      dataIndex: "issue_date", // Date string 'YYYY-MM-DD'
-      sorter: true,
-      align: "center",
-      render: (_, row) => moment(row.issue_date).format("DD-MM-YYYY"), // Render the string directly
-    },
+    // {
+    //   title: "Ngày Cấp",
+    //   dataIndex: "issue_date", // Date string 'YYYY-MM-DD'
+    //   sorter: true,
+    //   align: "center",
+    //   render: (_, row) => moment(row.issue_date).format("DD-MM-YYYY"), // Render the string directly
+    // },
     {
       title: "Ngày Sinh",
       dataIndex: "date_of_birth", // Date string 'YYYY-MM-DD'
@@ -121,7 +119,7 @@ const DriverListPage = () => {
       render: (_, row) => moment(row.license_expiry).format("DD-MM-YYYY"), // Render the string directly
     },
     {
-      title: "Loại Tài Xế",
+      title: "Nhà thầu",
       dataIndex: "contractor_id",
       align: "center",
       render: (_, row) => {
@@ -130,6 +128,12 @@ const DriverListPage = () => {
         );
         return contractor ? contractor.name : undefined;
       },
+    },
+    {
+      title: "Lương cứng",
+      dataIndex: "fixed_salary",
+      sorter: true,
+      align: "center",
     },
     {
       title: "Ghi Chú",

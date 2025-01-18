@@ -37,6 +37,8 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     return null;
   }
 
+  const truck = trucks.find((item) => item.id === data.truck_id);
+
   const feeData = [
     { name: "Ngày tạo", value: moment(data.order_time).format("DD-MM-YYYY") },
     {
@@ -45,7 +47,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     },
     {
       name: "Xe tải",
-      value: trucks.find((item) => item.id === data.truck_id)?.license_plate,
+      value: `${truck?.license_plate} - ${truck?.capacity}T`,
     },
     {
       name: "Tài xế",
@@ -100,7 +102,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
 
   return (
     <Modal
-      title="Xem lại Đơn hàng"
+      title="Chi tiết Đơn hàng"
       centered
       open={true}
       onOk={onClose}
@@ -131,7 +133,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
         ),
       ]}
     >
-      <div>
+      <div className="mb-2">
         <List
           size="small"
           dataSource={feeData}
@@ -147,13 +149,15 @@ const ReviewComponent: React.FC<ReviewProps> = ({
         />
       </div>
 
-      <div style={{ marginTop: 16, fontWeight: "bold" }}>
+      <Typography.Text italic>Chi dầu và Thu cước không được tính vào lương</Typography.Text>
+
+      <div>
         <List
           dataSource={conclusion}
           renderItem={(item) => (
-            <List.Item style={{ padding: "4px 16px" }}>
-              <Text>{item.name}</Text>
-              <Text strong style={{ textAlign: "right", display: "block" }}>
+            <List.Item>
+              <Text className="text-bold text-red-600">{item.name}</Text>
+              <Text strong className="text-bold text-red-500">
                 {item?.value?.toLocaleString()}
               </Text>
             </List.Item>

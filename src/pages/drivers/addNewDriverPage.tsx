@@ -161,6 +161,23 @@ const AddDriverForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item
+              label="Lương cứng (Nếu có)"
+              name="fixed_salary"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
+              <Input
+                size="large"
+                type="number"
+                placeholder="Nhập lương cứng nếu có"
+                defaultValue={0}
+                min={0}
+                onWheel={(e) => e.currentTarget.blur()}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
               label="Nhà Thầu"
               name="contractor_id"
               rules={[{ required: true, message: "Hãy chọn nhà thầu!" }]}
