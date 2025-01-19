@@ -9,7 +9,7 @@ import {
   Typography,
 } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const { Text } = Typography;
 
@@ -23,13 +23,18 @@ const SummarizeForm = (props: any) => {
       return null;
     }
 
-    const onFieldsChange = (changedFields: any, allFields: any) => {
-      console.log("Changed Fields:", changedFields);
-      console.log("allFields:", allFields);
+    const onFieldsChange = (_: any, allFields: any) => {
       const sum = allFields.reduce((acc: number, current: any) => acc + (current.value || 0), 0);
       const totalSalary = props.data.total_salary + sum + props.data.driver.fixed_salary;
       setTotal(totalSalary)
     };
+
+    useEffect(() => {
+      const allFields = form.getFieldsValue();
+      const sum = Object.values(allFields).reduce((acc: number, current: any) => acc + (current || 0), 0);
+      const totalSalary = props.data.total_salary + sum + props.data.driver.fixed_salary;
+      setTotal(totalSalary)
+    }, [props.data])
 
     return (
       <Form
