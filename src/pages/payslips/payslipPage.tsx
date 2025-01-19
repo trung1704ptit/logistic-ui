@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button, Row, Col, Spin, Space, Form } from "antd";
+import { Select, Button, Row, Col, Spin, Space, Form, Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IDriver } from "@/interfaces/driver";
@@ -8,8 +8,10 @@ import { webRoutes } from "@/routes/web";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { apiRoutes } from "@/routes/api";
 import http from "@/lib/http";
-import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
+import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { IOrder } from "@/interfaces/order";
+
+const { Text } = Typography;
 
 const breadcrumb = {
   items: [
@@ -51,6 +53,7 @@ function summarizeByDriverId(data: IOrder[]) {
         loading_salary: 0,
         recovery_fee: 0,
         other_salary: 0,
+        oil_fee: 0,
         outside_oil_fee: 0,
         total_salary: 0,
         charge_fee: 0,
@@ -67,10 +70,10 @@ function summarizeByDriverId(data: IOrder[]) {
     summary[driver_id].loading_salary += fields.loading_salary || 0;
     summary[driver_id].recovery_fee += fields.recovery_fee || 0;
     summary[driver_id].other_salary += fields.other_salary || 0;
+    summary[driver_id].oil_fee += fields.oil_fee || 0;
     summary[driver_id].outside_oil_fee += fields.outside_oil_fee || 0;
     summary[driver_id].total_salary += fields.total_salary || 0;
     summary[driver_id].charge_fee += fields.charge_fee || 0;
-
   });
 
   return Object.values(summary);
@@ -116,9 +119,7 @@ const PayslipAdmin: React.FC = () => {
         `${apiRoutes.orders}?year=${values.year}&month=${values.month}`
       );
       if (res && res.data) {
-        console.log(res.data.data);
-        const sumarizedData: any = summarizeByDriverId(res.data.data)
-        console.log("sumarizedData:", sumarizedData)
+        const sumarizedData: any = summarizeByDriverId(res.data.data);
         setData(sumarizedData);
       }
     } catch (error) {
@@ -130,107 +131,141 @@ const PayslipAdmin: React.FC = () => {
 
   const currentYear = new Date().getFullYear();
 
-    const columns: ProColumns[] = [
-      {
-        title: "Tài xế",
-        dataIndex: "driver_id",
-        sorter: false,
-        align: "center",
-        ellipsis: true,
-        render: (_, row) => <>{row.driver.full_name}</>,
-      },
-      {
-        title: "Số chuyến",
-        dataIndex: "total_trips",
-        sorter: false,
-        align: "center",
-        ellipsis: true,
-      },
-      {
-        title: "Lương điểm",
-        dataIndex: "point_salary",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Lương chuyến",
-        dataIndex: "trip_salary",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Tiền ăn",
-        dataIndex: "meal_fee",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Lương theo ngày",
-        dataIndex: "daily_salary",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Thưởng KPI",
-        dataIndex: "delivery_province",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Lương bốc xếp",
-        dataIndex: "loading_salary",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Vé",
-        dataIndex: "parking_fee",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Lưu ca",
-        dataIndex: "standby_fee",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Chi khác",
-        dataIndex: "other_salary",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Đổ dầu ngoài",
-        dataIndex: "outside_oil_fee",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Chi dầu",
-        dataIndex: "oil_fee",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Thu cước",
-        dataIndex: "charge_fee",
-        sorter: false,
-        align: "center",
-      },
-      {
-        title: "Hành động",
-        align: "center",
-        key: "actions",
-        render: (_, row) => (
-          <Space>
-            <Button type="dashed">
-              Chi tiết
-            </Button>
-          </Space>
-        ),
-      },
-    ];
+  const columns: ProColumns[] = [
+    {
+      title: "Tài xế",
+      dataIndex: "driver_id",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+      render: (_, row) => <>{row.driver.full_name}</>,
+    },
+    {
+      title: "Lương cơ bản",
+      dataIndex: "fixed_salary",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+      render: (_, row) => row?.driver.fixed_salary.toLocaleString(),
+    },
+    {
+      title: "Trách nhiệm xe",
+      dataIndex: "fixed_salary",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+      render: (_, row) => row?.driver.fixed_salary.toLocaleString(),
+    },
+    {
+      title: "Phụ cấp",
+      dataIndex: "fixed_salary",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+      render: (_, row) => row?.driver.fixed_salary.toLocaleString(),
+    },
+    {
+      title: "Số chuyến",
+      dataIndex: "total_trips",
+      sorter: false,
+      align: "center",
+      ellipsis: true,
+    },
+    {
+      title: "Lương điểm",
+      dataIndex: "point_salary",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.point_salary.toLocaleString(),
+    },
+    {
+      title: "Lương chuyến",
+      dataIndex: "trip_salary",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.trip_salary.toLocaleString(),
+    },
+    {
+      title: "Tiền ăn",
+      dataIndex: "meal_fee",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.meal_fee.toLocaleString(),
+    },
+    {
+      title: "Lương ngày",
+      dataIndex: "daily_salary",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.daily_salary.toLocaleString(),
+    },
+    {
+      title: "Thưởng KPI",
+      dataIndex: "delivery_province",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.daily_salary.toLocaleString(),
+    },
+    {
+      title: "Bốc xếp",
+      dataIndex: "loading_salary",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.loading_salary.toLocaleString(),
+    },
+    {
+      title: "Vé",
+      dataIndex: "parking_fee",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.parking_fee.toLocaleString(),
+    },
+    {
+      title: "Lưu ca",
+      dataIndex: "standby_fee",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.standby_fee.toLocaleString(),
+    },
+    {
+      title: "Chi khác",
+      dataIndex: "other_salary",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.other_salary.toLocaleString(),
+    },
+    {
+      title: "Đổ dầu ngoài",
+      dataIndex: "outside_oil_fee",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.outside_oil_fee.toLocaleString(),
+    },
+    {
+      title: "Chi dầu",
+      dataIndex: "oil_fee",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.oil_fee.toLocaleString(),
+    },
+    {
+      title: "Thu cước",
+      dataIndex: "charge_fee",
+      sorter: false,
+      align: "center",
+      render: (_, row) => row?.charge_fee.toLocaleString(),
+    },
+    {
+      title: "Hành động",
+      align: "center",
+      key: "actions",
+      render: (_, row) => (
+        <Space>
+          <Button type="dashed">Chi tiết</Button>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -328,24 +363,23 @@ const PayslipAdmin: React.FC = () => {
         <Spin style={{ display: "block", marginTop: 20 }} />
       ) : (
         data && (
-          <ProTable
-          columns={columns}
-          cardBordered={false}
-          bordered={true}
-          showSorterTooltip={false}
-          scroll={{ x: true }}
-          tableLayout={"fixed"}
-          rowSelection={false}
-          pagination={{
-            showQuickJumper: true,
-            pageSize: 20,
-          }}
-          dataSource={data}
-          dateFormatter="string"
-          rowKey="id"
-          search={false}
-          size="small"
-        />
+          <>
+            <ProTable
+              columns={columns}
+              cardBordered={false}
+              bordered={true}
+              scroll={{ x: true }}
+              tableLayout={"fixed"}
+              rowSelection={false}
+              pagination={false}
+              dataSource={data}
+              dateFormatter="string"
+              rowKey="id"
+              search={false}
+              size="small"
+            />
+            <Text italic>Bảng thống kê đã tính tổng các lương và phụ cấp</Text>
+          </>
         )
       )}
     </BasePageContainer>

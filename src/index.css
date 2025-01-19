@@ -63,6 +63,19 @@ button.ant-btn-primary {
   box-shadow: none;
 }
 
+.ant-pro-page-container-children-container {
+  padding-block-start: 0;
+  padding-block-end: 16px;
+  padding-inline: 16px;
+}
+
+.ant-pro-page-container .ant-pro-page-container-warp-page-header {
+  padding-block-start: 8px;
+  padding-block-end: 16px;
+  padding-inline-start: 16px;
+  padding-inline-end: 16px;
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
