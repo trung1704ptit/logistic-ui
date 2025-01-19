@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Select, Button, Row, Col, Spin, Space, Form, Typography } from "antd";
+import {
+  Select,
+  Button,
+  Row,
+  Col,
+  Spin,
+  Space,
+  Form,
+  Typography,
+  Divider,
+  Card,
+} from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IDriver } from "@/interfaces/driver";
@@ -10,6 +21,7 @@ import { apiRoutes } from "@/routes/api";
 import http from "@/lib/http";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { IOrder } from "@/interfaces/order";
+import SummarizeForm from "./SummarizeForm";
 
 const { Text } = Typography;
 
@@ -37,12 +49,13 @@ function summarizeByDriverId(data: IOrder[]) {
   const summary: any = {};
 
   data.forEach((entry) => {
-    const { driver_id, driver, ...fields } = entry;
+    const { driver_id, driver, contractor, ...fields } = entry;
 
     if (!summary[driver_id]) {
       summary[driver_id] = {
         driver_id,
         driver,
+        contractor,
         total_trips: 0,
         trip_salary: 0,
         daily_salary: 0,
@@ -97,7 +110,7 @@ const PayslipAdmin: React.FC = () => {
   const [payslipData, setPayslipData] = useState<IPayslip | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any>([]);
 
   // Handle contractor selection and filter drivers based on the contractor
   useEffect(() => {
@@ -275,7 +288,7 @@ const PayslipAdmin: React.FC = () => {
         initialValues={{ year: currentYear, drivers: "*" }}
       >
         <Row gutter={16}>
-          <Col span={6}>
+          <Col xs={12} sm={6}>
             <Form.Item
               label="Năm"
               name="year"
@@ -293,7 +306,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={6}>
+          <Col xs={12} sm={6}>
             <Form.Item
               label="Tháng"
               name="month"
@@ -308,7 +321,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={6}>
+          <Col xs={12} sm={6}>
             <Form.Item
               label="Nhà Thầu"
               name="contractor_id"
@@ -327,7 +340,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col span={6}>
+          <Col xs={12} sm={6}>
             <Form.Item
               label="Tài Xế"
               name="drivers"
@@ -379,6 +392,26 @@ const PayslipAdmin: React.FC = () => {
               size="small"
             />
             <Text italic>Bảng thống kê đã tính tổng các lương và phụ cấp</Text>
+
+            <Divider />
+
+            {data.map((item: any) => (
+              <Card
+                styles={{
+                  header: { backgroundColor: "#ccebcc" },
+                }}
+                size="small"
+                key={item.driver_id}
+                title={`${
+                  item.driver.full_name
+                }, Tháng ${form.getFieldValue("month")}-${form.getFieldValue(
+                  "year"
+                )}`}
+                className="mb-8"
+              >
+                <SummarizeForm data={item} />
+              </Card>
+            ))}
           </>
         )
       )}
