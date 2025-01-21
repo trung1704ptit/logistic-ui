@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal, message, Select } from "antd";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { removeVietnameseTones } from "@/lib/utils";
-import Title from "antd/lib/typography/Title";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
 import { useSelector } from "react-redux";
@@ -23,19 +22,17 @@ const TruckListPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [orderDetail, setOrderDetail] = useState<IOrder>();
   const d = new Date();
-  const [datetime, setDatetime] = useState({
-    month: d.getMonth() + 1,
-    year: d.getFullYear(),
-  });
+  // const [filter, setFilter] = useState({
+  //   month: d.getMonth() + 1,
+  //   year: d.getFullYear(),
+  //   driverId: "all",
+  // });
   // const trucks = useSelector((state: RootState) => state.truck.trucks);
   // const contractors = useSelector(
   //   (state: RootState) => state.contractor.contractors
   // );
-  // const drivers = useSelector((state: RootState) => state.driver.drivers);
-
-  const handleViewOrder = (order: any) => {
-    navigate(`${webRoutes.updateTruck}?id=${order.id}`);
-  };
+  const [searchParams, setSearchParams] = useSearchParams();
+  const drivers = useSelector((state: RootState) => state.driver.drivers);
 
   const handleDeleteOrder = (order: any) => {
     Modal.confirm({
@@ -46,7 +43,7 @@ const TruckListPage = () => {
           const res = await http.delete(`${apiRoutes.orders}/${order.id}`);
           if (res.status === 204) {
             message.success("Xóa đơn hàng thành công");
-            fetchOrders(datetime.month, datetime.year);
+            fetchOrders();
           }
         } catch (error) {
           console.error("Error deleting contractor:", error);
@@ -71,12 +68,27 @@ const TruckListPage = () => {
 
     setFilteredData(filtered);
   };
+  
+  useEffect(() => {
+    const month = searchParams.get("month");
+    const year = searchParams.get("year");
+    if (!year && !month) {
+      searchParams.set("month", (d.getMonth() + 1).toString())
+      searchParams.set("year", d.getFullYear().toString())
+      searchParams.set("driver_id", "all")
 
-  const fetchOrders = async (month: number, year: number) => {
+      setSearchParams(searchParams)
+    }
+  }, [searchParams])
+
+  const fetchOrders = async () => {
     try {
       setIsLoading(true);
+      const driverId = searchParams.get("driver_id");
+      const month = searchParams.get("month");
+      const year = searchParams.get("year");
       const res = await http.get(
-        `${apiRoutes.orders}?year=${year}&month=${month}`
+        `${apiRoutes.orders}?year=${year}&month=${month}&driver_id=${driverId}`
       );
       if (res && res.data) {
         console.log(res.data.data);
@@ -90,9 +102,15 @@ const TruckListPage = () => {
     }
   };
 
+  const handleChangeFilter = (type: string, val: any) => {
+    searchParams.set(type, val.toString());
+
+    setSearchParams(searchParams);
+  };
+
   useEffect(() => {
-    fetchOrders(datetime.month, datetime.year);
-  }, [datetime]);
+    fetchOrders();
+  }, [searchParams]);
 
   const columns: ProColumns[] = [
     {
@@ -170,13 +188,6 @@ const TruckListPage = () => {
     },
   ];
 
-  const handleChangeDatetime = (type: string, val: number) => {
-    setDatetime({
-      ...datetime,
-      [type]: val
-    })
-  }
-
   return (
     <BasePageContainer
       breadcrumb={{
@@ -204,39 +215,56 @@ const TruckListPage = () => {
         cardBordered={false}
         cardProps={{
           title: (
-            <Space>
-              <span>Danh sách đơn hàng</span>
-              <Select
-                placeholder="Tháng"
-                className="w-[100px]"
-                defaultValue={datetime.month}
-                onChange={val => handleChangeDatetime("month", val)}
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <Select.Option key={i + 1} value={i + 1}>
-                    Tháng {i + 1}
-                  </Select.Option>
-                ))}
-              </Select>
-              <Select
-                placeholder="Năm"
-                className="w-[100px]"
-                defaultValue={datetime.year}
-                onChange={val => handleChangeDatetime("year", val)}
-              >
-                {Array.from({ length: 5 }, (_, i) => {
-                  const year = d.getFullYear() - i;
-                  return (
-                    <Select.Option key={year} value={year}>
-                      {year}
+            <div className="mb-3">
+              <h4>Danh sách đơn hàng</h4>
+              <Space>
+                <Select
+                  placeholder="Tháng"
+                  className="w-[100px]"
+                  value={searchParams.get("month")}
+                  onChange={(val) => handleChangeFilter("month", val)}
+                >
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <Select.Option key={i + 1} value={i + 1}>
+                      Tháng {i + 1}
                     </Select.Option>
-                  );
-                })}
-              </Select>
-            </Space>
+                  ))}
+                </Select>
+                <Select
+                  placeholder="Năm"
+                  className="w-[100px]"
+                  value={searchParams.get("year")}
+                  onChange={(val) => handleChangeFilter("year", val)}
+                >
+                  {Array.from({ length: 5 }, (_, i) => {
+                    const year = d.getFullYear() - i;
+                    return (
+                      <Select.Option key={year} value={year}>
+                        {year}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+                <Select
+                  placeholder="Tài xế"
+                  className="w-[180px]"
+                  value={searchParams.get("driver_id")}
+                  onChange={(val) => handleChangeFilter("driver_id", val)}
+                >
+                  <Select.Option key={"all"} value="all">
+                    Tất cả
+                  </Select.Option>
+                  {drivers.map((driver) => (
+                    <Select.Option key={driver.id} value={driver.id}>
+                      {driver.full_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Space>
+            </div>
           ),
           extra: (
-            <Space>
+            <Space className="mb-3">
               <Input
                 placeholder="Tìm kiếm đơn hàng..."
                 value={searchTerm}
@@ -263,6 +291,11 @@ const TruckListPage = () => {
         pagination={{
           showQuickJumper: true,
           pageSize: 30,
+        }}
+        options={{
+          reload: false,
+          density: false,
+          setting: false,
         }}
         request={async (params) => {
           const data = filteredData.slice(

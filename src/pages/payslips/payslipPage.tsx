@@ -22,6 +22,7 @@ import http from "@/lib/http";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { IOrder } from "@/interfaces/order";
 import SummarizeForm from "./SummarizeForm";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
@@ -94,6 +95,7 @@ function summarizeByDriverId(data: IOrder[]) {
 
 const PayslipAdmin: React.FC = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const [form] = Form.useForm();
 
   // Get contractors and drivers from Redux state
@@ -111,6 +113,10 @@ const PayslipAdmin: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any>([]);
+
+  const currentYear = new Date().getFullYear();
+  const selectedMonth = form.getFieldValue("month");
+  const selectedYear = form.getFieldValue("year");
 
   // Handle contractor selection and filter drivers based on the contractor
   useEffect(() => {
@@ -142,7 +148,9 @@ const PayslipAdmin: React.FC = () => {
     }
   };
 
-  const currentYear = new Date().getFullYear();
+  const hanleViewOrderListByDriver = (driverId: string) => {
+    navigate(`${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}`)
+  }
 
   const columns: ProColumns[] = [
     {
@@ -162,22 +170,6 @@ const PayslipAdmin: React.FC = () => {
       render: (_, row) => row?.driver.fixed_salary.toLocaleString(),
     },
     {
-      title: "Trách nhiệm xe",
-      dataIndex: "fixed_salary",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-      render: (_, row) => row?.driver.fixed_salary.toLocaleString(),
-    },
-    {
-      title: "Phụ cấp",
-      dataIndex: "fixed_salary",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-      render: (_, row) => row?.driver.fixed_salary.toLocaleString(),
-    },
-    {
       title: "Số chuyến",
       dataIndex: "total_trips",
       sorter: false,
@@ -185,88 +177,18 @@ const PayslipAdmin: React.FC = () => {
       ellipsis: true,
     },
     {
-      title: "Lương điểm",
-      dataIndex: "point_salary",
+      title: "Thực lĩnh",
+      dataIndex: "total_trips2",
       sorter: false,
       align: "center",
-      render: (_, row) => row?.point_salary.toLocaleString(),
+      ellipsis: true,
     },
     {
-      title: "Lương chuyến",
-      dataIndex: "trip_salary",
+      title: "Trạng thái",
+      dataIndex: "total_trips2",
       sorter: false,
       align: "center",
-      render: (_, row) => row?.trip_salary.toLocaleString(),
-    },
-    {
-      title: "Tiền ăn",
-      dataIndex: "meal_fee",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.meal_fee.toLocaleString(),
-    },
-    {
-      title: "Lương ngày",
-      dataIndex: "daily_salary",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.daily_salary.toLocaleString(),
-    },
-    {
-      title: "Thưởng KPI",
-      dataIndex: "delivery_province",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.daily_salary.toLocaleString(),
-    },
-    {
-      title: "Bốc xếp",
-      dataIndex: "loading_salary",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.loading_salary.toLocaleString(),
-    },
-    {
-      title: "Vé",
-      dataIndex: "parking_fee",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.parking_fee.toLocaleString(),
-    },
-    {
-      title: "Lưu ca",
-      dataIndex: "standby_fee",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.standby_fee.toLocaleString(),
-    },
-    {
-      title: "Chi khác",
-      dataIndex: "other_salary",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.other_salary.toLocaleString(),
-    },
-    {
-      title: "Đổ dầu ngoài",
-      dataIndex: "outside_oil_fee",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.outside_oil_fee.toLocaleString(),
-    },
-    {
-      title: "Chi dầu",
-      dataIndex: "oil_fee",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.oil_fee.toLocaleString(),
-    },
-    {
-      title: "Thu cước",
-      dataIndex: "charge_fee",
-      sorter: false,
-      align: "center",
-      render: (_, row) => row?.charge_fee.toLocaleString(),
+      ellipsis: true,
     },
     {
       title: "Hành động",
@@ -274,7 +196,7 @@ const PayslipAdmin: React.FC = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed">Chi tiết</Button>
+          <Button type="dashed" onClick={() => hanleViewOrderListByDriver(row.driver_id)}>Chi tiết</Button>
         </Space>
       ),
     },
@@ -288,7 +210,7 @@ const PayslipAdmin: React.FC = () => {
         initialValues={{ year: currentYear, drivers: "*" }}
       >
         <Row gutter={16}>
-          <Col xs={12} sm={6}>
+          <Col xs={12} sm={3}>
             <Form.Item
               label="Năm"
               name="year"
@@ -306,7 +228,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={12} sm={6}>
+          <Col xs={12} sm={3}>
             <Form.Item
               label="Tháng"
               name="month"
@@ -321,7 +243,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={12} sm={6}>
+          <Col xs={12} sm={3}>
             <Form.Item
               label="Nhà Thầu"
               name="contractor_id"
@@ -340,7 +262,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={12} sm={6}>
+          <Col xs={12} sm={3}>
             <Form.Item
               label="Tài Xế"
               name="drivers"
@@ -390,6 +312,23 @@ const PayslipAdmin: React.FC = () => {
               rowKey="id"
               search={false}
               size="small"
+              options={{
+                reload: false,
+                density: false,
+                setting: false,
+              }}
+              cardProps={{
+                title: (
+                  <h4>
+                    Bảng tổng hợp lương{" "}
+                    {selectedMonth && selectedYear && (
+                      <>
+                        {selectedMonth}-{selectedYear}
+                      </>
+                    )}
+                  </h4>
+                ),
+              }}
             />
             <Text italic>Bảng thống kê đã tính tổng các lương và phụ cấp</Text>
 
@@ -402,11 +341,9 @@ const PayslipAdmin: React.FC = () => {
                 }}
                 size="small"
                 key={item.driver_id}
-                title={`${
-                  item.driver.full_name
-                }, Tháng ${form.getFieldValue("month")}-${form.getFieldValue(
-                  "year"
-                )}`}
+                title={`${item.driver.full_name}, Tháng ${form.getFieldValue(
+                  "month"
+                )}-${form.getFieldValue("year")}`}
                 className="mb-8"
               >
                 <SummarizeForm data={item} />
