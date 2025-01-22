@@ -11,7 +11,7 @@ import {
   Divider,
   Card,
 } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IDriver } from "@/interfaces/driver";
 import { IPayslip } from "@/interfaces/payslip";
@@ -22,7 +22,6 @@ import http from "@/lib/http";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { IOrder } from "@/interfaces/order";
 import SummarizeForm from "./SummarizeForm";
-import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 
@@ -94,8 +93,6 @@ function summarizeByDriverId(data: IOrder[]) {
 }
 
 const PayslipAdmin: React.FC = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate()
   const [form] = Form.useForm();
 
   // Get contractors and drivers from Redux state
@@ -149,8 +146,9 @@ const PayslipAdmin: React.FC = () => {
   };
 
   const hanleViewOrderListByDriver = (driverId: string) => {
-    navigate(`${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}`)
-  }
+    const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}`;
+    window.open(url, "_blank");
+  };
 
   const columns: ProColumns[] = [
     {
@@ -196,7 +194,18 @@ const PayslipAdmin: React.FC = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed" onClick={() => hanleViewOrderListByDriver(row.driver_id)}>Chi tiết</Button>
+          <Button
+            type="dashed"
+            onClick={() => hanleViewOrderListByDriver(row.driver_id)}
+          >
+            Chi tiết
+          </Button>
+          <Button
+            type="default"
+            onClick={() => hanleViewOrderListByDriver(row.driver_id)}
+          >
+            Tải xuống
+          </Button>
         </Space>
       ),
     },

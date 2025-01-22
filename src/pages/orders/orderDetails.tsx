@@ -39,8 +39,6 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     return null;
   }
 
-  console.log(data);
-
   data = {
     ...data,
     trip_salary: data.trip_salary || 0,
@@ -64,8 +62,6 @@ const ReviewComponent: React.FC<ReviewProps> = ({
   const driver = data.driver
     ? data.driver
     : drivers.find((item) => item.id === data.driver_id);
-
-  console.log("trucks:", trucks);
 
   const formData = [
     { name: "Ngày tạo", value: moment(data.order_time).format("DD-MM-YYYY") },

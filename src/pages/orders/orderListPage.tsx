@@ -170,6 +170,7 @@ const TruckListPage = () => {
       dataIndex: "total_salary",
       sorter: false,
       align: "center",
+      render: (_, row) => row.total_salary.toLocaleString()
     },
     {
       title: "Hành động",

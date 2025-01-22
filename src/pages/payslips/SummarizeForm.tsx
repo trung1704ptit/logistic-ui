@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 const { Text } = Typography;
 
 const SummarizeForm = (props: any) => {
-  const [total, setTotal] = useState(0);
+  const [finalSalary, setFinalSalary] = useState(0);
 
   try {
     const [form] = Form.useForm();
@@ -23,18 +23,37 @@ const SummarizeForm = (props: any) => {
       return null;
     }
 
-    const onFieldsChange = (_: any, allFields: any) => {
-      const sum = allFields.reduce((acc: number, current: any) => acc + (current.value || 0), 0);
-      const totalSalary = props.data.total_salary + sum + props.data.driver.fixed_salary;
-      setTotal(totalSalary)
+    const calculateFinalSalary = () => {
+      const allFields = form.getFieldsValue();
+      const {
+        take_care_truck_salary,
+        allowance_sunday_salary,
+        allowance_daily_salary,
+        allowance_phone_salary,
+        kpi_salary,
+        deposit_salary,
+        other_salary
+      } = allFields;
+      const finalSalary =
+        props.data.total_salary +
+        props.data.driver.fixed_salary +
+        take_care_truck_salary +
+        allowance_sunday_salary +
+        allowance_daily_salary +
+        allowance_phone_salary +
+        other_salary +
+        kpi_salary -
+        deposit_salary;
+      setFinalSalary(finalSalary);
+    };
+
+    const onFieldsChange = (_: any) => {
+      calculateFinalSalary();
     };
 
     useEffect(() => {
-      const allFields = form.getFieldsValue();
-      const sum = Object.values(allFields).reduce((acc: number, current: any) => acc + (current || 0), 0);
-      const totalSalary = props.data.total_salary + sum + props.data.driver.fixed_salary;
-      setTotal(totalSalary)
-    }, [props.data])
+      calculateFinalSalary();
+    }, [props.data]);
 
     return (
       <Form
@@ -49,6 +68,7 @@ const SummarizeForm = (props: any) => {
           allowance_phone_salary: 0,
           kpi_salary: props.data.total_trips >= 45 ? 500000 : 0,
           deposit_salary: 0,
+          other_salary: props.data.other_salary
         }}
       >
         <Row gutter={[32, 16]}>
@@ -205,9 +225,19 @@ const SummarizeForm = (props: any) => {
           </Col>
 
           <Col xs={12} sm={6}>
-            <label className="font-medium">Chi khác:</label>
-            <br />
-            <Text>{props.data.other_salary.toLocaleString()}</Text>
+            <Form.Item
+              label="Chi khác:"
+              name="other_salary"
+              className="mb-0 font-medium"
+              normalize={(value) => (value ? Number(value) : value)}
+            >
+              <Input
+                type="number"
+                min={0}
+                className="md:w-[50%] w-[100%]"
+                onWheel={(e) => e.currentTarget.blur()}
+              />
+            </Form.Item>
           </Col>
 
           <Col xs={12} sm={6}>
@@ -246,7 +276,7 @@ const SummarizeForm = (props: any) => {
               <strong className="text-lg">
                 <label className="font-medium">Thực lĩnh: </label>
                 <Text className="text-red-600 text-lg">
-                  {total.toLocaleString()}
+                  {finalSalary.toLocaleString()}
                 </Text>
               </strong>
               <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
