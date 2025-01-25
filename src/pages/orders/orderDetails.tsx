@@ -32,7 +32,6 @@ const ReviewComponent: React.FC<ReviewProps> = ({
   const trucks = useSelector((state: RootState) => state.truck.trucks);
   const drivers = useSelector((state: RootState) => state.driver.drivers);
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
   if (!data) {
@@ -110,7 +109,6 @@ const ReviewComponent: React.FC<ReviewProps> = ({
         total_salary: total,
       };
       setIsLoading(true);
-      setIsError(false);
       let res: any = {};
       if (orderId) {
         res = await http.put(`${apiRoutes.orders}/${orderId}`, payload);
@@ -122,7 +120,6 @@ const ReviewComponent: React.FC<ReviewProps> = ({
         navigate(webRoutes.orders);
       }
     } catch (error) {
-      setIsError(true);
       message.error("Có lỗi xảy ra, vui lòng thử lại sau");
     } finally {
       setIsLoading(false);

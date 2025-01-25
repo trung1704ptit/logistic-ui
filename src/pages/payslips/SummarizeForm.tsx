@@ -10,15 +10,83 @@ import {
 } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
+import http from "@/lib/http";
+import { apiRoutes } from "@/routes/api";
+import { message } from "antd/lib";
 
 const { Text } = Typography;
+const { TextArea } = Input;
 
 const SummarizeForm = (props: any) => {
   const [finalSalary, setFinalSalary] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   try {
     const [form] = Form.useForm();
-    const handleSubmit = () => {};
+    const handleSubmit = async () => {
+      try {
+        setLoading(true);
+        const allFields = form.getFieldsValue();
+        const {
+          take_care_truck_salary,
+          allowance_sunday_salary,
+          allowance_daily_salary,
+          allowance_phone_salary,
+          kpi_salary,
+          deposit_salary,
+          other_salary,
+          notes,
+        } = allFields;
+        const payload = {
+          driver_id: props.data.driver_id,
+          contractor_id: props.data.contractor_id,
+          total_trips: props.data.total_trips,
+          take_care_truck_salary,
+          point_salary: props.data.point_salary,
+          trip_salary: props.data.trip_salary,
+          daily_salary: props.data.daily_salary,
+          meal_fee: props.data.meal_fee,
+          charge_fee: props.data.charge_fee,
+          loading_salary: props.data.loading_salary,
+          allowance_sunday_salary,
+          allowance_daily_salary,
+          allowance_phone_salary,
+          kpi_salary,
+          oil_fee: props.data.oil_fee,
+          other_salary,
+          outside_oil_fee: props.data.outside_oil_fee,
+          parking_fee: props.data.parking_fee,
+          recovery_fee: props.data.recovery_fee,
+          deposit_salary,
+          standby_fee: props.data.standby_fee,
+          total_salary: props.data.total_salary,
+          final_salary: finalSalary,
+          year: props.year,
+          month: props.month,
+          notes,
+        };
+
+        if (props.data.existPayslip) {
+          await http.put(`${apiRoutes.payslips}/${props.data?.existPayslip?.id}`, payload);
+        } else {
+          await http.post(apiRoutes.payslips, payload);
+        }
+
+        message.success(
+          `Lưu lương cho ${props.data.driver.full_name} thành công`
+        );
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      } catch (error) {
+        message.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
+        console.log(error)
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (!props.data) {
       return null;
     }
@@ -32,7 +100,7 @@ const SummarizeForm = (props: any) => {
         allowance_phone_salary,
         kpi_salary,
         deposit_salary,
-        other_salary
+        other_salary,
       } = allFields;
       const finalSalary =
         props.data.total_salary +
@@ -68,7 +136,8 @@ const SummarizeForm = (props: any) => {
           allowance_phone_salary: 0,
           kpi_salary: props.data.total_trips >= 45 ? 500000 : 0,
           deposit_salary: 0,
-          other_salary: props.data.other_salary
+          other_salary: props.data.other_salary,
+          notes: "",
         }}
       >
         <Row gutter={[32, 16]}>
@@ -269,6 +338,16 @@ const SummarizeForm = (props: any) => {
             <Text>{props.data.charge_fee.toLocaleString()}</Text>
           </Col>
 
+          <Col xs={24} md={6}>
+            <Form.Item
+              label="Ghi chú"
+              name="notes"
+              className="mb-0 font-medium"
+            >
+              <TextArea size="large" placeholder="Nhập ghi chú" rows={2} />
+            </Form.Item>
+          </Col>
+
           <Divider className="m-0" />
 
           <Col xs={24}>
@@ -279,9 +358,15 @@ const SummarizeForm = (props: any) => {
                   {finalSalary.toLocaleString()}
                 </Text>
               </strong>
-              <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<SaveOutlined />}
+                disabled={loading}
+              >
                 Lưu lại
               </Button>
+              {props?.data?.existPayslip && <span>Đã lưu</span>}
             </Space>
           </Col>
         </Row>

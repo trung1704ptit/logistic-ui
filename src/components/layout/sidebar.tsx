@@ -3,12 +3,12 @@ import { BiHomeAlt2 } from "react-icons/bi";
 import { LiaHandshake } from "react-icons/lia";
 import Icon, {
   UserOutlined,
-  SettingOutlined,
-  LineChartOutlined,
+  // SettingOutlined,
+  // LineChartOutlined,
   DollarOutlined,
-  CopyOutlined,
+  // CopyOutlined,
   TruckOutlined,
-  FormOutlined,
+  // FormOutlined,
   BuildOutlined
 } from "@ant-design/icons";
 
@@ -25,12 +25,12 @@ export const sidebar = [
     name: "Đơn hàng",
     icon: <Icon component={LiaHandshake} />,
   },
-  {
-    path: webRoutes.expenses,
-    key: webRoutes.expenses,
-    name: "Chi phí",
-    icon: <FormOutlined />,
-  },
+  // {
+  //   path: webRoutes.expenses,
+  //   key: webRoutes.expenses,
+  //   name: "Chi phí",
+  //   icon: <FormOutlined />,
+  // },
   // {
   //   path: webRoutes.prices,
   //   key: webRoutes.prices,
@@ -61,22 +61,22 @@ export const sidebar = [
     name: "Xe tải",
     icon: <TruckOutlined />,
   },
-  {
-    path: webRoutes.reports,
-    key: webRoutes.reports,
-    name: "Báo cáo",
-    icon: <LineChartOutlined />,
-  },
-  {
-    path: webRoutes.settings,
-    key: webRoutes.settings,
-    name: "Cài đặt",
-    icon: <SettingOutlined />,
-  },
-  {
-    path: webRoutes.users,
-    key: webRoutes.users,
-    name: "Tài khoản",
-    icon: <UserOutlined />,
-  },
+  // {
+  //   path: webRoutes.reports,
+  //   key: webRoutes.reports,
+  //   name: "Báo cáo",
+  //   icon: <LineChartOutlined />,
+  // },
+  // {
+  //   path: webRoutes.settings,
+  //   key: webRoutes.settings,
+  //   name: "Cài đặt",
+  //   icon: <SettingOutlined />,
+  // },
+  // {
+  //   path: webRoutes.users,
+  //   key: webRoutes.users,
+  //   name: "Tài khoản",
+  //   icon: <UserOutlined />,
+  // },
 ];

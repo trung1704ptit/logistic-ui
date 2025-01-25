@@ -22,6 +22,7 @@ import http from "@/lib/http";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { IOrder } from "@/interfaces/order";
 import SummarizeForm from "./SummarizeForm";
+import * as XLSX from "xlsx";
 
 const { Text } = Typography;
 
@@ -38,22 +39,16 @@ const breadcrumb = {
   ],
 };
 
-interface IForm {
-  month: number;
-  year: number;
-  contractor_id: string;
-  drivers: string[];
-}
-
 function summarizeByDriverId(data: IOrder[]) {
   const summary: any = {};
 
   data.forEach((entry) => {
-    const { driver_id, driver, contractor, ...fields } = entry;
+    const { driver_id, driver, contractor, contractor_id, ...fields } = entry;
 
     if (!summary[driver_id]) {
       summary[driver_id] = {
         driver_id,
+        contractor_id,
         driver,
         contractor,
         total_trips: 0,
@@ -109,7 +104,8 @@ const PayslipAdmin: React.FC = () => {
   const [payslipData, setPayslipData] = useState<IPayslip | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<any>([]);
+  const [orderList, setOrderList] = useState<any>([]);
+  const [payslipList, setPayslipList] = useState<any>([]);
 
   const currentYear = new Date().getFullYear();
   const selectedMonth = form.getFieldValue("month");
@@ -131,12 +127,21 @@ const PayslipAdmin: React.FC = () => {
     try {
       const values = await form.validateFields();
       setIsLoading(true);
-      const res = await http.get(
+      const orderRes = await http.get(
         `${apiRoutes.orders}?year=${values.year}&month=${values.month}`
       );
-      if (res && res.data) {
-        const sumarizedData: any = summarizeByDriverId(res.data.data);
-        setData(sumarizedData);
+      const payslipRes = await http.get(
+        `${apiRoutes.payslips}?year=${values.year}&month=${values.month}`
+      );
+
+      if (payslipRes && payslipRes.data) {
+        const payslipData = payslipRes.data.data;
+        setPayslipList(payslipData);
+      }
+
+      if (orderRes && orderRes.data) {
+        const orderData: any = summarizeByDriverId(orderRes.data.data);
+        setOrderList(orderData);
       }
     } catch (error) {
       console.log(error);
@@ -149,6 +154,44 @@ const PayslipAdmin: React.FC = () => {
     const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}`;
     window.open(url, "_blank");
   };
+
+  const handleDownloadOrderList = (driverId: string) => {
+
+  }
+
+  const exportToExcel = (driver: IDriver) => {
+    // Create a worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet([]);
+    const summaryData = payslipList.find((item: any) => item.driver_id === driver.id);
+    const orderDetails = orderList.filter((item: any) => item.driver_id === driver.id)
+
+    // Add summary section at the top
+    let rowIndex = 0;
+    Object.entries(summaryData).forEach(([key, value]) => {
+      XLSX.utils.sheet_add_aoa(worksheet, [[key, value]], { origin: `A${++rowIndex}` });
+    });
+
+    // Add a blank row after the summary
+    rowIndex += 1;
+
+    // Add table headers
+    const headers = Object.keys(orderDetails[0]);
+    XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: `A${rowIndex}` });
+
+    // Add row-by-row data below headers
+    XLSX.utils.sheet_add_json(worksheet, orderDetails, {
+      skipHeader: true, // Skip adding headers again
+      origin: `A${rowIndex + 1}`, // Start rows after the headers
+    });
+
+    // Create a workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    // Write the file and download
+    XLSX.writeFile(workbook, `Lương ${selectedMonth}-${selectedYear}-${driver.full_name}.xlsx`);
+  };
+
 
   const columns: ProColumns[] = [
     {
@@ -176,17 +219,15 @@ const PayslipAdmin: React.FC = () => {
     },
     {
       title: "Thực lĩnh",
-      dataIndex: "total_trips2",
+      dataIndex: "final_salary",
       sorter: false,
       align: "center",
       ellipsis: true,
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "total_trips2",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
+      render: (_, row) => (
+        <span className="text-red-600 font-bold">
+          {row?.final_salary?.toLocaleString()}
+        </span>
+      ),
     },
     {
       title: "Hành động",
@@ -202,7 +243,7 @@ const PayslipAdmin: React.FC = () => {
           </Button>
           <Button
             type="default"
-            onClick={() => hanleViewOrderListByDriver(row.driver_id)}
+            onClick={() => exportToExcel(row.driver)}
           >
             Tải xuống
           </Button>
@@ -219,7 +260,7 @@ const PayslipAdmin: React.FC = () => {
         initialValues={{ year: currentYear, drivers: "*" }}
       >
         <Row gutter={16}>
-          <Col xs={12} sm={3}>
+          <Col xs={12} sm={12} md={3}>
             <Form.Item
               label="Năm"
               name="year"
@@ -237,7 +278,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={12} sm={3}>
+          <Col xs={12} sm={12} md={3}>
             <Form.Item
               label="Tháng"
               name="month"
@@ -252,7 +293,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={12} sm={3}>
+          <Col xs={12} sm={12} md={5}>
             <Form.Item
               label="Nhà Thầu"
               name="contractor_id"
@@ -271,7 +312,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={12} sm={3}>
+          <Col xs={12} sm={12} md={5}>
             <Form.Item
               label="Tài Xế"
               name="drivers"
@@ -306,7 +347,7 @@ const PayslipAdmin: React.FC = () => {
       {isLoading ? (
         <Spin style={{ display: "block", marginTop: 20 }} />
       ) : (
-        data && (
+        orderList && (
           <>
             <ProTable
               columns={columns}
@@ -316,7 +357,7 @@ const PayslipAdmin: React.FC = () => {
               tableLayout={"fixed"}
               rowSelection={false}
               pagination={false}
-              dataSource={data}
+              dataSource={payslipList}
               dateFormatter="string"
               rowKey="id"
               search={false}
@@ -343,21 +384,39 @@ const PayslipAdmin: React.FC = () => {
 
             <Divider />
 
-            {data.map((item: any) => (
-              <Card
-                styles={{
-                  header: { backgroundColor: "#ccebcc" },
-                }}
-                size="small"
-                key={item.driver_id}
-                title={`${item.driver.full_name}, Tháng ${form.getFieldValue(
-                  "month"
-                )}-${form.getFieldValue("year")}`}
-                className="mb-8"
-              >
-                <SummarizeForm data={item} />
-              </Card>
-            ))}
+            {orderList.map((item: any) => {
+              const existPayslip = payslipList.find(
+                (p: any) => p.driver_id === item.driver_id
+              );
+
+              console.log('existPayslip:', existPayslip)
+              return (
+                <Card
+                  styles={{
+                    header: {
+                      backgroundColor: existPayslip.submitted ? "#ccebcc" : "#f1f1f1",
+                    },
+                  }}
+                  size="small"
+                  key={item.driver_id}
+                  title={`${item.driver.full_name}, Tháng ${form.getFieldValue(
+                    "month"
+                  )}-${form.getFieldValue("year")} - ${
+                    existPayslip.submitted ? "Đã lưu" : "Chưa lưu"
+                  }`}
+                  className="mb-8"
+                >
+                  <SummarizeForm
+                    data={{
+                      ...item,
+                      existPayslip: existPayslip
+                    }}
+                    year={selectedYear}
+                    month={selectedMonth}
+                  />
+                </Card>
+              );
+            })}
           </>
         )
       )}

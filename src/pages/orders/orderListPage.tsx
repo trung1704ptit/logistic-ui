@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal, message, Select } from "antd";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
@@ -16,21 +16,11 @@ import { IOrder } from "@/interfaces/order";
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate();
   const [filteredData, setFilteredData] = useState([]);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [orderDetail, setOrderDetail] = useState<IOrder>();
   const d = new Date();
-  // const [filter, setFilter] = useState({
-  //   month: d.getMonth() + 1,
-  //   year: d.getFullYear(),
-  //   driverId: "all",
-  // });
-  // const trucks = useSelector((state: RootState) => state.truck.trucks);
-  // const contractors = useSelector(
-  //   (state: RootState) => state.contractor.contractors
-  // );
   const [searchParams, setSearchParams] = useSearchParams();
   const drivers = useSelector((state: RootState) => state.driver.drivers);
 
@@ -68,18 +58,18 @@ const TruckListPage = () => {
 
     setFilteredData(filtered);
   };
-  
+
   useEffect(() => {
     const month = searchParams.get("month");
     const year = searchParams.get("year");
     if (!year && !month) {
-      searchParams.set("month", (d.getMonth() + 1).toString())
-      searchParams.set("year", d.getFullYear().toString())
-      searchParams.set("driver_id", "all")
+      searchParams.set("month", (d.getMonth() + 1).toString());
+      searchParams.set("year", d.getFullYear().toString());
+      searchParams.set("driver_id", "all");
 
-      setSearchParams(searchParams)
+      setSearchParams(searchParams);
     }
-  }, [searchParams])
+  }, [searchParams]);
 
   const fetchOrders = async () => {
     try {
@@ -170,7 +160,7 @@ const TruckListPage = () => {
       dataIndex: "total_salary",
       sorter: false,
       align: "center",
-      render: (_, row) => row.total_salary.toLocaleString()
+      render: (_, row) => row.total_salary.toLocaleString(),
     },
     {
       title: "Hành động",
@@ -214,6 +204,7 @@ const TruckListPage = () => {
       <ProTable
         columns={columns}
         cardBordered={false}
+        loading={isLoading}
         cardProps={{
           title: (
             <div className="mb-3">

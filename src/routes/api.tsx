@@ -11,4 +11,5 @@ export const apiRoutes = {
   files: `${BACKEND_API_URL}/files`,
   prices: `${BACKEND_API_URL}/prices`,
   orders: `${BACKEND_API_URL}/orders`,
+  payslips: `${BACKEND_API_URL}/payslips`,
 };
