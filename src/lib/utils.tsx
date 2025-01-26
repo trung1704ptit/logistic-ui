@@ -1,8 +1,6 @@
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import dayjs from "dayjs";
 import { SHORT_KEYS } from "@/constants";
-import { pick } from "lodash";
 import { IOrder } from "@/interfaces/order";
 
 export enum NotificationType {

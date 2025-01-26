@@ -23,6 +23,8 @@ import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { IOrder } from "@/interfaces/order";
 import SummarizeForm from "./SummarizeForm";
 import * as XLSX from "xlsx";
+import { KEYS_ORDER, KEYS_PAYSLIP } from "@/constants";
+import moment from "moment";
 
 const { Text } = Typography;
 
@@ -104,7 +106,8 @@ const PayslipAdmin: React.FC = () => {
   const [payslipData, setPayslipData] = useState<IPayslip | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [orderList, setOrderList] = useState<any>([]);
+  const [orderListSummarized, setOrderListSummarized] = useState<any>([]);
+  const [orderListRaw, setOrderListRaw] = useState<any>([]);
   const [payslipList, setPayslipList] = useState<any>([]);
 
   const currentYear = new Date().getFullYear();
@@ -141,7 +144,8 @@ const PayslipAdmin: React.FC = () => {
 
       if (orderRes && orderRes.data) {
         const orderData: any = summarizeByDriverId(orderRes.data.data);
-        setOrderList(orderData);
+        setOrderListSummarized(orderData);
+        setOrderListRaw(orderRes.data.data);
       }
     } catch (error) {
       console.log(error);
@@ -155,43 +159,80 @@ const PayslipAdmin: React.FC = () => {
     window.open(url, "_blank");
   };
 
-  const handleDownloadOrderList = (driverId: string) => {
 
+  const exportExcel = (driver: IDriver) => {
+    const orderRecords = orderListRaw.filter(
+      (item: any) => item.driver_id === driver.id
+    );
+
+    const payslipRecords = payslipList.filter(
+      (item: any) => item.driver_id === driver.id
+    );
+
+    exportSingleDriverToExcel(orderRecords, payslipRecords, driver)
   }
 
-  const exportToExcel = (driver: IDriver) => {
-    // Create a worksheet
-    const worksheet = XLSX.utils.aoa_to_sheet([]);
-    const summaryData = payslipList.find((item: any) => item.driver_id === driver.id);
-    const orderDetails = orderList.filter((item: any) => item.driver_id === driver.id)
+  const exportSingleDriverToExcel = (orderRecords: any, payslipRecords: any, driver ?: any) => {
+    console.log(payslipRecords)
+    const payslipRows = payslipRecords.map((payslip: any) => 
+      KEYS_PAYSLIP.map((keyItem) => {
+        let result = undefined;
+        if (keyItem.value === "contractor_id") {
+          result = payslip.contractor.name;
+        } else if (keyItem.value === "driver_id") {
+          result = payslip?.driver?.full_name;
+        } else if (keyItem.value === "month_year") {
+          result = `${payslip.month}-${payslip.year}`;
+        } else {
+          result = payslip[keyItem.value];
+        }
+  
+        return result
+      })
+    )
 
-    // Add summary section at the top
-    let rowIndex = 0;
-    Object.entries(summaryData).forEach(([key, value]) => {
-      XLSX.utils.sheet_add_aoa(worksheet, [[key, value]], { origin: `A${++rowIndex}` });
-    });
+    const orderRows = orderRecords.map((order: any) =>
+      KEYS_ORDER.map((keyItem) => {
+        if (keyItem.value === "contractor_id") {
+          return order.contractor.name;
+        } else if (keyItem.value === "driver_id") {
+          return order?.driver?.full_name;
+        } else if (keyItem.value === "truck_id") {
+          return `${order.truck.license_plate} ${order.truck.capacity}T`;
+        } else if (keyItem.value === "order_time") {
+          return moment(order.order_time).format("DD-MM-YYYY");
+        }
+        return order[keyItem.value];
+      })
+    );
 
-    // Add a blank row after the summary
-    rowIndex += 1;
+    const firstSection = [KEYS_ORDER.map((item) => item.label), ...orderRows];
 
-    // Add table headers
-    const headers = Object.keys(orderDetails[0]);
-    XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: `A${rowIndex}` });
+    const blankRows = Array(8).fill([]);
 
-    // Add row-by-row data below headers
-    XLSX.utils.sheet_add_json(worksheet, orderDetails, {
-      skipHeader: true, // Skip adding headers again
-      origin: `A${rowIndex + 1}`, // Start rows after the headers
-    });
+    const secondSection = [
+      KEYS_PAYSLIP.map((item) => item.label),
+      ...payslipRows,
+    ];
+
+    const data = [...firstSection, blankRows,blankRows, blankRows, blankRows, ...secondSection];
+
+    // Create a worksheet from the data array
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
 
     // Create a workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.utils.book_append_sheet(workbook, worksheet, driver?.full_name || `Bảng lương ${selectedMonth}-${selectedYear}`);
 
-    // Write the file and download
-    XLSX.writeFile(workbook, `Lương ${selectedMonth}-${selectedYear}-${driver.full_name}.xlsx`);
+    XLSX.writeFile(
+      workbook,
+      `${driver?.full_name || 'Bảng lương'}-${selectedMonth}-${selectedYear}.xlsx`
+    );
   };
 
+  const exportAllDriverToExcel = () => {
+    exportSingleDriverToExcel(orderListRaw, payslipList)
+  }
 
   const columns: ProColumns[] = [
     {
@@ -200,7 +241,7 @@ const PayslipAdmin: React.FC = () => {
       sorter: false,
       align: "center",
       ellipsis: true,
-      render: (_, row) => <>{row.driver.full_name}</>,
+      render: (_, row) => <>{row.driver?.full_name}</>,
     },
     {
       title: "Lương cơ bản",
@@ -208,7 +249,7 @@ const PayslipAdmin: React.FC = () => {
       sorter: false,
       align: "center",
       ellipsis: true,
-      render: (_, row) => row?.driver.fixed_salary.toLocaleString(),
+      render: (_, row) => row?.driver?.fixed_salary?.toLocaleString(),
     },
     {
       title: "Số chuyến",
@@ -241,11 +282,8 @@ const PayslipAdmin: React.FC = () => {
           >
             Chi tiết
           </Button>
-          <Button
-            type="default"
-            onClick={() => exportToExcel(row.driver)}
-          >
-            Tải xuống
+          <Button type="dashed" onClick={() => exportExcel(row.driver)}>
+            Tải xuống Excel
           </Button>
         </Space>
       ),
@@ -339,7 +377,7 @@ const PayslipAdmin: React.FC = () => {
           <Button type="primary" onClick={handleSubmit}>
             Tổng hợp lương
           </Button>
-          <Button type="dashed" onClick={handleSubmit} disabled>
+          <Button type="dashed" onClick={exportAllDriverToExcel}>
             Tải xuống Excel
           </Button>
         </Space>
@@ -347,7 +385,7 @@ const PayslipAdmin: React.FC = () => {
       {isLoading ? (
         <Spin style={{ display: "block", marginTop: 20 }} />
       ) : (
-        orderList && (
+        orderListSummarized && (
           <>
             <ProTable
               columns={columns}
@@ -384,32 +422,33 @@ const PayslipAdmin: React.FC = () => {
 
             <Divider />
 
-            {orderList.map((item: any) => {
+            {orderListSummarized.map((item: any) => {
               const existPayslip = payslipList.find(
                 (p: any) => p.driver_id === item.driver_id
               );
 
-              console.log('existPayslip:', existPayslip)
               return (
                 <Card
                   styles={{
                     header: {
-                      backgroundColor: existPayslip.submitted ? "#ccebcc" : "#f1f1f1",
+                      backgroundColor: existPayslip?.submitted
+                        ? "#ccebcc"
+                        : "#f1f1f1",
                     },
                   }}
                   size="small"
                   key={item.driver_id}
-                  title={`${item.driver.full_name}, Tháng ${form.getFieldValue(
-                    "month"
-                  )}-${form.getFieldValue("year")} - ${
-                    existPayslip.submitted ? "Đã lưu" : "Chưa lưu"
-                  }`}
+                  title={`${
+                    item?.driver?.full_name
+                  }, Tháng ${form.getFieldValue("month")}-${form.getFieldValue(
+                    "year"
+                  )} - ${existPayslip?.submitted ? "Đã lưu" : "Chưa lưu"}`}
                   className="mb-8"
                 >
                   <SummarizeForm
                     data={{
                       ...item,
-                      existPayslip: existPayslip
+                      existPayslip: existPayslip,
                     }}
                     year={selectedYear}
                     month={selectedMonth}

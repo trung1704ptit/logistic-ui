@@ -66,7 +66,7 @@ const SummarizeForm = (props: any) => {
           notes,
         };
 
-        if (props.data.existPayslip) {
+        if (props?.data?.existPayslip) {
           await http.put(`${apiRoutes.payslips}/${props.data?.existPayslip?.id}`, payload);
         } else {
           await http.post(apiRoutes.payslips, payload);
