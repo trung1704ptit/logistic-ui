@@ -13,7 +13,7 @@ import LoginPage from '@/pages/auth/loginPage';
 const errorElement = <ErrorPage />;
 const fallbackElement = <ProgressBar />;
 
-const DashboardPage = loadable(() => import('@/pages/dashboardPage'), {
+const DashboardPage = loadable(() => import('@/pages/dashboard/dashboardPage'), {
   fallback: fallbackElement,
 });
 const UserListPage = loadable(() => import('@/pages/users/userListPage'), {

@@ -213,7 +213,7 @@ const TruckListPage = () => {
                 <Select
                   placeholder="Tháng"
                   className="w-[100px]"
-                  value={searchParams.get("month")}
+                  value={parseInt(searchParams.get("month") as string)}
                   onChange={(val) => handleChangeFilter("month", val)}
                 >
                   {Array.from({ length: 12 }, (_, i) => (

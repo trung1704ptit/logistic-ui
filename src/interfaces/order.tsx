@@ -34,5 +34,7 @@ export interface IOrder {
   notes?: string;
   contractor?: IContractor;
   driver?: IDriver
-  truck?: ITruck
+  truck?: ITruck;
+  created_at?: string;
+  updated_at?: string;
 }
