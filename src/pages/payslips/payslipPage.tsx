@@ -10,6 +10,7 @@ import {
   Typography,
   Divider,
   Card,
+  message,
 } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -173,7 +174,6 @@ const PayslipAdmin: React.FC = () => {
   }
 
   const exportSingleDriverToExcel = (orderRecords: any, payslipRecords: any, driver ?: any) => {
-    console.log(payslipRecords)
     const payslipRows = payslipRecords.map((payslip: any) => 
       KEYS_PAYSLIP.map((keyItem) => {
         let result = undefined;
@@ -215,7 +215,7 @@ const PayslipAdmin: React.FC = () => {
       ...payslipRows,
     ];
 
-    const data = [...firstSection, blankRows,blankRows, blankRows, blankRows, ...secondSection];
+    const data = [[["DANH SÁCH ĐƠN HÀNG"],[],[],[],[],[]], ...firstSection, blankRows,blankRows, blankRows, blankRows, [["TỔNG LƯƠNG"],[],[],[],[]],...secondSection];
 
     // Create a worksheet from the data array
     const worksheet = XLSX.utils.aoa_to_sheet(data);
@@ -377,7 +377,14 @@ const PayslipAdmin: React.FC = () => {
           <Button type="primary" onClick={handleSubmit}>
             Tổng hợp lương
           </Button>
-          <Button type="dashed" onClick={exportAllDriverToExcel}>
+          <Button type="dashed" onClick={() => {
+            if (!selectedContractor || !selectedMonth || !selectedYear) {
+              message.error("Vui lòng lựa chọn nhà thầu, tháng, năm!")
+              return;
+            }
+            exportAllDriverToExcel()
+          }
+          }>
             Tải xuống Excel
           </Button>
         </Space>
