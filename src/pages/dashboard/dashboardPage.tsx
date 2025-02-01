@@ -17,7 +17,7 @@ const breadcrumb: BreadcrumbProps = {
   items: [
     {
       key: webRoutes.dashboard,
-      title: <Link to={webRoutes.dashboard}>Dashboard</Link>,
+      title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
     },
   ],
 };
@@ -29,7 +29,7 @@ const DashboardPage = () => {
 
 
   return (
-    <BasePageContainer breadcrumb={breadcrumb} transparent={true}>
+    <BasePageContainer breadcrumb={breadcrumb}>
       <Row gutter={24}>
         <Col xl={6} lg={6} md={12} sm={24} xs={24} style={{ marginBottom: 24 }}>
           <StatCard

@@ -96,7 +96,7 @@ const OrderGraph = () => {
       },
       title: {
         display: true,
-        text: `Thống kê đơn hàng trong tháng ${time.month}/${time.year}`,
+        text: `Thống kê đơn hàng tháng ${time.month}/${time.year}`,
       },
     },
     scales: {
@@ -109,7 +109,11 @@ const OrderGraph = () => {
       y: {
         title: {
           display: true,
-          text: "Số lượng đơn hàng",
+          text: "Số đơn hàng",
+        },
+        ticks: {
+          stepSize: 1,
+          precision: 0,
         },
       },
     },
@@ -145,7 +149,7 @@ const OrderGraph = () => {
             );
           })}
         </Select>
-        <span>Tổng số: {orderState.orders.length}</span>
+        <span>Tổng số: <strong>{orderState.orders.length}</strong></span>
       </Space>
 
       {orderState.loading ? (
