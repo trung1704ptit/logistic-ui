@@ -75,9 +75,9 @@ button.ant-btn-primary {
   padding-inline-start: 16px;
   padding-inline-end: 16px;
 }
-/* .ant-pro-card.ant-pro-card-size-small .ant-pro-card-body {
-  padding: 8px
-} */
+.ant-pro-page-container .ant-pro-page-container-warp-page-header .ant-page-header-breadcrumb {
+  padding-block-start: 10px;
+}
 
 @keyframes fadeIn {
   0% {

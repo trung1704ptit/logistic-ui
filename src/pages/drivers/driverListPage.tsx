@@ -13,6 +13,20 @@ import { fetchDrivers } from "@/store/slices/driverSlice";
 import moment from "moment";
 import http from "@/lib/http";
 import { IDriver } from "@/interfaces/driver";
+import { BreadcrumbProps } from "antd";
+
+const breadcrumb: BreadcrumbProps = {
+  items: [
+    {
+      key: webRoutes.dashboard,
+      title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
+    },
+    {
+      key: webRoutes.drivers,
+      title: <Link to={webRoutes.drivers}>Tài xế</Link>,
+    },
+  ],
+};
 
 // Driver List Page Component
 const DriverListPage = () => {
@@ -175,7 +189,7 @@ const DriverListPage = () => {
   };
 
   return (
-    <BasePageContainer breadcrumb={{ items: [] }}>
+    <BasePageContainer breadcrumb={breadcrumb}>
       {contextHolder}
       <ProTable
         columns={columns}

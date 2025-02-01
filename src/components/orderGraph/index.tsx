@@ -1,7 +1,7 @@
 import { AppDispatch, RootState } from "@/store";
 import { fetchOrders } from "@/store/slices/orderSlice";
 import { Select, Space } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Bar } from "react-chartjs-2";
 
@@ -119,6 +119,10 @@ const OrderGraph = () => {
     },
   };
 
+  const oilFee = useMemo(() => {
+    return orderState.orders.reduce((acc, current) => acc + current.oil_fee, 0);
+  }, [orderState.orders]);
+
   return (
     <div className="min-h-[150px] bg-white rounded-md p-3">
       <Space>
@@ -149,8 +153,15 @@ const OrderGraph = () => {
             );
           })}
         </Select>
-        <span>Tổng số: <strong>{orderState.orders.length}</strong></span>
       </Space>
+      <ul>
+        <li>
+          Tổng số đơn: <strong>{orderState.orders.length}</strong>
+        </li>
+        <li>
+          Tổng tiền chi dầu: <strong>{oilFee.toLocaleString()}</strong>
+        </li>
+      </ul>
 
       {orderState.loading ? (
         <div className="flex p-4">Loading...</div>
