@@ -38,18 +38,21 @@ const orderSlice = createSlice({
 export const { fetchStart, fetchSuccess, fetchFailure } = orderSlice.actions;
 
 // Define the thunk here for fetching orders
-export const fetchOrders = (year: number, month: number) => async (dispatch: AppDispatch) => {
-  dispatch(fetchStart());
-  try {
-    const res = await http.get(
-        `${apiRoutes.orders}?year=${year}&month=${month}`
+export const fetchOrders =
+  (year: number, month: number) => async (dispatch: AppDispatch) => {
+    dispatch(fetchStart());
+    try {
+      setTimeout(async () => {
+        const res = await http.get(
+          `${apiRoutes.orders}?year=${year}&month=${month}`
+        );
+        dispatch(fetchSuccess(res.data.data));
+      }, 1000);
+    } catch (error) {
+      dispatch(
+        fetchFailure(error instanceof Error ? error.message : "Unknown error")
       );
-    dispatch(fetchSuccess(res.data.data));
-  } catch (error) {
-    dispatch(
-      fetchFailure(error instanceof Error ? error.message : "Unknown error")
-    );
-  }
-};
+    }
+  };
 
 export default orderSlice.reducer;

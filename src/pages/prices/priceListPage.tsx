@@ -115,7 +115,7 @@ const PricingListPage = () => {
 
       setTimeout(() => {
         window.location.reload()
-      }, 3000)
+      }, 1500)
       message.success(`Đã tải lên bảng giá excel ${renamedFile.name}`);
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
@@ -229,8 +229,8 @@ const PricingListPage = () => {
   const columns: ProColumns[] = [
     {
       title: "Tên File",
+      align: "center",
       dataIndex: "file_name",
-      align: "left",
       ellipsis: true,
       render: (_, row, index) => (
         <>
@@ -243,22 +243,22 @@ const PricingListPage = () => {
     },
     {
       title: "Ngày tạo",
+      align: "center",
       dataIndex: "created_at",
-      align: "left",
       ellipsis: true,
       render: (_, row) => moment(row.created_at).format("DD-MM-YYYY"),
     },
 
     {
       title: "Nhà thầu",
+      align: "center",
       dataIndex: "contractor",
-      align: "left",
       ellipsis: true,
       render: (_, row) => <span>{contractor?.name}</span>,
     },
     {
       title: "Hành động",
-      align: "left",
+      align: "center",
       key: "actions",
       render: (_, row) => (
         <Space>

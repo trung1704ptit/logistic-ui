@@ -438,9 +438,7 @@ const PayslipAdmin: React.FC = () => {
                 <Card
                   styles={{
                     header: {
-                      backgroundColor: existPayslip?.submitted
-                        ? "#ccebcc"
-                        : "#f1f1f1",
+                      backgroundColor: "#f1f1f1",
                     },
                   }}
                   size="small"

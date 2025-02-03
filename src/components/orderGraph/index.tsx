@@ -1,6 +1,6 @@
 import { AppDispatch, RootState } from "@/store";
 import { fetchOrders } from "@/store/slices/orderSlice";
-import { Select, Space } from "antd";
+import { Select, Space, Skeleton } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Bar } from "react-chartjs-2";
@@ -154,21 +154,22 @@ const OrderGraph = () => {
           })}
         </Select>
       </Space>
-      <ul>
-        <li>
-          Tổng số đơn: <strong>{orderState.orders.length}</strong>
-        </li>
-        <li>
-          Tổng tiền chi dầu: <strong>{oilFee.toLocaleString()}</strong>
-        </li>
-      </ul>
-
       {orderState.loading ? (
-        <div className="flex p-4">Loading...</div>
+        <Skeleton />
       ) : (
-        <div style={{ height: "400px", width: "100%" }}>
-          <Bar data={data} options={options} />
-        </div>
+        <>
+          <ul>
+            <li>
+              Tổng số đơn: <strong>{orderState.orders.length}</strong>
+            </li>
+            <li>
+              Tổng tiền chi dầu: <strong>{oilFee.toLocaleString()}</strong>
+            </li>
+          </ul>
+          <div style={{ height: "400px", width: "100%" }}>
+            <Bar data={data} options={options} />
+          </div>
+        </>
       )}
     </div>
   );

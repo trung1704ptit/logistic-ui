@@ -103,6 +103,13 @@ http.interceptors.response.use(
       });
     }
 
+    if (
+      error?.response?.status === 403 &&
+      error?.response?.data?.message?.includes("no logger exists")
+    ) {
+      store.dispatch(logout());
+    }
+
     return Promise.reject(error);
   }
 );
