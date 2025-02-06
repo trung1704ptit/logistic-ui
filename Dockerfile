@@ -14,4 +14,4 @@ ENV NODE_OPTIONS="--max-old-space-size=1024"
 
 EXPOSE 5173
 COPY dist/ /app/dist/
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start", "--", "--host", "0.0.0.0"]
