@@ -13,5 +13,5 @@ COPY . .
 ENV NODE_OPTIONS="--max-old-space-size=1024"
 
 EXPOSE 5173
-COPY /usr/dist/ /app/dist/
+COPY dist/ /app/dist/
 CMD ["npm", "run", "start"]
