@@ -15,5 +15,5 @@ ENV NODE_OPTIONS="--max-old-space-size=1024"
 RUN npm run build
 
 EXPOSE 5173
-
+COPY /usr/dist/ /app/dist/
 CMD ["npm", "run", "start"]

@@ -69,6 +69,12 @@ https://reforge.netlify.app
   npm run dev
   ```
 
+
+- run docker
+  ```shell
+  scp -r dist user@your-vps-ip:/dist
+  ```
+
 - Finally, visit [`http://localhost:5173`](http://localhost:5173) from your browser. Credentials can be found above.
 
 ## Config
