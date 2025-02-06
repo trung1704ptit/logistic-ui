@@ -10,6 +10,8 @@ RUN npm install
 RUN npm install -g typescript
 COPY . .
 
+ENV NODE_OPTIONS="--max-old-space-size=1024"
+
 RUN npm run build
 
 EXPOSE 5173
