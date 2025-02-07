@@ -75,7 +75,7 @@ const LoginPage = () => {
         name="login"
         onFinish={onSubmit}
         layout={'vertical'}
-        requiredMark={false}
+        validateTrigger="onSubmit"
       >
         <div>
           <Form.Item
