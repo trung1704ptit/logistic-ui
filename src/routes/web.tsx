@@ -8,7 +8,11 @@ export const webRoutes = {
   login: '/login',
   logout: '/logout',
   dashboard: '/dashboard',
+
+  // users
   users: '/users',
+  newUser: '/users/new',
+  updateUser: '/users/update',
 
   // drivers
   drivers: '/drivers',

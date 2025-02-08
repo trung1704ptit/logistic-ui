@@ -16,9 +16,19 @@ const fallbackElement = <ProgressBar />;
 const DashboardPage = loadable(() => import('@/pages/dashboard/dashboardPage'), {
   fallback: fallbackElement,
 });
+// Users
 const UserListPage = loadable(() => import('@/pages/users/userListPage'), {
   fallback: fallbackElement,
 });
+
+const NewUserPage = loadable(() => import('@/pages/users/newUserPage'), {
+  fallback: fallbackElement,
+});
+const UpdateUserPage = loadable(() => import('@/pages/users/updateUserPage'), {
+  fallback: fallbackElement,
+});
+// drivers
+
 const DriverListPage = loadable(() => import('@/pages/drivers/driverListPage'), {
   fallback: fallbackElement,
 });
@@ -220,8 +230,12 @@ export const browserRouter = createBrowserRouter([
         element: <UserListPage />,
       },
       {
-        path: webRoutes.expenses,
-        element: <UserListPage />,
+        path: webRoutes.newUser,
+        element: <NewUserPage />,
+      },
+      {
+        path: webRoutes.updateUser,
+        element: <UpdateUserPage />,
       },
       {
         path: webRoutes.contractors,
