@@ -3,7 +3,6 @@ import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
-import { FiUsers } from "react-icons/fi";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +13,7 @@ import moment from "moment";
 import http from "@/lib/http";
 import { IDriver } from "@/interfaces/driver";
 import { BreadcrumbProps } from "antd";
+import Title from "antd/lib/typography/Title";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -195,8 +195,7 @@ const DriverListPage = () => {
         columns={columns}
         cardBordered={false}
         cardProps={{
-          title: <FiUsers className="opacity-60" />,
-          subTitle: "Tài xế",
+          title: <Title level={5}>Danh sách tài xế</Title>,
           extra: (
             <Space>
               <Input
@@ -230,6 +229,11 @@ const DriverListPage = () => {
             success: true,
             total: filteredDriverList.length,
           } as RequestData<(typeof drivers)[0]>;
+        }}
+        options={{
+          reload: false,
+          density: false,
+          setting: false,
         }}
         dataSource={filteredDriverList}
         dateFormatter="string"

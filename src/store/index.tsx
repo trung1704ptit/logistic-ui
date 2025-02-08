@@ -14,6 +14,7 @@ import contractorSlice, { ContractorState } from "./slices/contractorSlice";
 import truckSlice, { TruckState } from "./slices/truckSlice";
 import driverSlice, { DriverState } from "./slices/driverSlice";
 import orderSlice, { OrderState } from "./slices/orderSlice";
+import clientSlice, { ClientState } from "./slices/clientSlice";
 
 const persistConfig = {
   key: CONFIG.appName,
@@ -26,7 +27,8 @@ const rootReducer = combineReducers({
   contractor: contractorSlice,
   truck: truckSlice,
   driver: driverSlice,
-  order: orderSlice
+  order: orderSlice,
+  client: clientSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -47,5 +49,6 @@ export type RootState = {
   truck: TruckState;
   driver: DriverState;
   order: OrderState;
+  client: ClientState;
 };
 export type AppDispatch = typeof store.dispatch;

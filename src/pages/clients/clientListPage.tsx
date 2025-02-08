@@ -7,11 +7,12 @@ import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
-import { ITruck } from "@/interfaces/truck";
 import { RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import http from "@/lib/http";
-import { fetchTrucks } from "@/store/slices/truckSlice";
+import { IClient } from "@/interfaces/client";
+import { apiRoutes } from "@/routes/api";
+import { fetchClients } from "@/store/slices/clientSlice";
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,29 +20,29 @@ const TruckListPage = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const appDispatch = useDispatch();
 
-  const truckState = useSelector((state: RootState) => state.truck);
+  const clients = useSelector((state: RootState) => state.client.clients);
   const contractorState = useSelector((state: RootState) => state.contractor);
-  const [filteredTruckList, setFilteredTruckList] = useState<ITruck[]>([]);
+  const [filteredClientList, setFilteredList] = useState<IClient[]>([]);
 
-  const handleEditTruck = (truck: any) => {
-    navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
+  const handleEdit = (client: any) => {
+    navigate(`${webRoutes.updateTruck}?id=${client.id}`);
   };
 
   useEffect(() => {
-    if (truckState.trucks) {
-      setFilteredTruckList(truckState.trucks);
+    if (clients) {
+      setFilteredList(clients);
     }
-  }, [truckState]);
+  }, [clients]);
 
-  const handleDeleteTruck = (truck: ITruck) => {
+  const handleDelete = (client: IClient) => {
     Modal.confirm({
       title: "Xác nhận xóa xe tải",
       content: `Bạn có chắc muốn xóa xe tải?`,
       onOk: async () => {
         try {
-          const res = await http.delete(`/trucks/${truck.id}`);
-          console.log(res)
-          appDispatch(fetchTrucks() as any);
+          const res = await http.delete(`${apiRoutes.clients}/${client.id}`);
+          console.log(res);
+          appDispatch(fetchClients() as any);
           if (res.status === 204) {
             messageApi.open({
               type: "success",
@@ -59,69 +60,40 @@ const TruckListPage = () => {
     });
   };
 
-  const handleSearchTruck = (searchTerm: string) => {
+  const handleSearch = (searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
       searchTerm.toLowerCase()
     );
 
-    const filtered = truckState?.trucks.filter((truck: any) =>
-      Object.keys(truck).some((key) =>
-        removeVietnameseTones(String(truck[key]))
+    const filtered = clients.filter((client: any) =>
+      Object.keys(client).some((key) =>
+        removeVietnameseTones(String(client[key]))
           .toLowerCase()
           .includes(normalizedSearchTerm)
       )
     );
 
-    setFilteredTruckList(filtered);
+    setFilteredList(filtered);
   };
 
   const columns: ProColumns[] = [
     {
-      title: "Biển Kiểm Soát",
-      dataIndex: "license_plate",
+      title: "Tên nhãn hàng",
+      dataIndex: "name",
       sorter: false,
       align: "center",
       ellipsis: true,
     },
     {
-      title: "Tải Trọng",
-      dataIndex: "capacity",
+      title: "Địa chỉ",
+      dataIndex: "address",
       sorter: false,
       align: "center",
       ellipsis: true,
-      render: (_, row) => `${row.capacity} T`,
     },
     {
-      title: "Dài",
-      dataIndex: "length",
-      sorter: false,
-      align: "center",
-      render: (_, row) => `${row.length} m`,
-    },
-    {
-      title: "Rộng",
-      dataIndex: "width",
-      sorter: false,
-      align: "center",
-      render: (_, row) => `${row.width} m`,
-    },
-    {
-      title: "Cao",
-      dataIndex: "height",
-      sorter: false,
-      align: "center",
-      render: (_, row) => `${row.height} m`,
-    },
-    {
-      title: "Thể Tích",
-      dataIndex: "volume",
-      sorter: false,
-      align: "center",
-      render: (_, row) => `${row.volume} m³`,
-    },
-    {
-      title: "Thương hiệu",
-      dataIndex: "brand",
+      title: "Điện thoại",
+      dataIndex: "phone",
       sorter: false,
       align: "center",
     },
@@ -149,10 +121,10 @@ const TruckListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed" onClick={() => handleEditTruck(row)}>
+          <Button type="dashed" onClick={() => handleEdit(row)}>
             Xem Chi Tiết
           </Button>
-          <Button danger onClick={() => handleDeleteTruck(row)}>
+          <Button danger onClick={() => handleDelete(row)}>
             Xóa
           </Button>
         </Space>
@@ -169,8 +141,8 @@ const TruckListPage = () => {
             title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
           },
           {
-            key: webRoutes.trucks,
-            title: <Link to={webRoutes.trucks}>Xe tải</Link>,
+            key: webRoutes.clients,
+            title: <Link to={webRoutes.clients}>Nhãn hàng</Link>,
           },
         ],
       }}
@@ -179,28 +151,23 @@ const TruckListPage = () => {
       <ProTable
         columns={columns}
         cardBordered={false}
-        options={{
-          reload: false,
-          density: false,
-          setting: false,
-        }}
         cardProps={{
-          title: <Title level={5}>Danh sách xe tải</Title>,
+          title: <Title level={5}>Danh sách nhãn hàng</Title>,
           extra: (
             <Space>
               <Input
-                placeholder="Tìm kiếm xe tải..."
+                placeholder="Tìm kiếm nhãn hàng..."
                 value={searchTerm}
                 onChange={(e) => {
                   const value = e.target.value;
                   setSearchTerm(value);
-                  handleSearchTruck(value);
+                  handleSearch(value);
                 }}
                 style={{ minWidth: "10%" }}
               />
-              <Link to={webRoutes.addNewTruck}>
+              <Link to={webRoutes.addNewClient}>
                 <Button type="primary" icon={<PlusOutlined />}>
-                  Thêm xe tải
+                  Thêm nhãn hàng
                 </Button>
               </Link>
             </Space>
@@ -216,17 +183,22 @@ const TruckListPage = () => {
           pageSize: 20,
         }}
         request={async (params) => {
-          const data = filteredTruckList.slice(
+          const data = filteredClientList.slice(
             ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
             (params?.current ?? 1) * (params?.pageSize ?? 10)
           );
           return {
             data,
             success: true,
-            total: filteredTruckList.length,
-          } as RequestData<(typeof filteredTruckList)[0]>;
+            total: filteredClientList.length,
+          } as RequestData<(typeof filteredClientList)[0]>;
         }}
-        dataSource={filteredTruckList}
+        options={{
+          reload: false,
+          density: false,
+          setting: false,
+        }}
+        dataSource={filteredClientList}
         dateFormatter="string"
         rowKey="id"
         search={false}

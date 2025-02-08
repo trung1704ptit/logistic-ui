@@ -25,6 +25,11 @@ export const webRoutes = {
   addNewTruck: '/trucks/new',
   updateTruck: '/trucks/update',
 
+  // Clients
+  clients: '/clients',
+  addNewClient: '/clients/new',
+  updateClient: '/clients/update',
+
   settings: '/settings',
   payslip: '/payslip',
   reports: '/reports',    

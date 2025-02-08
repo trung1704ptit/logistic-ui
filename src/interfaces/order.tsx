@@ -6,7 +6,7 @@ export interface IOrder {
   id?: string;
   contractor_id: string;
   order_time: string;
-  company_name: string;
+  client: string;
   driver_id: string;
   truck_id: string;
   price_id: string;

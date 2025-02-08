@@ -15,6 +15,7 @@ import { AppDispatch } from "@/store";
 import { fetchTrucks } from '@/store/slices/truckSlice';
 import { fetchContractors } from '@/store/slices/contractorSlice';
 import { fetchDrivers } from '@/store/slices/driverSlice';
+import { fetchClients } from '@/store/slices/clientSlice';
 
 
 const Layout = () => {
@@ -52,6 +53,7 @@ const Layout = () => {
     appDispatch(fetchContractors());
     appDispatch(fetchTrucks());
     appDispatch(fetchDrivers());
+    appDispatch(fetchClients());
   }, [appDispatch]);
 
   return (

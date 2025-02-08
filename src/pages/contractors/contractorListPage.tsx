@@ -149,6 +149,11 @@ const DriverListPage = () => {
       <ProTable
         columns={columns}
         cardBordered={false}
+        options={{
+          reload: false,
+          density: false,
+          setting: false,
+        }}
         cardProps={{
           title: <Title level={5}>Nhà thầu</Title>,
           extra: (

@@ -139,7 +139,7 @@ const TruckListPage = () => {
     },
     {
       title: "Nhãn hàng",
-      dataIndex: "company_name",
+      dataIndex: "client",
       sorter: false,
       align: "center",
     },

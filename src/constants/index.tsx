@@ -38,7 +38,7 @@ export const KEYS_ORDER = [
   { label: "Nhà thầu", value: "contractor_id" },
   { label: "Xe tải", value: "truck_id" },
   { label: "Thời gian", value: "order_time" },
-  { label: "Nhãn hàng", value: "company_name" },
+  { label: "Nhãn hàng", value: "client" },
   { label: "Tỉnh lấy hàng", value: "pickup_province" },
   { label: "Huyện lấy hàng", value: "pickup_district" },
   { label: "Tỉnh giao hàng", value: "delivery_province" },

@@ -362,7 +362,7 @@ const UpdateOrder: React.FC = () => {
           <Col xs={24} sm={12}>
             <Form.Item
               label="Nhãn hàng"
-              name="company_name"
+              name="client"
               rules={[{ required: true, message: "Hãy nhập tên nhãn hàng!" }]}
             >
               <Input size="large" placeholder="Nhập tên nhãn hàng" />

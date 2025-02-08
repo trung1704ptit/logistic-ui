@@ -76,7 +76,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
       name: "Tài xế",
       value: driver?.full_name,
     },
-    { name: "Nhãn hàng", value: data.company_name },
+    { name: "Nhãn hàng", value: data.client },
     {
       name: "Lấy hàng",
       value: `${data.pickup_province} - ${data.pickup_district}`,

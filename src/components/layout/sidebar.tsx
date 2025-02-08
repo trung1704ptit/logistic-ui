@@ -1,82 +1,68 @@
 import { webRoutes } from "@/routes/web";
-import { BiHomeAlt2 } from "react-icons/bi";
-import { LiaHandshake } from "react-icons/lia";
-import Icon, {
-  UserOutlined,
-  // SettingOutlined,
-  // LineChartOutlined,
-  DollarOutlined,
-  // CopyOutlined,
-  TruckOutlined,
-  // FormOutlined,
-  BuildOutlined
-} from "@ant-design/icons";
+import {
+  BsFlag,
+  BsPersonPlus,
+  BsPeople,
+  BsHouse,
+  BsCart,
+  BsCurrencyDollar,
+  BsTruck,
+  BsBuildingCheck,
+} from "react-icons/bs";
 
 export const sidebar = [
   {
     path: webRoutes.dashboard,
     key: webRoutes.dashboard,
     name: "Tổng quan",
-    icon: <Icon component={BiHomeAlt2} />,
+    icon: <BsHouse />,
   },
   {
     path: webRoutes.orders,
     key: webRoutes.orders,
     name: "Đơn hàng",
-    icon: <Icon component={LiaHandshake} />,
+    icon: <BsCart />,
   },
-  // {
-  //   path: webRoutes.expenses,
-  //   key: webRoutes.expenses,
-  //   name: "Chi phí",
-  //   icon: <FormOutlined />,
-  // },
-  // {
-  //   path: webRoutes.prices,
-  //   key: webRoutes.prices,
-  //   name: "Bảng giá",
-  //   icon: <CopyOutlined />,
-  // },
   {
     path: webRoutes.payslip,
     key: webRoutes.payslip,
     name: "Bảng lương",
-    icon: <DollarOutlined />,
+    icon: <BsCurrencyDollar />,
   },
   {
     path: webRoutes.drivers,
     key: webRoutes.drivers,
     name: "Tài xế",
-    icon: <UserOutlined />,
+    icon: <BsPeople />,
   },
   {
     path: webRoutes.contractors,
     key: webRoutes.contractors,
     name: "Nhà thầu",
-    icon: <BuildOutlined />,
+    icon: <BsBuildingCheck />,
   },
   {
     path: webRoutes.trucks,
     key: webRoutes.trucks,
     name: "Xe tải",
-    icon: <TruckOutlined />,
+    icon: <BsTruck />,
   },
-  // {
-  //   path: webRoutes.reports,
-  //   key: webRoutes.reports,
-  //   name: "Báo cáo",
-  //   icon: <LineChartOutlined />,
-  // },
+  {
+    path: webRoutes.clients,
+    key: webRoutes.clients,
+    name: "Nhãn hàng",
+    icon: <BsFlag />,
+  },
   // {
   //   path: webRoutes.settings,
   //   key: webRoutes.settings,
   //   name: "Cài đặt",
-  //   icon: <SettingOutlined />,
+  //   icon: <BsTools />,
   // },
-  // {
-  //   path: webRoutes.users,
-  //   key: webRoutes.users,
-  //   name: "Tài khoản",
-  //   icon: <UserOutlined />,
-  // },
+  {
+    path: webRoutes.users,
+    key: webRoutes.users,
+    name: "Tài khoản",
+    icon: <BsPersonPlus />,
+  },
 ];
