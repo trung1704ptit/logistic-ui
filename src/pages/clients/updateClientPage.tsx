@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Row, Col, Select } from "antd";
+import { Form, Input, Button, Row, Col } from "antd";
 import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import http from "@/lib/http";
@@ -14,7 +14,6 @@ import { fetchContractors } from "@/store/slices/contractorSlice";
 import { apiRoutes } from "@/routes/api";
 
 const { TextArea } = Input;
-const { Option } = Select;
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -105,28 +104,12 @@ const UpdateTruckForm: React.FC = () => {
               <Input size="large" />
             </Form.Item>
           </Col>
-
           <Col xs={24} sm={12}>
-            <Form.Item
-              label="Nhà thầu"
-              name="contractor_id"
-              rules={[{ required: true, message: "Hãy chọn nhà thầu!" }]}
-            >
-              <Select size="large" placeholder="Chọn nhà thầu">
-                {contractors.map((contractor) => (
-                  <Option value={contractor.id} key={contractor.id}>
-                    {contractor.name}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col xs={24}>
             <Form.Item label="Ghi chú" name="note">
               <TextArea
                 size="large"
                 placeholder="Nhập ghi chú (nếu có)"
-                rows={2}
+                rows={1}
               />
             </Form.Item>
           </Col>

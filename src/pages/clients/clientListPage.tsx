@@ -21,7 +21,6 @@ const TruckListPage = () => {
   const appDispatch = useDispatch();
 
   const clients = useSelector((state: RootState) => state.client.clients);
-  const contractorState = useSelector((state: RootState) => state.contractor);
   const [filteredClientList, setFilteredList] = useState<IClient[]>([]);
 
   const handleEdit = (client: any) => {
@@ -96,18 +95,6 @@ const TruckListPage = () => {
       dataIndex: "phone",
       sorter: false,
       align: "center",
-    },
-    {
-      title: "Nhà Thầu",
-      dataIndex: "contractor_id",
-      sorter: false,
-      align: "center",
-      render: (_, row) => {
-        const contractor = contractorState?.contractors?.find(
-          (contractor) => contractor.id === row.contractor_id
-        );
-        return contractor ? contractor.name : undefined;
-      },
     },
     {
       title: "Ghi Chú",

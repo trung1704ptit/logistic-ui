@@ -3,6 +3,5 @@ export interface IClient {
     name:string;
     address: string;
     phone: string;
-    contractor_id:string;
     note: string;
 }
