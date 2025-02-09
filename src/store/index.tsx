@@ -19,7 +19,7 @@ import clientSlice, { ClientState } from "./slices/clientSlice";
 const persistConfig = {
   key: CONFIG.appName,
   storage,
-  blacklist: ["contractor", "driver", "truck", "order"],
+  blacklist: ["contractor", "driver", "truck", "order", "client"],
 };
 
 const rootReducer = combineReducers({

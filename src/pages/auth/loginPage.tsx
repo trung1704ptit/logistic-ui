@@ -10,6 +10,7 @@ import { handleErrorResponse, setPageTitle } from '@/lib/utils';
 import { Admin } from '@/interfaces/admin';
 import { defaultHttp } from '@/lib/http';
 import type { InputRef } from 'antd';
+import axios from 'axios';
 
 interface FormValues {
   email: string;
@@ -25,6 +26,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [form] = Form.useForm();
   const emailRef = useRef<InputRef>(null);
+  const [errorMsg, setErroMsg] = useState("")
 
   useEffect(() => {
     setPageTitle(`Đăng nhập - ${CONFIG.appName}`);
@@ -49,14 +51,22 @@ const LoginPage = () => {
         const admin: Admin = {
           access_token: response?.data?.access_token,
           refresh_token: response?.data?.refresh_token,
+          user_profile: response?.data?.user_profile,
         };
         console.log({ admin })
         dispatch(login(admin));
       })
       .catch((error) => {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.data.message.includes("Invalid email or Password")) {
+            setErroMsg("Sai email hoặc mật khẩu, vui lòng thử lại!.") 
+            return;
+          }
+        }
         handleErrorResponse(error);
+      }).finally(() => {
         setLoading(false);
-      });
+      })
   };
 
   return (
@@ -123,6 +133,8 @@ const LoginPage = () => {
             />
           </Form.Item>
         </div>
+
+        {errorMsg && <p className='text-red-600 m-0 p-0'>{errorMsg}</p>}
 
         <div className="text-center">
           <Button

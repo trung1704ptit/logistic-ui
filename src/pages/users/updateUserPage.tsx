@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Row, Col } from "antd";
+import { Form, Input, Button, Row, Col, message } from "antd";
 import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
@@ -9,9 +9,9 @@ import { AppDispatch } from "@/store";
 import { useDispatch } from "react-redux";
 import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
-import { fetchClients } from "@/store/slices/clientSlice";
-import { fetchContractors } from "@/store/slices/contractorSlice";
 import { apiRoutes } from "@/routes/api";
+import { AxiosResponse } from "axios";
+import { logout } from "@/store/slices/adminSlice";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -33,11 +33,12 @@ const breadcrumb: BreadcrumbProps = {
 const UpdateTruckForm: React.FC = () => {
   const [form] = Form.useForm();
   const [isLoading, setIsLoading] = useState(false);
-  const appDispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
   const [isError, setIsError] = useState(false);
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const id = params.get("id");
+  const option = params.get("option");
 
   const navigate = useNavigate();
 
@@ -66,11 +67,26 @@ const UpdateTruckForm: React.FC = () => {
     try {
       setIsLoading(true);
       setIsError(false);
-      const res = await http.put(`${apiRoutes.clients}/${id}`, values); // Use PUT for update
+      let res: AxiosResponse;
+      if (option === "edit") {
+        res = await http.put(`${apiRoutes.users}/${id}`, values);
+      } else {
+        if (values.password !== values.password_confirm) {
+          message.error(
+            "Mật khẩu và xác nhận mật khẩu không trùng khớp. Vui lòng kiểm tra lại!"
+          );
+          return;
+        }
+        res = await http.post(`${apiRoutes.resetPassword}/${id}`, values);
+      }
       if (res && res.data) {
-        appDispatch(fetchContractors());
-        appDispatch(fetchClients());
-        navigate(webRoutes.clients);
+        message.success(
+          "Cập nhật thành công!"
+        );
+        navigate(webRoutes.users);
+        if (option === "reset-password") {
+          dispatch(logout());
+        }
       }
     } catch (error) {
       setIsError(true);
@@ -103,20 +119,26 @@ const UpdateTruckForm: React.FC = () => {
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item label="Email" name="email">
-              <Input size="large" disabled/>
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item label="Mật khẩu" name="password">
-              <Input size="large"/>
+              <Input size="large" disabled />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
-            <Form.Item label="Xác nhận Mật khẩu" name="password_confirm">
-              <Input size="large"/>
-            </Form.Item>
-          </Col>
+          {option === "reset-password" && (
+            <>
+              <Col xs={24} sm={12}>
+                <Form.Item label="Mật khẩu" name="password">
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+
+              <Col xs={24} sm={12}>
+                <Form.Item label="Xác nhận Mật khẩu" name="password_confirm">
+                  <Input size="large" />
+                </Form.Item>
+              </Col>
+            </>
+          )}
+
           <Col xs={24}>
             <Form.Item>
               <Space>

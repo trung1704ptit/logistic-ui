@@ -21,8 +21,8 @@ const UserListPage = () => {
 
   const [filteredUserList, setFilteredUserList] = useState<IUser[]>([]);
 
-  const handleEdit = (user: any) => {
-    navigate(`${webRoutes.updateUser}?id=${user.id}`);
+  const handleEdit = (user: any, option: string) => {
+    navigate(`${webRoutes.updateUser}?id=${user.id}&option=${option}`);
   };
 
   const fetchUsers = async () => {
@@ -112,10 +112,10 @@ const UserListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed" onClick={() => handleEdit(row)}>
+          <Button type="dashed" onClick={() => handleEdit(row, "edit")}>
             Sửa
           </Button>
-          <Button type="dashed" onClick={() => handleEdit(row)}>
+          <Button type="dashed" onClick={() => handleEdit(row, "reset-password")}>
             Đổi mật khẩu
           </Button>
           <Button danger onClick={() => handleDelete(row)}>

@@ -5,6 +5,7 @@ export const apiRoutes = {
   login: `${BACKEND_API_URL}/auth/login`,
   logout: `${BACKEND_API_URL}/auth/logout`,
   register: `${BACKEND_API_URL}/auth/register`,
+  resetPassword: `${BACKEND_API_URL}/auth/reset-password`,
   users: `${BACKEND_API_URL}/users`,
   reviews: `${BACKEND_API_URL}/unknown`,
   drivers: `${BACKEND_API_URL}/drivers`,

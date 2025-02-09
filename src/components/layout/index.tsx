@@ -1,35 +1,37 @@
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { webRoutes } from '@/routes/web';
-import { Dropdown } from 'antd';
-import { ProLayout, ProLayoutProps } from '@ant-design/pro-components';
-import Icon, { LogoutOutlined } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
-import { logout } from '@/store/slices/adminSlice';
-import { memo, useEffect } from 'react';
-import { sidebar } from '@/components/layout/sidebar';
-import { apiRoutes } from '@/routes/api';
-import http from '@/lib/http';
-import { handleErrorResponse } from '@/lib/utils';
-import { RiShieldUserFill } from 'react-icons/ri';
-import { AppDispatch } from "@/store";
-import { fetchTrucks } from '@/store/slices/truckSlice';
-import { fetchContractors } from '@/store/slices/contractorSlice';
-import { fetchDrivers } from '@/store/slices/driverSlice';
-import { fetchClients } from '@/store/slices/clientSlice';
-
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { webRoutes } from "@/routes/web";
+import { Dropdown } from "antd";
+import { ProLayout, ProLayoutProps } from "@ant-design/pro-components";
+import Icon, { LogoutOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "@/store/slices/adminSlice";
+import { memo, useEffect } from "react";
+import { sidebar } from "@/components/layout/sidebar";
+import { apiRoutes } from "@/routes/api";
+import http from "@/lib/http";
+import { handleErrorResponse } from "@/lib/utils";
+import { RiShieldUserFill } from "react-icons/ri";
+import { AppDispatch, RootState } from "@/store";
+import { fetchTrucks } from "@/store/slices/truckSlice";
+import { fetchContractors } from "@/store/slices/contractorSlice";
+import { fetchDrivers } from "@/store/slices/driverSlice";
+import { fetchClients } from "@/store/slices/clientSlice";
 
 const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const appDispatch = useDispatch<AppDispatch>();
   const dispatch = useDispatch();
+  const userProfile = useSelector(
+    (state: RootState) => state.admin?.user_profile
+  );
 
   const defaultProps: ProLayoutProps = {
     title: CONFIG.appName,
     pageTitleRender(props, defaultPageTitle) {
       return `${defaultPageTitle} - ${CONFIG.appName}`;
     },
-    logo: '/icon.png',
+    logo: "/icon.png",
     fixedHeader: true,
     fixSiderbar: true,
     layout: CONFIG.theme.sidebarLayout,
@@ -48,7 +50,6 @@ const Layout = () => {
     dispatch(logout());
   };
 
-
   useEffect(() => {
     appDispatch(fetchContractors());
     appDispatch(fetchTrucks());
@@ -62,8 +63,8 @@ const Layout = () => {
         {...defaultProps}
         token={{
           sider: {
-            colorMenuBackground: 'white',
-            colorBgMenuItemSelected: '#ccebcc',
+            colorMenuBackground: "white",
+            colorBgMenuItemSelected: "#ccebcc",
           },
         }}
         location={location}
@@ -82,19 +83,19 @@ const Layout = () => {
         avatarProps={{
           icon: <Icon component={RiShieldUserFill} />,
           className:
-            'bg-rfprimary bg-opacity-20 text-rfprimary text-opacity-90',
-          size: 'small',
-          shape: 'square',
-          title: 'Admin',
+            "bg-rfprimary bg-opacity-20 text-rfprimary text-opacity-90",
+          size: "small",
+          shape: "square",
+          title: userProfile ? userProfile.name : "Admin",
           render: (_, dom) => {
             return (
               <Dropdown
                 menu={{
                   items: [
                     {
-                      key: 'logout',
+                      key: "logout",
                       icon: <LogoutOutlined />,
-                      label: 'Logout',
+                      label: "Đăng xuất",
                       onClick: () => {
                         logoutAdmin();
                       },
