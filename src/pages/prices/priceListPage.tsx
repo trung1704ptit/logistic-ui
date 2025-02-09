@@ -37,23 +37,26 @@ const PricingListPage = () => {
   const [pricings, setPricings] = useState([]);
   const [filteredPricingList, setFilteredPricingList] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
-  const contractorId = params.get("id");
+  const ownerId = params.get("owner_id");
+  const ownerType = params.get("owner_type");
+
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
   const [contractor, setContractor] = useState<IContractor>();
 
   useEffect(() => {
-    if (contractorId) {
-      const filteredContractor = contractors.find((c) => c.id === contractorId);
+    if (ownerId) {
+      const filteredContractor = contractors.find((c) => c.id === ownerId);
       if (filteredContractor) {
         setContractor(filteredContractor);
       }
     }
-  }, [contractorId, contractors]);
+  }, [ownerId, contractors]);
 
   const handleFileUpload = async (file: any) => {
     try {
@@ -64,7 +67,7 @@ const PricingListPage = () => {
         year: "numeric",
       })
         .format(new Date())
-        .replace(/\//g, "_"); // Replace "/" with "_" to get "DD_MM_YYYY"
+        .replace(/\//g, "_");
 
       // Combine timestamp and formatted date in the filename
       const originalExtension = file.name.split(".").pop();
@@ -81,12 +84,12 @@ const PricingListPage = () => {
       try {
         await http.post(`${apiRoutes.files}/upload`, formData, {
           headers: {
-            "Content-Type": "multipart/form-data", // Required to indicate file upload
+            "Content-Type": "multipart/form-data",
           },
         });
       } catch (error) {
         console.error("Error uploading file:", error);
-        message.error('Có lỗi xảy ra trong quá trình tải file');
+        message.error("Có lỗi xảy ra trong quá trình tải file");
       }
 
       const prices = jsonData.map((item: any) => ({
@@ -101,21 +104,21 @@ const PricingListPage = () => {
       }));
 
       const data = {
-        contractor_id: contractorId,
+        owner_id: ownerId,
+        owner_type: ownerType,
         file_name: newFileName,
         prices,
       };
 
       // Step 4: Send parsed data to the API
-      await http.post(`${apiRoutes.prices}/${contractorId}`, data, {
+      await http.post(`${apiRoutes.prices}/${ownerId}`, data, {
         headers: {
           "Content-Type": "application/json", // Ensure this header is set for JSON data
         },
       });
 
-      setTimeout(() => {
-        window.location.reload()
-      }, 1500)
+      fetchPricings();
+
       message.success(`Đã tải lên bảng giá excel ${renamedFile.name}`);
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
@@ -144,26 +147,30 @@ const PricingListPage = () => {
     });
   };
 
-
   const fetchPricings = async () => {
     try {
-      const response = await http.get(`/prices/${contractorId}`);
-      if (response.status === 200) {
-        setPricings(response.data.data);
-        setFilteredPricingList(response.data.data);
-      }
+      setIsLoading(true);
+      setTimeout(async () => {
+        const response = await http.get(`/prices/${ownerId}`);
+        if (response.status === 200) {
+          setPricings(response.data.data);
+          setFilteredPricingList(response.data.data);
+          setIsLoading(false);
+        }
+      }, 1000);
     } catch (error) {
       console.error("Error fetching pricings:", error);
       messageApi.open({
         type: "error",
         content: "Không thể tải dữ liệu bảng giá",
       });
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchPricings();
-  }, [contractorId]);
+  }, [ownerId]);
 
   const handleDeletePricing = (pricing: any) => {
     Modal.confirm({
@@ -171,7 +178,9 @@ const PricingListPage = () => {
       content: `Bạn có chắc muốn xóa bảng giá ${pricing.file_name}?`,
       onOk: async () => {
         try {
-          const res = await http.delete(`/prices/${contractor?.id}/${pricing.id}`);
+          const res = await http.delete(
+            `/prices/${contractor?.id}/${pricing.id}`
+          );
           if (res.status === 204) {
             messageApi.open({
               type: "success",
@@ -192,9 +201,12 @@ const PricingListPage = () => {
 
   const downloadFile = async (fileName: string) => {
     try {
-      const response = await http.get(`${apiRoutes.files}/download/${fileName}`, {
-        responseType: "blob",
-      });
+      const response = await http.get(
+        `${apiRoutes.files}/download/${fileName}`,
+        {
+          responseType: "blob",
+        }
+      );
 
       // Create a Blob from the response
       const blob = new Blob([response.data], {
@@ -215,7 +227,9 @@ const PricingListPage = () => {
       message.success(`Đã tải xuống bảng giá excel ${fileName}`);
     } catch (error) {
       console.error("Error downloading file:", error);
-      message.error("Có lỗi xảy ra trong quá trình tải file, vui lòng thử lại sau.");
+      message.error(
+        "Có lỗi xảy ra trong quá trình tải file, vui lòng thử lại sau."
+      );
     }
   };
 
@@ -279,6 +293,7 @@ const PricingListPage = () => {
       <ProTable
         columns={columns}
         cardBordered={false}
+        loading={isLoading}
         options={{
           reload: false,
           density: false,

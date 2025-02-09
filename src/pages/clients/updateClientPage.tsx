@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col } from "antd";
+import { Form, Input, Button, Row, Col, message } from "antd";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space, Modal, Card } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
-import Title from "antd/lib/typography/Title";
 
-import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
-import { removeVietnameseTones } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
-import { IContractor } from "@/interfaces/contractor";
+import { IClient } from "@/interfaces/client";
 import http from "@/lib/http";
-import { ITruck } from "@/interfaces/truck";
 import ErrorMessage from "@/components/Alert/Error";
-import { fetchContractors } from "@/store/slices/contractorSlice";
+import { apiRoutes } from "@/routes/api";
+import { fetchClients } from "@/store/slices/clientSlice";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -36,16 +33,12 @@ const breadcrumb: BreadcrumbProps = {
 
 const ContractorForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [editingContractor, setEditingClient] = useState<IContractor>();
+  const [editingContractor, setEditingClient] = useState<IClient>();
   const location = useLocation();
   const navigate = useNavigate();
 
   const params = new URLSearchParams(location.search);
   const clients = useSelector((state: RootState) => state.client.clients);
-  const trucks = useSelector((state: RootState) => state.truck.trucks);
-
-  const [searchTruckTerm, setSearchTruckTerm] = useState("");
-  const [filteredTruckList, setFilteredTruckList] = useState<ITruck[]>([]);
 
   const [isUpdateLoading, setIsUpdateLoading] = useState(false);
   const [isUpdateError, setIsUpdateError] = useState(false);
@@ -53,44 +46,30 @@ const ContractorForm: React.FC = () => {
 
   useEffect(() => {
     if (clients) {
-      const contractorId = params.get("id");
-      const contractor: IContractor | undefined = clients.find(
-        (item) => item.id === contractorId
+      const clientId = params.get("id");
+      const client: IClient | undefined = clients.find(
+        (item) => item.id === clientId
       );
-      if (contractor && contractor.id !== editingContractor?.id) {
-        setEditingClient(contractor);
-        form.setFieldsValue(contractor);
+      if (client && client.id !== editingContractor?.id) {
+        setEditingClient(client);
+        form.setFieldsValue(client);
       }
     }
   }, [clients, params]);
 
-  const handleSearchTruck = (searchTerm: string) => {
-    const normalizedSearchTerm = removeVietnameseTones(
-      searchTruckTerm.toLowerCase()
-    );
 
-    const filtered = trucks.filter((truck: any) =>
-      Object.keys(truck).some((key) =>
-        removeVietnameseTones(String(truck[key]))
-          .toLowerCase()
-          .includes(normalizedSearchTerm)
-      )
-    );
-
-    setFilteredTruckList(filtered);
-  };
-
-  const handleSubmit = async (contractor: IContractor) => {
+  const handleSubmit = async (client: IClient) => {
     if (editingContractor) {
       try {
         setIsUpdateLoading(true);
         setIsUpdateError(false);
         const res = await http.put(
-          `/clients/${editingContractor.id}`,
-          contractor
+          `${apiRoutes.clients}/${editingContractor.id}`,
+          client
         );
         if (res && res.data) {
-          dispatch(fetchContractors());
+          message.success("Cập nhật thành công")
+          dispatch(fetchClients())
           navigate(webRoutes.clients);
         }
       } catch (error) {

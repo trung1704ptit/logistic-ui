@@ -36,6 +36,10 @@ const DriverListPage = () => {
   const clients = useSelector((state: RootState) => state.client.clients);
   const [filteredClientList, setFilteredList] = useState<IClient[]>([]);
 
+  const handleViewPricesList = (client: any) => {
+    navigate(`${webRoutes.prices}?owner_id=${client.id}&owner_type=client`)
+  };
+
   const handleEdit = (client: any) => {
     navigate(`${webRoutes.updateClient}?id=${client.id}`);
   };
@@ -105,13 +109,13 @@ const DriverListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="default" onClick={() => handleEdit(row)}>
+          <Button type="default" onClick={() => handleViewPricesList(row)} size="small">
             Bảng giá
           </Button>
-          <Button type="dashed" onClick={() => handleEdit(row)}>
+          <Button type="dashed" onClick={() => handleEdit(row)} size="small">
             Sửa
           </Button>
-          <Button danger onClick={() => handleDelete(row)}>
+          <Button danger onClick={() => handleDelete(row)} size="small">
             Xóa
           </Button>
         </Space>

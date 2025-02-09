@@ -75,7 +75,7 @@ const DriverListPage = () => {
   }, [contractors]);
 
   const handleViewContractorPrices = (contractor: IContractor) => {
-    navigate(`${webRoutes.prices}?id=${contractor.id}`)
+    navigate(`${webRoutes.prices}?owner_id=${contractor.id}&owner_type=contractor`)
   }
 
   // Columns configuration for ProTable
@@ -112,13 +112,13 @@ const DriverListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed" onClick={() => handleViewContractorPrices(row)}>
+          <Button type="dashed" onClick={() => handleViewContractorPrices(row)} size="small">
             Bảng giá
           </Button>
-          <Button type="dashed" onClick={() => handleEditContractor(row)}>
+          <Button type="dashed" onClick={() => handleEditContractor(row)} size="small">
             Chi Tiết
           </Button>
-          <Button danger onClick={() => handleDeleteContractor(row)}>
+          <Button danger onClick={() => handleDeleteContractor(row)} size="small">
             Xóa
           </Button>
         </Space>
