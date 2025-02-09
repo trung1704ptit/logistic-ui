@@ -7,14 +7,27 @@ import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
-import { RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
 import http from "@/lib/http";
 import { IClient } from "@/interfaces/client";
 import { apiRoutes } from "@/routes/api";
 import { fetchClients } from "@/store/slices/clientSlice";
 
-const TruckListPage = () => {
+const breadcrumb = {
+  items: [
+    {
+      key: webRoutes.dashboard,
+      title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
+    },
+    {
+      key: webRoutes.contractors,
+      title: <Link to={webRoutes.contractors}>Nhãn hàng</Link>,
+    },
+  ],
+};
+
+const DriverListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
@@ -24,7 +37,7 @@ const TruckListPage = () => {
   const [filteredClientList, setFilteredList] = useState<IClient[]>([]);
 
   const handleEdit = (client: any) => {
-    navigate(`${webRoutes.updateTruck}?id=${client.id}`);
+    navigate(`${webRoutes.updateClient}?id=${client.id}`);
   };
 
   useEffect(() => {
@@ -35,8 +48,8 @@ const TruckListPage = () => {
 
   const handleDelete = (client: IClient) => {
     Modal.confirm({
-      title: "Xác nhận xóa xe tải",
-      content: `Bạn có chắc muốn xóa xe tải?`,
+      title: "Xác nhận xóa nhãn hàng",
+      content: `Bạn có chắc muốn xóa nhãn hàng?`,
       onOk: async () => {
         try {
           const res = await http.delete(`${apiRoutes.clients}/${client.id}`);
@@ -49,7 +62,7 @@ const TruckListPage = () => {
             });
           }
         } catch (error) {
-          console.error("Error deleting contractor:", error);
+          console.error("Error deleting:", error);
           messageApi.open({
             type: "error",
             content: "Có lỗi xảy ra, vui lòng thử lại sau",
@@ -57,22 +70,6 @@ const TruckListPage = () => {
         }
       },
     });
-  };
-
-  const handleSearch = (searchTerm: string) => {
-    const normalizedSearchTerm = removeVietnameseTones(
-      searchTerm.toLowerCase()
-    );
-
-    const filtered = clients.filter((client: any) =>
-      Object.keys(client).some((key) =>
-        removeVietnameseTones(String(client[key]))
-          .toLowerCase()
-          .includes(normalizedSearchTerm)
-      )
-    );
-
-    setFilteredList(filtered);
   };
 
   const columns: ProColumns[] = [
@@ -84,20 +81,20 @@ const TruckListPage = () => {
       ellipsis: true,
     },
     {
-      title: "Địa chỉ",
-      dataIndex: "address",
+      title: "Số điện thoại",
+      dataIndex: "phone",
       sorter: false,
       align: "center",
       ellipsis: true,
     },
     {
-      title: "Điện thoại",
-      dataIndex: "phone",
+      title: "Địa chỉ",
+      dataIndex: "address",
       sorter: false,
       align: "center",
     },
     {
-      title: "Ghi Chú",
+      title: "Ghi chú",
       dataIndex: "note",
       sorter: false,
       align: "center",
@@ -108,8 +105,11 @@ const TruckListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
+          <Button type="default" onClick={() => handleEdit(row)}>
+            Bảng giá
+          </Button>
           <Button type="dashed" onClick={() => handleEdit(row)}>
-            Xem Chi Tiết
+            Sửa
           </Button>
           <Button danger onClick={() => handleDelete(row)}>
             Xóa
@@ -119,31 +119,40 @@ const TruckListPage = () => {
     },
   ];
 
+  // Example search function
+  const handleSearch = (searchTerm: string) => {
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTerm.toLowerCase()
+    );
+
+    const filtered = clients?.filter((driver: any) =>
+      Object.keys(driver).some((key) =>
+        removeVietnameseTones(String(driver[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
+      )
+    );
+
+    setFilteredList(filtered);
+  };
+
   return (
-    <BasePageContainer
-      breadcrumb={{
-        items: [
-          {
-            key: webRoutes.dashboard,
-            title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
-          },
-          {
-            key: webRoutes.clients,
-            title: <Link to={webRoutes.clients}>Nhãn hàng</Link>,
-          },
-        ],
-      }}
-    >
+    <BasePageContainer breadcrumb={breadcrumb}>
       {contextHolder}
       <ProTable
         columns={columns}
         cardBordered={false}
+        options={{
+          reload: false,
+          density: false,
+          setting: false,
+        }}
         cardProps={{
-          title: <Title level={5}>Danh sách nhãn hàng</Title>,
+          title: <Title level={5}>Nhãn hàng</Title>,
           extra: (
             <Space>
               <Input
-                placeholder="Tìm kiếm nhãn hàng..."
+                placeholder="Tìm kiếm..."
                 value={searchTerm}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -170,20 +179,15 @@ const TruckListPage = () => {
           pageSize: 20,
         }}
         request={async (params) => {
-          const data = filteredClientList.slice(
+          const data = filteredClientList?.slice(
             ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
             (params?.current ?? 1) * (params?.pageSize ?? 10)
           );
           return {
             data,
             success: true,
-            total: filteredClientList.length,
-          } as RequestData<(typeof filteredClientList)[0]>;
-        }}
-        options={{
-          reload: false,
-          density: false,
-          setting: false,
+            total: filteredClientList?.length || 0,
+          } as RequestData<(typeof clients)[0]>;
         }}
         dataSource={filteredClientList}
         dateFormatter="string"
@@ -195,4 +199,4 @@ const TruckListPage = () => {
   );
 };
 
-export default TruckListPage;
+export default DriverListPage;

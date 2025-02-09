@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Row, Col } from "antd";
-import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { BreadcrumbProps, Space } from "antd";
+import { BreadcrumbProps, Space, Modal, Card } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
+import Title from "antd/lib/typography/Title";
+
+import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
+import { removeVietnameseTones } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
+import { IContractor } from "@/interfaces/contractor";
 import http from "@/lib/http";
+import { ITruck } from "@/interfaces/truck";
 import ErrorMessage from "@/components/Alert/Error";
-import { fetchClients } from "@/store/slices/clientSlice";
 import { fetchContractors } from "@/store/slices/contractorSlice";
-import { apiRoutes } from "@/routes/api";
-
-const { TextArea } = Input;
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -26,122 +28,152 @@ const breadcrumb: BreadcrumbProps = {
       title: <Link to={webRoutes.clients}>Nhãn hàng</Link>,
     },
     {
-      key: webRoutes.addNewTruck,
-      title: <Link to={webRoutes.addNewTruck}>Cập nhật nhãn hàng</Link>,
+      key: webRoutes.updateContractors,
+      title: <Link to={webRoutes.updateContractors}>Cập nhật nhãn hàng</Link>,
     },
   ],
 };
 
-const UpdateTruckForm: React.FC = () => {
+const ContractorForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const appDispatch = useDispatch<AppDispatch>();
-  const [isError, setIsError] = useState(false);
-  const { search } = useLocation();
-  const params = new URLSearchParams(search);
-  const clientId = params.get("id");
-  const contractors = useSelector(
-    (state: RootState) => state.contractor.contractors
-  );
-  const clients = useSelector((state: RootState) => state.client.clients);
+  const [editingContractor, setEditingClient] = useState<IContractor>();
+  const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const client = clients?.find((item) => item.id === clientId);
-    if (client) {
-      form.setFieldsValue(client);
-    } else {
-      setIsError(true);
-    }
-  }, [clientId, clients, form]);
+  const params = new URLSearchParams(location.search);
+  const clients = useSelector((state: RootState) => state.client.clients);
+  const trucks = useSelector((state: RootState) => state.truck.trucks);
 
-  const handleSubmit = async (values: any) => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      const res = await http.put(`${apiRoutes.clients}/${clientId}`, values); // Use PUT for update
-      if (res && res.data) {
-        appDispatch(fetchContractors());
-        appDispatch(fetchClients());
-        navigate(webRoutes.clients);
+  const [searchTruckTerm, setSearchTruckTerm] = useState("");
+  const [filteredTruckList, setFilteredTruckList] = useState<ITruck[]>([]);
+
+  const [isUpdateLoading, setIsUpdateLoading] = useState(false);
+  const [isUpdateError, setIsUpdateError] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    if (clients) {
+      const contractorId = params.get("id");
+      const contractor: IContractor | undefined = clients.find(
+        (item) => item.id === contractorId
+      );
+      if (contractor && contractor.id !== editingContractor?.id) {
+        setEditingClient(contractor);
+        form.setFieldsValue(contractor);
       }
-    } catch (error) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
+    }
+  }, [clients, params]);
+
+  const handleSearchTruck = (searchTerm: string) => {
+    const normalizedSearchTerm = removeVietnameseTones(
+      searchTruckTerm.toLowerCase()
+    );
+
+    const filtered = trucks.filter((truck: any) =>
+      Object.keys(truck).some((key) =>
+        removeVietnameseTones(String(truck[key]))
+          .toLowerCase()
+          .includes(normalizedSearchTerm)
+      )
+    );
+
+    setFilteredTruckList(filtered);
+  };
+
+  const handleSubmit = async (contractor: IContractor) => {
+    if (editingContractor) {
+      try {
+        setIsUpdateLoading(true);
+        setIsUpdateError(false);
+        const res = await http.put(
+          `/clients/${editingContractor.id}`,
+          contractor
+        );
+        if (res && res.data) {
+          dispatch(fetchContractors());
+          navigate(webRoutes.clients);
+        }
+      } catch (error) {
+        setIsUpdateError(true);
+      } finally {
+        setIsUpdateLoading(false);
+      }
     }
   };
 
   const handleCancel = () => {
-    navigate(-1);
+    navigate(webRoutes.clients);
   };
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-        style={{ maxWidth: 800, margin: "0 auto" }}
-      >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Tên nhãn hàng"
-              name="name"
-              rules={[{ required: true, message: "Hãy nhập tên nhãn hàng!" }]}
-            >
-              <Input size="large" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item label="Địa chỉ" name="address">
-              <Input size="large" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item label="Số điện thoại" name="height">
-              <Input size="large" />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item label="Ghi chú" name="note">
-              <TextArea
-                size="large"
-                placeholder="Nhập ghi chú (nếu có)"
-                rows={1}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24}>
-            <Form.Item>
-              <Space>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="shadow-none"
-                  icon={<PlusOutlined />}
-                  loading={isLoading}
-                  disabled={isLoading}
-                >
-                  Cập nhật xe tải
-                </Button>
-                <Button
-                  type="default"
-                  className="shadow-none"
-                  icon={<CloseOutlined />}
-                  onClick={handleCancel}
-                >
-                  Thoát
-                </Button>
-              </Space>
-              {isError && <ErrorMessage />}
-            </Form.Item>
-          </Col>
-        </Row>
-      </Form>
+      <Card>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          style={{ maxWidth: 800, margin: "0 auto" }}
+        >
+          <Row gutter={16}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Tên nhãn hàng"
+                name="name"
+                rules={[{ required: true, message: "Hãy nhập tên nhãn hàng!" }]}
+              >
+                <Input placeholder="Nhập tên nhãn hàng" size="large" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Số điện thoại"
+                name="phone"
+                rules={[
+                  { required: true, message: "Hãy nhập số điện thoại!" },
+                  { pattern: /^\d+$/, message: "Số điện thoại không hợp lệ!" },
+                ]}
+              >
+                <Input placeholder="Nhập số điện thoại" size="large" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label="Địa chỉ"
+                name="address"
+                rules={[{ required: true, message: "Hãy nhập địa chỉ!" }]}
+              >
+                <Input.TextArea placeholder="Nhập địa chỉ" rows={2} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12}>
+              <Form.Item label="Ghi chú" name="note">
+                <Input.TextArea placeholder="Nhập ghi chú (nếu có)" rows={2} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item>
+            <Space>
+              <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+                Cập nhật nhãn hàng
+              </Button>
+              <Button
+                type="default"
+                icon={<CloseOutlined />}
+                onClick={handleCancel}
+                loading={isUpdateLoading}
+                disabled={isUpdateLoading}
+              >
+                Thoát
+              </Button>
+            </Space>
+            {isUpdateError && <ErrorMessage />}
+          </Form.Item>
+        </Form>
+      </Card>
     </BasePageContainer>
   );
 };
 
-export default UpdateTruckForm;
+export default ContractorForm;
