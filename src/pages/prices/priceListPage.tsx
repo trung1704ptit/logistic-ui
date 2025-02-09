@@ -47,16 +47,24 @@ const PricingListPage = () => {
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
-  const [contractor, setContractor] = useState<IContractor>();
+  const clients = useSelector(
+    (state: RootState) => state.client.clients
+  );
+  const [owner, setOwner] = useState<IContractor>();
 
   useEffect(() => {
-    if (ownerId) {
-      const filteredContractor = contractors.find((c) => c.id === ownerId);
-      if (filteredContractor) {
-        setContractor(filteredContractor);
+    if (ownerId && ownerType && contractors && clients) {
+      let filteredOwnerData: any;
+      if (ownerType === "contractor") {
+        filteredOwnerData = contractors.find((c) => c.id === ownerId);
+      } else {
+        filteredOwnerData = clients.find((c) => c.id === ownerId);
+      }
+      if (filteredOwnerData) {
+        setOwner(filteredOwnerData);
       }
     }
-  }, [ownerId, contractors]);
+  }, [ownerId, ownerType, contractors, clients]);
 
   const handleFileUpload = async (file: any) => {
     try {
@@ -179,7 +187,7 @@ const PricingListPage = () => {
       onOk: async () => {
         try {
           const res = await http.delete(
-            `/prices/${contractor?.id}/${pricing.id}`
+            `/prices/${owner?.id}/${pricing.id}`
           );
           if (res.status === 204) {
             messageApi.open({
@@ -268,7 +276,7 @@ const PricingListPage = () => {
       align: "center",
       dataIndex: "contractor",
       ellipsis: true,
-      render: (_, row) => <span>{contractor?.name}</span>,
+      render: (_, row) => <span>{owner?.name}</span>,
     },
     {
       title: "Hành động",
@@ -300,7 +308,7 @@ const PricingListPage = () => {
           setting: false,
         }}
         cardProps={{
-          title: <Title level={5}>Bảng giá {contractor?.name}</Title>,
+          title: <Title level={5}>Bảng giá {owner?.name}</Title>,
           extra: (
             <Space>
               <Input
