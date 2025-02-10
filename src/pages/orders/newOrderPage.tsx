@@ -29,6 +29,8 @@ import { priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
 import { AiOutlineExport } from "react-icons/ai";
 import OrderDetails from "./orderDetails";
+import { ITruck } from "@/interfaces/truck";
+import { IDriver } from "@/interfaces/driver";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -58,26 +60,35 @@ const breadcrumb: BreadcrumbProps = {
 const AddOrderForm: React.FC = () => {
   const [form] = Form.useForm();
   const [contractorId, setContractorId] = useState<string>();
+  const [clientId, setClientId] = useState<string>();
   const [pricesTable, setPricesTable] = useState<IPrice[]>([]);
   const [pickupDistricts, setPickupDistricts] = useState<string[]>([]);
   const [deliveryDistricts, setDeliveryDistricts] = useState<string[]>([]);
-  const [unitSelected, setUnitSelected] = useState("");
+  const [unitSelected, setUnitSelected] = useState("weight");
   const [isReview, setIsReview] = useState(false);
-  const drivers = useSelector((state: RootState) => state.driver.drivers);
+  const allDrivers = useSelector((state: RootState) => state.driver.drivers);
+  const allClients = useSelector((state: RootState) => state.client.clients);
+  const allTrucks = useSelector((state: RootState) => state.truck.trucks);
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
+  const [trucks, setTrucks] = useState<ITruck[]>([]);
+  const [drivers, setDrivers] = useState<IDriver[]>([]);
+
   const [selectedPriceTable, setSelectedPriceTable] = useState<IPrice>();
   const [locationLabels, setLocationLabels] = useState<ILocationLabels>({
     allDeliveryProvinces: [],
     allPickupProvinces: [],
   });
-  const trucks = useSelector((state: RootState) => state.truck.trucks);
   const navigate = useNavigate();
 
   const handleSelectContractor = (value: string) => {
     setContractorId(value);
     form.setFieldsValue({ driver_id: undefined, truck_id: undefined });
+  };
+
+  const handleSelectClient = (value: string) => {
+    setClientId(value);
   };
 
   const handleSubmit = (values: any) => {
@@ -151,7 +162,7 @@ const AddOrderForm: React.FC = () => {
       deliveryProvince &&
       deliveryDistrict
     ) {
-      const selectedTruck = trucks.find(
+      const selectedTruck = allTrucks.find(
         (item) => item.id === form.getFieldValue("truck_id")
       );
       const singlePriceRow = selectedPriceTable?.price_details.find(
@@ -184,7 +195,20 @@ const AddOrderForm: React.FC = () => {
 
   useEffect(() => {
     if (contractorId) {
+      // filter prices
       fetchPricings();
+
+      // filter trucks
+      const trucksFiltered = allTrucks.filter(
+        (item) => item.contractor_id === contractorId
+      );
+      setTrucks(trucksFiltered);
+
+      // filter drivers
+      const driversFiltered = allDrivers.filter(
+        (item) => item.contractor_id === contractorId
+      );
+      setDrivers(driversFiltered);
     }
   }, [contractorId]);
 
@@ -337,17 +361,7 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item
-              label="Nhãn hàng"
-              name="client"
-              rules={[{ required: true, message: "Hãy nhập tên nhãn hàng!" }]}
-            >
-              <Input size="large" placeholder="Nhập tên nhãn hàng" />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Lái xe"
+              label="Chọn Lái xe"
               name="driver_id"
               rules={[{ required: true, message: "Hãy chọn lái xe!" }]}
             >
@@ -390,9 +404,29 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item
+              label="Nhãn hàng"
+              name="client"
+              rules={[{ required: true, message: "Hãy chọn nhãn hàng!" }]}
+            >
+              <Select
+                size="large"
+                placeholder="Chọn nhãn hàng"
+                onChange={handleSelectClient}
+              >
+                {allClients.map((client) => (
+                  <Option key={client.id} value={client.id}>
+                    {client.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
               label={
                 <div>
-                  Chọn bảng giá{" "}
+                  Bảng giá nhãn hàng{" "}
                   {contractorId && (
                     <Upload
                       name="avatar"
@@ -428,6 +462,96 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label={
+                <div>
+                  Bảng giá nhà thầu{" "}
+                  {contractorId && (
+                    <Upload
+                      name="avatar"
+                      className="avatar-uploader cursor-pointer"
+                      customRequest={({ file, onSuccess, onError }: any) => {
+                        handleFileUpload(file)
+                          .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
+                          .catch((err) => onError?.(err)); // Handle errors
+                      }}
+                      showUploadList={false}
+                      accept=".xlsx,.xls"
+                    >
+                      <Link to={""}>(Thêm bảng giá khác?)</Link>
+                    </Upload>
+                  )}
+                </div>
+              }
+              name="price_id"
+              rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
+            >
+              <Select
+                size="large"
+                placeholder="Chọn Bảng Giá"
+                disabled={!contractorId}
+                onChange={handleSelectPriceTable}
+              >
+                {pricesTable &&
+                  pricesTable.map((priceTable, index) => (
+                    <Option key={priceTable.id} value={priceTable.id}>
+                      {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
+                    </Option>
+                  ))}
+              </Select>
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Đơn vị tính"
+              name="unit"
+              rules={[{ required: true, message: "Hãy chọn Đơn vị tính!" }]}
+            >
+              <Select
+                size="large"
+                placeholder="Chọn đơn vị tính"
+                onChange={handleUnitSelect}
+              >
+                <Option key="weight" value="weight">
+                  Theo Tấn
+                </Option>
+                <Option key="volumn" value="volumn">
+                  Theo Khối
+                </Option>
+              </Select>
+            </Form.Item>
+          </Col>
+
+          {unitSelected === "weight" && (
+            <Col xs={24} sm={12}>
+              <Form.Item label="Số tấn của hàng" name="package_weight">
+                <Input
+                  size="large"
+                  type="number"
+                  min={0}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  placeholder="Nhập số tấn"
+                />
+              </Form.Item>
+            </Col>
+          )}
+
+          {unitSelected === "volumn" && (
+            <Col xs={24} sm={12}>
+              <Form.Item label="Số khối của hàng" name="package_volumn">
+                <Input
+                  size="large"
+                  type="number"
+                  min={0}
+                  onWheel={(e) => e.currentTarget.blur()}
+                  placeholder="Nhập số khối"
+                />
+              </Form.Item>
+            </Col>
+          )}
 
           <Divider />
 
@@ -512,60 +636,6 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12}>
             <Form.Item
-              label="Đơn vị tính"
-              name="unit"
-              rules={[{ required: true, message: "Hãy chọn Đơn vị tính!" }]}
-            >
-              <Select
-                size="large"
-                placeholder="Chọn đơn vị tính"
-                disabled={!contractorId}
-                onChange={handleUnitSelect}
-              >
-                <Option key="weight" value="weight">
-                  Theo Tấn
-                </Option>
-                <Option key="volumn" value="volumn">
-                  Theo Khối
-                </Option>
-              </Select>
-            </Form.Item>
-          </Col>
-
-          {unitSelected === "weight" && (
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Số tấn thực của hàng (Nếu có)"
-                name="package_weight"
-              >
-                <Input
-                  size="large"
-                  type="number"
-                  min={0}
-                  onWheel={(e) => e.currentTarget.blur()}
-                />
-              </Form.Item>
-            </Col>
-          )}
-
-          {unitSelected === "volumn" && (
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Số khối thực của hàng (Nếu có)"
-                name="package_volumn"
-              >
-                <Input
-                  size="large"
-                  type="number"
-                  min={0}
-                  onWheel={(e) => e.currentTarget.blur()}
-                />
-              </Form.Item>
-            </Col>
-          )}
-
-          <Col xs={24} sm={12}>
-            <Form.Item
               label="Lương chuyến"
               name="trip_salary"
               normalize={(value) => (value ? Number(value) : value)}
@@ -639,6 +709,7 @@ const AddOrderForm: React.FC = () => {
                 type="number"
                 min={0}
                 onWheel={(e) => e.currentTarget.blur()}
+                placeholder="Nhập phí thu hồi"
               />
             </Form.Item>
           </Col>

@@ -79,7 +79,7 @@ const AddTruckForm: React.FC = () => {
         style={{ maxWidth: 800, margin: "0 auto" }}
       >
         <Row gutter={[16, 16]}>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8}>
             <Form.Item
               label="Biển kiểm soát"
               name="license_plate"
@@ -88,7 +88,7 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Nhập biển kiểm soát" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8}>
             <Form.Item
               label="Tải trọng xe (T)"
               name="capacity"
@@ -97,7 +97,17 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Ví dụ 2.5" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={6}>
+
+          <Col xs={24} sm={8}>
+            <Form.Item
+              label="Mét khối (m³)"
+              name="volume"
+            >
+              <Input size="large" placeholder="Nhập thể tích" />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={8}>
             <Form.Item
               label="Dài (m)"
               name="length"
@@ -105,7 +115,7 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Nhập chiều dài" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={6}>
+          <Col xs={24} sm={8}>
             <Form.Item
               label="Rộng (m)"
               name="width"
@@ -113,7 +123,7 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Nhập chiều rộng" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={6}>
+          <Col xs={24} sm={8}>
             <Form.Item
               label="Cao (m)"
               name="height"
@@ -121,14 +131,7 @@ const AddTruckForm: React.FC = () => {
               <Input size="large" placeholder="Nhập chiều cao" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={6}>
-            <Form.Item
-              label="Mét khối"
-              name="volume"
-            >
-              <Input size="large" placeholder="Nhập thể tích (m³)" />
-            </Form.Item>
-          </Col>
+
           <Col xs={24} sm={12}>
             <Form.Item
               label="Thương hiệu xe"

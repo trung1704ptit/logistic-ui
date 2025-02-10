@@ -8,6 +8,7 @@ import {
   BsCurrencyDollar,
   BsTruck,
   BsBuildingCheck,
+  BsTools
 } from "react-icons/bs";
 
 export const sidebar = [
@@ -53,16 +54,16 @@ export const sidebar = [
     name: "Nhãn hàng",
     icon: <BsFlag />,
   },
-  // {
-  //   path: webRoutes.settings,
-  //   key: webRoutes.settings,
-  //   name: "Cài đặt",
-  //   icon: <BsTools />,
-  // },
   {
     path: webRoutes.users,
     key: webRoutes.users,
     name: "Tài khoản",
     icon: <BsPersonPlus />,
+  },
+  {
+    path: webRoutes.settings,
+    key: webRoutes.settings,
+    name: "Cài đặt",
+    icon: <BsTools />,
   },
 ];

@@ -1,218 +1,124 @@
-import {
-  ActionType,
-  ProTable,
-  ProColumns,
-  RequestData,
-  TableDropdown,
-  ProDescriptions,
-} from '@ant-design/pro-components';
-import { Avatar, BreadcrumbProps, Modal, Space } from 'antd';
-import { useRef } from 'react';
-import { FiUsers } from 'react-icons/fi';
-import { CiCircleMore } from 'react-icons/ci';
-import { Link } from 'react-router-dom';
-import { User } from '@/interfaces/user';
-import { apiRoutes } from '@/routes/api';
-import { webRoutes } from '@/routes/web';
-import {
-  handleErrorResponse,
-  NotificationType,
-  showNotification,
-} from '@/lib/utils';
-import http from '@/lib/http';
-import BasePageContainer from '@/components/layout/pageContainer';
-import LazyImage from '@/components/lazy-image';
-import Icon, {
-  ExclamationCircleOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
-
-enum ActionKey {
-  DELETE = 'delete',
-}
+import { Row, Col, BreadcrumbProps, Form, Space, Input, Button } from "antd";
+import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { apiRoutes } from "@/routes/api";
+import { webRoutes } from "@/routes/web";
+import BasePageContainer from "@/components/layout/pageContainer";
+import { useState } from "react";
+import http from "@/lib/http";
+import ErrorMessage from "@/components/Alert/Error";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
     {
       key: webRoutes.dashboard,
-      title: <Link to={webRoutes.dashboard}>Dashboard</Link>,
+      title: <Link to={webRoutes.dashboard}>Trang chủ</Link>,
     },
     {
-      key: webRoutes.users,
-      title: <Link to={webRoutes.users}>Users</Link>,
+      key: webRoutes.settings,
+      title: <Link to={webRoutes.settings}>Cài đặt</Link>,
     },
   ],
 };
 
 const DriverListPage = () => {
-  const actionRef = useRef<ActionType>();
-  const [modal, modalContextHolder] = Modal.useModal();
+  const [form] = Form.useForm();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
 
-  const columns: ProColumns[] = [
-    {
-      title: 'Avatar',
-      dataIndex: 'avatar',
-      align: 'center',
-      sorter: false,
-      render: (_, row: User) =>
-        row.avatar ? (
-          <Avatar
-            shape="circle"
-            size="small"
-            src={
-              <LazyImage
-                src={row.avatar}
-                placeholder={<div className="bg-gray-100 h-full w-full" />}
-              />
-            }
-          />
-        ) : (
-          <Avatar shape="circle" size="small">
-            {row.first_name.charAt(0).toUpperCase()}
-          </Avatar>
-        ),
-    },
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      sorter: false,
-      align: 'center',
-      ellipsis: true,
-      render: (_, row: User) => `${row.first_name} ${row.last_name}`,
-    },
-    {
-      title: 'Email',
-      dataIndex: 'email',
-      sorter: false,
-      align: 'center',
-      ellipsis: true,
-    },
-    {
-      title: 'Action',
-      align: 'center',
-      key: 'option',
-      fixed: 'right',
-      render: (_, row: User) => [
-        <TableDropdown
-          key="actionGroup"
-          onSelect={(key) => handleActionOnSelect(key, row)}
-          menus={[
-            {
-              key: ActionKey.DELETE,
-              name: (
-                <Space>
-                  <DeleteOutlined />
-                  Delete
-                </Space>
-              ),
-            },
-          ]}
-        >
-          <Icon component={CiCircleMore} className="text-rfprimary text-xl" />
-        </TableDropdown>,
-      ],
-    },
-  ];
-
-  const handleActionOnSelect = (key: string, user: User) => {
-    if (key === ActionKey.DELETE) {
-      showDeleteConfirmation(user);
+  const handleSubmit = async (values: any) => {
+    try {
+      const payload = {
+        ...values,
+        height: parseFloat(values.height),
+        width: parseFloat(values.width),
+        length: parseFloat(values.length),
+        capacity: parseFloat(values.capacity),
+        volume: parseFloat(values.volume),
+      };
+      setIsLoading(true);
+      setIsError(false);
+      const res = await http.post("/settings", payload);
+      if (res && res.data) {
+      }
+    } catch (error) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const showDeleteConfirmation = (user: User) => {
-    modal.confirm({
-      title: 'Are you sure to delete this user?',
-      icon: <ExclamationCircleOutlined />,
-      content: (
-        <ProDescriptions column={1} title=" ">
-          <ProDescriptions.Item valueType="avatar" label="Avatar">
-            {user.avatar}
-          </ProDescriptions.Item>
-          <ProDescriptions.Item valueType="text" label="Name">
-            {user.first_name} {user.last_name}
-          </ProDescriptions.Item>
-          <ProDescriptions.Item valueType="text" label="Email">
-            {user.email}
-          </ProDescriptions.Item>
-        </ProDescriptions>
-      ),
-      onOk: () => {
-        return http
-          .delete(`${apiRoutes.users}/${user.id}`)
-          .then(() => {
-            showNotification(
-              'Success',
-              NotificationType.SUCCESS,
-              'User is deleted.'
-            );
-
-            actionRef.current?.reloadAndRest?.();
-          })
-          .catch((error) => {
-            handleErrorResponse(error);
-          });
-      },
-    });
+  const handleCancel = () => {
+    navigate(-1);
   };
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
-      <ProTable
-        columns={columns}
-        cardBordered={false}
-        cardProps={{
-          subTitle: 'Users',
-          tooltip: {
-            className: 'opacity-60',
-            title: 'Mocked data',
-          },
-          title: <FiUsers className="opacity-60" />,
-        }}
-        bordered={true}
-        showSorterTooltip={false}
-        scroll={{ x: true }}
-        tableLayout={'fixed'}
-        rowSelection={false}
-        pagination={{
-          showQuickJumper: true,
-          pageSize: 10,
-        }}
-        actionRef={actionRef}
-        request={(params) => {
-          return http
-            .get(apiRoutes.users, {
-              params: {
-                page: params.current,
-                per_page: params.pageSize,
-              },
-            })
-            .then((response) => {
-              const users: [User] = response.data.data;
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        style={{ maxWidth: 800, margin: "0 auto" }}
+      >
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={8}>
+            <Form.Item
+              label="Số chuyến đạt KPI tháng"
+              name="kpi_count"
+              rules={[{ required: true, message: "Hãy nhập số KPI" }]}
+            >
+              <Input size="large" placeholder="Ví dụ 45" />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={8}>
+            <Form.Item
+              label="Tiền thưởng khi đạt KPI tháng"
+              name="kpi_bonus"
+              rules={[{ required: true, message: "Hãy nhập tiền KPI" }]}
+            >
+              <Input size="large" placeholder="Ví dụ 500,000" />
+            </Form.Item>
+          </Col>
 
-              return {
-                data: users,
-                success: true,
-                total: response.data.total,
-              } as RequestData<User>;
-            })
-            .catch((error) => {
-              handleErrorResponse(error);
+          <Col xs={24} sm={8}>
+            <Form.Item label="Mét khối (m³)" name="volume">
+              <Input size="large" placeholder="Nhập thể tích" />
+            </Form.Item>
+          </Col>
 
-              return {
-                data: [],
-                success: false,
-              } as RequestData<User>;
-            });
-        }}
-        dateFormatter="string"
-        search={false}
-        rowKey="id"
-        options={{
-          search: false,
-        }}
-      />
-      {modalContextHolder}
+          <Col xs={24} sm={8}>
+            <Form.Item label="Dài (m)" name="length">
+              <Input size="large" placeholder="Nhập chiều dài" />
+            </Form.Item>
+          </Col>
+          <Col xs={24}>
+            <Form.Item>
+              <Space>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className="shadow-none"
+                  icon={<PlusOutlined />}
+                  loading={isLoading}
+                  disabled={isLoading}
+                >
+                  Lưu lại
+                </Button>
+                <Button
+                  type="default"
+                  className="shadow-none"
+                  icon={<CloseOutlined />}
+                  onClick={handleCancel}
+                >
+                  Thoát
+                </Button>
+              </Space>
+              {isError && <ErrorMessage />}
+            </Form.Item>
+          </Col>
+        </Row>
+      </Form>
     </BasePageContainer>
   );
 };
