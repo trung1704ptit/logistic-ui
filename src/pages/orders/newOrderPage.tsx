@@ -59,9 +59,11 @@ const breadcrumb: BreadcrumbProps = {
 
 const AddOrderForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [contractorId, setContractorId] = useState<string>();
+  const [contractorId, setContractorId] = useState<string>("");
   const [clientId, setClientId] = useState<string>();
-  const [pricesTable, setPricesTable] = useState<IPrice[]>([]);
+  const [pricesByContractor, setPricesByContractor] = useState<IPrice[]>([]);
+  const [pricesByClient, setPricesByClient] = useState<IPrice[]>([]);
+
   const [pickupDistricts, setPickupDistricts] = useState<string[]>([]);
   const [deliveryDistricts, setDeliveryDistricts] = useState<string[]>([]);
   const [unitSelected, setUnitSelected] = useState("weight");
@@ -87,12 +89,12 @@ const AddOrderForm: React.FC = () => {
     form.setFieldsValue({ driver_id: undefined, truck_id: undefined });
   };
 
-  const handleSelectClient = (value: string) => {
-    setClientId(value);
+  const handleSelectClient = (clientId: string) => {
+    setClientId(clientId);
+    fetchPricings(clientId, "client");
   };
 
   const handleSubmit = (values: any) => {
-    console.log(values);
     setIsReview(true);
   };
 
@@ -182,11 +184,15 @@ const AddOrderForm: React.FC = () => {
     }
   };
 
-  const fetchPricings = async () => {
+  const fetchPricings = async (ownerId: string, ownerType: string) => {
     try {
-      const response = await http.get(`/prices/${contractorId}`);
-      if (response.status === 200) {
-        setPricesTable(response.data.data);
+      const res = await http.get(`/prices/${ownerId}?ownerType=${ownerType}`);
+      if (res.status === 200) {
+        if (ownerType === "contractor") {
+          setPricesByContractor(res.data.data);
+        } else {
+          setPricesByClient(res.data.data);
+        }
       }
     } catch (error) {
       console.error("Error fetching pricings:", error);
@@ -196,7 +202,7 @@ const AddOrderForm: React.FC = () => {
   useEffect(() => {
     if (contractorId) {
       // filter prices
-      fetchPricings();
+      fetchPricings(contractorId, "contractor");
 
       // filter trucks
       const trucksFiltered = allTrucks.filter(
@@ -297,7 +303,7 @@ const AddOrderForm: React.FC = () => {
           },
         }
       );
-      fetchPricings();
+      fetchPricings(contractorId, "contractor");
 
       message.success(`Đã tải lên bảng giá excel ${renamedFile.name}`);
 
@@ -363,7 +369,7 @@ const AddOrderForm: React.FC = () => {
             <Form.Item
               label="Chọn Lái xe"
               name="driver_id"
-              rules={[{ required: true, message: "Hãy chọn lái xe!" }]}
+              // rules={[{ required: true, message: "Hãy chọn lái xe!" }]}
             >
               <Select
                 size="large"
@@ -384,7 +390,7 @@ const AddOrderForm: React.FC = () => {
             <Form.Item
               label="Chọn xe tải"
               name="truck_id"
-              rules={[{ required: true, message: "Hãy chọn xe tải!" }]}
+              // rules={[{ required: true, message: "Hãy chọn xe tải!" }]}
             >
               <Select
                 size="large"
@@ -453,8 +459,8 @@ const AddOrderForm: React.FC = () => {
                 disabled={!contractorId}
                 onChange={handleSelectPriceTable}
               >
-                {pricesTable &&
-                  pricesTable.map((priceTable, index) => (
+                {pricesByClient &&
+                  pricesByClient.map((priceTable, index) => (
                     <Option key={priceTable.id} value={priceTable.id}>
                       {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
                     </Option>
@@ -467,7 +473,7 @@ const AddOrderForm: React.FC = () => {
             <Form.Item
               label={
                 <div>
-                  Bảng giá nhà thầu{" "}
+                  Bảng giá cho nhà thầu{" "}
                   {contractorId && (
                     <Upload
                       name="avatar"
@@ -494,8 +500,8 @@ const AddOrderForm: React.FC = () => {
                 disabled={!contractorId}
                 onChange={handleSelectPriceTable}
               >
-                {pricesTable &&
-                  pricesTable.map((priceTable, index) => (
+                {pricesByContractor &&
+                  pricesByContractor.map((priceTable, index) => (
                     <Option key={priceTable.id} value={priceTable.id}>
                       {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
                     </Option>

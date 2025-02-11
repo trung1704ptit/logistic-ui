@@ -65,7 +65,7 @@ const DriverListPage = () => {
           <Col xs={24} sm={8}>
             <Form.Item
               label="Số chuyến đạt KPI tháng"
-              name="kpi_count"
+              name="kpi_threshold"
               rules={[{ required: true, message: "Hãy nhập số KPI" }]}
             >
               <Input size="large" placeholder="Ví dụ 45" />
@@ -77,19 +77,7 @@ const DriverListPage = () => {
               name="kpi_bonus"
               rules={[{ required: true, message: "Hãy nhập tiền KPI" }]}
             >
-              <Input size="large" placeholder="Ví dụ 500,000" />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={8}>
-            <Form.Item label="Mét khối (m³)" name="volume">
-              <Input size="large" placeholder="Nhập thể tích" />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={8}>
-            <Form.Item label="Dài (m)" name="length">
-              <Input size="large" placeholder="Nhập chiều dài" />
+              <Input size="large" placeholder="Ví dụ 500000" />
             </Form.Item>
           </Col>
           <Col xs={24}>
