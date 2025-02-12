@@ -14,6 +14,7 @@ import { priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
 import moment from "moment";
 import { apiRoutes } from "@/routes/api";
+import { IPrice } from "@/interfaces/price";
 
 const breadcrumb = {
   items: [
@@ -34,8 +35,8 @@ const breadcrumb = {
 
 const PricingListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [pricings, setPricings] = useState([]);
-  const [filteredPricingList, setFilteredPricingList] = useState([]);
+  const [pricings, setPricings] = useState<IPrice[]>([]);
+  const [filteredPricingList, setFilteredPricingList] = useState<IPrice[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -68,20 +69,13 @@ const PricingListPage = () => {
 
   const handleFileUpload = async (file: any) => {
     try {
-      const timestamp = new Date().getTime();
-      const formattedDate = new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-        .format(new Date())
-        .replace(/\//g, "_");
+      const filterFileName = pricings.filter(item => item.file_name.includes(file.name))
+      let filename = file.name;
+      if (filterFileName.length > 0) {
+        filename = `${filterFileName.length}-${file.name}`
+      }
 
-      // Combine timestamp and formatted date in the filename
-      const originalExtension = file.name.split(".").pop();
-      const newFileName = `${timestamp}_${formattedDate}.${originalExtension}`;
-
-      const renamedFile = new File([file], newFileName, { type: file.type });
+      const renamedFile = new File([file], filename, { type: file.type });
       const jsonData = await parseExcelFile(renamedFile);
 
       // Step 1: Prepare the file for upload
@@ -114,7 +108,7 @@ const PricingListPage = () => {
       const data = {
         owner_id: ownerId,
         owner_type: ownerType,
-        file_name: newFileName,
+        file_name: filename,
         prices,
       };
 
@@ -159,7 +153,7 @@ const PricingListPage = () => {
     try {
       setIsLoading(true);
       setTimeout(async () => {
-        const response = await http.get(`/prices/${ownerId}`);
+        const response = await http.get(`/prices/${ownerId}?ownerType=${ownerType}`);
         if (response.status === 200) {
           setPricings(response.data.data);
           setFilteredPricingList(response.data.data);

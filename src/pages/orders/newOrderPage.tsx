@@ -31,6 +31,7 @@ import { AiOutlineExport } from "react-icons/ai";
 import OrderDetails from "./orderDetails";
 import { ITruck } from "@/interfaces/truck";
 import { IDriver } from "@/interfaces/driver";
+import { IContractor } from "@/interfaces/contractor";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -59,10 +60,10 @@ const breadcrumb: BreadcrumbProps = {
 
 const AddOrderForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [contractorId, setContractorId] = useState<string>("");
-  const [clientId, setClientId] = useState<string>();
-  const [pricesByContractor, setPricesByContractor] = useState<IPrice[]>([]);
-  const [pricesByClient, setPricesByClient] = useState<IPrice[]>([]);
+  const [selectedContractor, setSelectedContractor] = useState<IContractor>();
+  const [clientId, setClientId] = useState<string>("");
+  const [priceListContractor, setPriceListContractor] = useState<IPrice[]>([]);
+  const [priceListClient, setPriceListClient] = useState<IPrice[]>([]);
 
   const [pickupDistricts, setPickupDistricts] = useState<string[]>([]);
   const [deliveryDistricts, setDeliveryDistricts] = useState<string[]>([]);
@@ -77,7 +78,10 @@ const AddOrderForm: React.FC = () => {
   const [trucks, setTrucks] = useState<ITruck[]>([]);
   const [drivers, setDrivers] = useState<IDriver[]>([]);
 
-  const [selectedPriceTable, setSelectedPriceTable] = useState<IPrice>();
+  const [selectedPriceClient, setSelectedPriceClient] = useState<IPrice>();
+  const [selectedPriceContractor, setSelectedPriceContractor] =
+    useState<IPrice>();
+
   const [locationLabels, setLocationLabels] = useState<ILocationLabels>({
     allDeliveryProvinces: [],
     allPickupProvinces: [],
@@ -85,7 +89,8 @@ const AddOrderForm: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSelectContractor = (value: string) => {
-    setContractorId(value);
+    const filterContractor = contractors.find((item) => item.id === value);
+    setSelectedContractor(filterContractor);
     form.setFieldsValue({ driver_id: undefined, truck_id: undefined });
   };
 
@@ -99,7 +104,7 @@ const AddOrderForm: React.FC = () => {
   };
 
   const updateLocationLabels = (data: any) => {
-    setSelectedPriceTable(data);
+    setSelectedPriceContractor(data);
     const allPickupProvinces: string[] = data.price_details.map(
       (item: IPriceDetail) => item.from_city
     );
@@ -113,12 +118,23 @@ const AddOrderForm: React.FC = () => {
     });
   };
 
-  const handleSelectPriceTable = async (priceId: string) => {
+  const handleSelectPriceContractor = async (priceId: string) => {
     try {
       const { data } = await http.get(
-        `${apiRoutes.prices}/${contractorId}/${priceId}`
+        `${apiRoutes.prices}/${selectedContractor?.id}/${priceId}`
       );
       updateLocationLabels(data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSelectPriceClient = async (priceId: string) => {
+    try {
+      const { data } = await http.get(
+        `${apiRoutes.prices}/${clientId}/${priceId}`
+      );
+      setSelectedPriceClient(data.data);
     } catch (error) {
       console.log(error);
     }
@@ -131,7 +147,7 @@ const AddOrderForm: React.FC = () => {
   const handleProvinceChange = (value: string, field: string) => {
     if (field === "pickup_province") {
       const districts =
-        selectedPriceTable?.price_details
+        selectedPriceContractor?.price_details
           .filter((item) => item.from_city === value)
           .map((item) => item.from_district) || [];
 
@@ -139,7 +155,7 @@ const AddOrderForm: React.FC = () => {
       form.setFieldValue("pickup_district", null);
     } else {
       const districts =
-        selectedPriceTable?.price_details
+        selectedPriceContractor?.price_details
           .filter((item) => item.to_city === value)
           .map((item) => item.to_district) || [];
 
@@ -167,7 +183,7 @@ const AddOrderForm: React.FC = () => {
       const selectedTruck = allTrucks.find(
         (item) => item.id === form.getFieldValue("truck_id")
       );
-      const singlePriceRow = selectedPriceTable?.price_details.find(
+      const singlePriceRow = selectedPriceContractor?.price_details.find(
         (item) =>
           item.from_city === pickupProvince &&
           item.from_district === pickupDistrict &&
@@ -189,9 +205,9 @@ const AddOrderForm: React.FC = () => {
       const res = await http.get(`/prices/${ownerId}?ownerType=${ownerType}`);
       if (res.status === 200) {
         if (ownerType === "contractor") {
-          setPricesByContractor(res.data.data);
+          setPriceListContractor(res.data.data);
         } else {
-          setPricesByClient(res.data.data);
+          setPriceListClient(res.data.data);
         }
       }
     } catch (error) {
@@ -200,23 +216,23 @@ const AddOrderForm: React.FC = () => {
   };
 
   useEffect(() => {
-    if (contractorId) {
+    if (selectedContractor?.id) {
       // filter prices
-      fetchPricings(contractorId, "contractor");
+      fetchPricings(selectedContractor?.id, "contractor");
 
       // filter trucks
       const trucksFiltered = allTrucks.filter(
-        (item) => item.contractor_id === contractorId
+        (item) => item.contractor_id === selectedContractor?.id
       );
       setTrucks(trucksFiltered);
 
       // filter drivers
       const driversFiltered = allDrivers.filter(
-        (item) => item.contractor_id === contractorId
+        (item) => item.contractor_id === selectedContractor?.id
       );
       setDrivers(driversFiltered);
     }
-  }, [contractorId]);
+  }, [selectedContractor?.id]);
 
   // Utility function to parse Excel file locally
   const parseExcelFile = (file: any): Promise<any> => {
@@ -240,22 +256,23 @@ const AddOrderForm: React.FC = () => {
     });
   };
 
-  const handleFileUpload = async (file: any) => {
+  const handleFileUpload = async (file: any, ownerType: string) => {
     try {
-      const timestamp = new Date().getTime();
-      const formattedDate = new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-        .format(new Date())
-        .replace(/\//g, "_"); // Replace "/" with "_" to get "DD_MM_YYYY"
+      let ownerId: string = selectedContractor?.id as string;
+      const isClientType = ownerType === "client";
+      if (isClientType) {
+        ownerId = clientId;
+      }
 
-      // Combine timestamp and formatted date in the filename
-      const originalExtension = file.name.split(".").pop();
-      const newFileName = `${timestamp}_${formattedDate}.${originalExtension}`;
+      const filterFileName = (
+        isClientType ? priceListClient : priceListContractor
+      ).filter((item) => item.file_name.includes(file.name));
+      let filename = file.name;
+      if (filterFileName.length > 0) {
+        filename = `${filterFileName.length}-${file.name}`;
+      }
 
-      const renamedFile = new File([file], newFileName, { type: file.type });
+      const renamedFile = new File([file], filename, { type: file.type });
       const jsonData = await parseExcelFile(renamedFile);
 
       // Step 1: Prepare the file for upload
@@ -286,8 +303,9 @@ const AddOrderForm: React.FC = () => {
       }));
 
       const data = {
-        contractor_id: contractorId,
-        file_name: newFileName,
+        owner_id: ownerId,
+        owner_type: ownerType,
+        file_name: filename,
         prices,
       };
 
@@ -295,7 +313,7 @@ const AddOrderForm: React.FC = () => {
 
       // Step 4: Send parsed data to the API
       const pricesRes = await http.post(
-        `${apiRoutes.prices}/${contractorId}`,
+        `${apiRoutes.prices}/${ownerId}`,
         data,
         {
           headers: {
@@ -303,13 +321,16 @@ const AddOrderForm: React.FC = () => {
           },
         }
       );
-      fetchPricings(contractorId, "contractor");
 
       message.success(`Đã tải lên bảng giá excel ${renamedFile.name}`);
+      await fetchPricings(ownerId, ownerType);
 
       if (pricesRes?.data?.data) {
-        form.setFieldsValue({ prices: pricesRes?.data?.data?.id });
-        message.info(`Đang áp dụng bảng giá mới ${renamedFile.name}`);
+        if (isClientType) {
+          form.setFieldsValue({ client_price_id: "" });
+        } else {
+          form.setFieldsValue({ contractor_price_id: "" });
+        }
       }
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
@@ -374,9 +395,9 @@ const AddOrderForm: React.FC = () => {
               <Select
                 size="large"
                 placeholder="Chọn lái xe"
-                disabled={!contractorId}
+                disabled={!selectedContractor?.id}
               >
-                {contractorId &&
+                {selectedContractor?.id &&
                   drivers.map((driver) => (
                     <Option key={driver.id} value={driver.id}>
                       {driver.full_name}
@@ -395,9 +416,9 @@ const AddOrderForm: React.FC = () => {
               <Select
                 size="large"
                 placeholder="Chọn xe tải"
-                disabled={!contractorId}
+                disabled={!selectedContractor?.id}
               >
-                {contractorId &&
+                {selectedContractor?.id &&
                   trucks.map((truck) => (
                     <Option key={truck.id} value={truck.id}>
                       {truck.license_plate} - {truck.capacity}T / {truck.volume}
@@ -433,34 +454,34 @@ const AddOrderForm: React.FC = () => {
               label={
                 <div>
                   Bảng giá nhãn hàng{" "}
-                  {contractorId && (
+                  {selectedContractor?.id && (
                     <Upload
                       name="avatar"
                       className="avatar-uploader cursor-pointer"
                       customRequest={({ file, onSuccess, onError }: any) => {
-                        handleFileUpload(file)
+                        handleFileUpload(file, "client")
                           .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
                           .catch((err) => onError?.(err)); // Handle errors
                       }}
                       showUploadList={false}
                       accept=".xlsx,.xls"
                     >
-                      <Link to={""}>(Thêm bảng giá khác?)</Link>
+                      <Link to={""}>(Thêm giá khác?)</Link>
                     </Upload>
                   )}
                 </div>
               }
-              name="price_id"
+              name="client_price_id"
               rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
             >
               <Select
                 size="large"
                 placeholder="Chọn Bảng Giá"
-                disabled={!contractorId}
-                onChange={handleSelectPriceTable}
+                disabled={!clientId}
+                onChange={handleSelectPriceClient}
               >
-                {pricesByClient &&
-                  pricesByClient.map((priceTable, index) => (
+                {priceListClient &&
+                  priceListClient.map((priceTable, index) => (
                     <Option key={priceTable.id} value={priceTable.id}>
                       {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
                     </Option>
@@ -468,47 +489,48 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label={
-                <div>
-                  Bảng giá cho nhà thầu{" "}
-                  {contractorId && (
-                    <Upload
-                      name="avatar"
-                      className="avatar-uploader cursor-pointer"
-                      customRequest={({ file, onSuccess, onError }: any) => {
-                        handleFileUpload(file)
-                          .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
-                          .catch((err) => onError?.(err)); // Handle errors
-                      }}
-                      showUploadList={false}
-                      accept=".xlsx,.xls"
-                    >
-                      <Link to={""}>(Thêm bảng giá khác?)</Link>
-                    </Upload>
-                  )}
-                </div>
-              }
-              name="price_id"
-              rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
-            >
-              <Select
-                size="large"
-                placeholder="Chọn Bảng Giá"
-                disabled={!contractorId}
-                onChange={handleSelectPriceTable}
+          {selectedContractor && selectedContractor.type !== "internal" && (
+            <Col xs={24} sm={12}>
+              <Form.Item
+                label={
+                  <div>
+                    Bảng giá cho nhà thầu{" "}
+                    {selectedContractor?.id && (
+                      <Upload
+                        name="avatar"
+                        className="avatar-uploader cursor-pointer"
+                        customRequest={({ file, onSuccess, onError }: any) => {
+                          handleFileUpload(file, "contractor")
+                            .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
+                            .catch((err) => onError?.(err)); // Handle errors
+                        }}
+                        showUploadList={false}
+                        accept=".xlsx,.xls"
+                      >
+                        <Link to={""}>(Thêm giá khác?)</Link>
+                      </Upload>
+                    )}
+                  </div>
+                }
+                name="contractor_price_id"
+                rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
               >
-                {pricesByContractor &&
-                  pricesByContractor.map((priceTable, index) => (
-                    <Option key={priceTable.id} value={priceTable.id}>
-                      {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
-                    </Option>
-                  ))}
-              </Select>
-            </Form.Item>
-          </Col>
+                <Select
+                  size="large"
+                  placeholder="Chọn Bảng Giá"
+                  disabled={!selectedContractor?.id}
+                  onChange={handleSelectPriceContractor}
+                >
+                  {priceListContractor &&
+                    priceListContractor.map((priceTable, index) => (
+                      <Option key={priceTable.id} value={priceTable.id}>
+                        {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
+                      </Option>
+                    ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          )}
 
           <Col xs={24} sm={12}>
             <Form.Item

@@ -6,6 +6,7 @@ export interface IContractor {
     name: string;
     phone: string;
     address: string;
+    type: string;
     note?: string;
     drivers?: IDriver[];
     trucks?: ITruck[];

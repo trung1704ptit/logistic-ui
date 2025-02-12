@@ -1,6 +1,7 @@
 export interface IPrice {
   id: string;
-  contractor_id: string;
+  owner_type: string;
+  owner_id: string;
   file_name: string;
   price_details: IPriceDetail[];
   updated_at: string;
