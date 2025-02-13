@@ -88,3 +88,8 @@ export const KEYS_PAYSLIP = [
   { label: "Ghi chú", value: "notes" },
   { label: "Thực lĩnh", value: "final_salary" },
 ];
+
+export const CONTRACTOR_TYPES = {
+  internal: 'internal',
+  external: 'external'
+}

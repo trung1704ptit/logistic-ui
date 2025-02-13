@@ -1,10 +1,19 @@
-import { Row, Col, BreadcrumbProps, Form, Space, Input, Button } from "antd";
+import {
+  Row,
+  Col,
+  BreadcrumbProps,
+  Form,
+  Space,
+  InputNumber,
+  Button,
+  message,
+} from "antd";
 import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { apiRoutes } from "@/routes/api";
 import { webRoutes } from "@/routes/web";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
 
@@ -27,20 +36,16 @@ const DriverListPage = () => {
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: ISetting) => {
     try {
-      const payload = {
-        ...values,
-        height: parseFloat(values.height),
-        width: parseFloat(values.width),
-        length: parseFloat(values.length),
-        capacity: parseFloat(values.capacity),
-        volume: parseFloat(values.volume),
-      };
       setIsLoading(true);
       setIsError(false);
-      const res = await http.post("/settings", payload);
+      const payload = {
+        settings: values,
+      };
+      const res = await http.post(apiRoutes.settings, payload);
       if (res && res.data) {
+        message.success("Cập nhật cài đặt thành công");
       }
     } catch (error) {
       setIsError(true);
@@ -48,6 +53,25 @@ const DriverListPage = () => {
       setIsLoading(false);
     }
   };
+
+  const fetchSettings = async () => {
+    try {
+      setIsLoading(true);
+      setIsError(false);
+      const res = await http.get(apiRoutes.settings);
+      if (res && res?.data) {
+        form.setFieldsValue(res.data.data.settings);
+      }
+    } catch (error) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
   const handleCancel = () => {
     navigate(-1);
@@ -68,7 +92,7 @@ const DriverListPage = () => {
               name="kpi_threshold"
               rules={[{ required: true, message: "Hãy nhập số KPI" }]}
             >
-              <Input size="large" placeholder="Ví dụ 45" />
+              <InputNumber size="large" placeholder="Ví dụ 45"  className="w-full" />
             </Form.Item>
           </Col>
           <Col xs={24} sm={8}>
@@ -77,7 +101,7 @@ const DriverListPage = () => {
               name="kpi_bonus"
               rules={[{ required: true, message: "Hãy nhập tiền KPI" }]}
             >
-              <Input size="large" placeholder="Ví dụ 500000" />
+              <InputNumber size="large" placeholder="Ví dụ 500000"  className="w-full" />
             </Form.Item>
           </Col>
           <Col xs={24}>

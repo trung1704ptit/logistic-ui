@@ -25,7 +25,7 @@ import http from "@/lib/http";
 import { IPrice, IPriceDetail } from "@/interfaces/price";
 import { apiRoutes } from "@/routes/api";
 import * as XLSX from "xlsx";
-import { priceKeys, priceKeysBlackList } from "@/constants";
+import { CONTRACTOR_TYPES, priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
 import { AiOutlineExport } from "react-icons/ai";
 import OrderDetails from "./orderDetails";
@@ -87,6 +87,9 @@ const AddOrderForm: React.FC = () => {
     allPickupProvinces: [],
   });
   const navigate = useNavigate();
+
+  const myValue = Form.useWatch("client_price_id", form);
+  const isIntenal = selectedContractor?.type === CONTRACTOR_TYPES.internal;
 
   const handleSelectContractor = (value: string) => {
     const filterContractor = contractors.find((item) => item.id === value);
@@ -327,9 +330,9 @@ const AddOrderForm: React.FC = () => {
 
       if (pricesRes?.data?.data) {
         if (isClientType) {
-          form.setFieldsValue({ client_price_id: "" });
+          form.setFieldsValue({ client_price_id: undefined });
         } else {
-          form.setFieldsValue({ contractor_price_id: "" });
+          form.setFieldsValue({ contractor_price_id: undefined });
         }
       }
     } catch (error) {
@@ -375,7 +378,6 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
           <Col xs={24} sm={12}>
             <Form.Item label="Ngày tạo" name="order_time">
               <DatePicker
@@ -385,7 +387,6 @@ const AddOrderForm: React.FC = () => {
               />
             </Form.Item>
           </Col>
-
           <Col xs={24} sm={12}>
             <Form.Item
               label="Chọn Lái xe"
@@ -406,7 +407,6 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
           <Col xs={24} sm={12}>
             <Form.Item
               label="Chọn xe tải"
@@ -428,7 +428,6 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
           <Col xs={24} sm={12}>
             <Form.Item
               label="Nhãn hàng"
@@ -448,13 +447,12 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
           <Col xs={24} sm={12}>
             <Form.Item
               label={
                 <div>
                   Bảng giá nhãn hàng{" "}
-                  {selectedContractor?.id && (
+                  {clientId && (
                     <Upload
                       name="avatar"
                       className="avatar-uploader cursor-pointer"
@@ -472,7 +470,7 @@ const AddOrderForm: React.FC = () => {
                 </div>
               }
               name="client_price_id"
-              rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
+              // rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
             >
               <Select
                 size="large"
@@ -513,7 +511,7 @@ const AddOrderForm: React.FC = () => {
                   </div>
                 }
                 name="contractor_price_id"
-                rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
+                // rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
               >
                 <Select
                   size="large"
@@ -531,7 +529,6 @@ const AddOrderForm: React.FC = () => {
               </Form.Item>
             </Col>
           )}
-
           <Col xs={24} sm={12}>
             <Form.Item
               label="Đơn vị tính"
@@ -552,7 +549,6 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
           {unitSelected === "weight" && (
             <Col xs={24} sm={12}>
               <Form.Item label="Số tấn của hàng" name="package_weight">
@@ -566,7 +562,6 @@ const AddOrderForm: React.FC = () => {
               </Form.Item>
             </Col>
           )}
-
           {unitSelected === "volumn" && (
             <Col xs={24} sm={12}>
               <Form.Item label="Số khối của hàng" name="package_volumn">
@@ -580,9 +575,7 @@ const AddOrderForm: React.FC = () => {
               </Form.Item>
             </Col>
           )}
-
           <Divider />
-
           <Col xs={24} sm={12}>
             <Form.Item
               label="Điểm đóng hàng"
@@ -622,7 +615,6 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
           <Col xs={24} sm={12}>
             <Form.Item
               label="Điểm trả hàng"
@@ -661,7 +653,6 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
           <Col xs={24} sm={12}>
             <Form.Item
               label="Lương chuyến"
@@ -867,7 +858,39 @@ const AddOrderForm: React.FC = () => {
               />
             </Form.Item>
           </Col>
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Giá từ nhãn hàng"
+              name="price_from_client"
+              normalize={(value) => (value ? Number(value) : value)}
+              rules={[{ required: true, message: "Hãy nhập giá từ nhãn hàng" }]}
+            >
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập giá"
+                onWheel={(e) => e.currentTarget.blur()}
+              />
+            </Form.Item>
+          </Col>
 
+          <Col xs={24} sm={12}>
+            <Form.Item
+              label="Giá áp cho nhà thầu"
+              name="price_for_contractor"
+              normalize={(value) => (value ? Number(value) : value)}
+              rules={[{ required: true, message: "Hãy nhập giá cho nhà thầu" }]}
+            >
+              <Input
+                size="large"
+                type="number"
+                min={0}
+                placeholder="Nhập giá"
+                onWheel={(e) => e.currentTarget.blur()}
+              />
+            </Form.Item>
+          </Col>
           <Col xs={24}>
             <Form.Item label="Ghi chú" name="notes">
               <TextArea
@@ -877,7 +900,6 @@ const AddOrderForm: React.FC = () => {
               />
             </Form.Item>
           </Col>
-
           {isReview && (
             <OrderDetails
               data={form.getFieldsValue()}
@@ -885,7 +907,6 @@ const AddOrderForm: React.FC = () => {
               onClose={() => setIsReview(false)}
             />
           )}
-
           <Col xs={24}>
             <Form.Item>
               <Space>
