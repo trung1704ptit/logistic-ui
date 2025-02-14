@@ -17,7 +17,12 @@ import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
 
-import { findPrice, searchByLabel } from "@/lib/utils";
+import {
+  findPrice,
+  NotificationType,
+  searchByLabel,
+  showNotification,
+} from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import dayjs from "dayjs";
@@ -32,6 +37,8 @@ import OrderDetails from "./orderDetails";
 import { ITruck } from "@/interfaces/truck";
 import { IDriver } from "@/interfaces/driver";
 import { IContractor } from "@/interfaces/contractor";
+import { IClient } from "@/interfaces/client";
+import InputNumber from "@/components/InputNumber";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -61,7 +68,7 @@ const breadcrumb: BreadcrumbProps = {
 const AddOrderForm: React.FC = () => {
   const [form] = Form.useForm();
   const [selectedContractor, setSelectedContractor] = useState<IContractor>();
-  const [clientId, setClientId] = useState<string>("");
+  const [selectedClient, setSelectedClientId] = useState<IClient>();
   const [priceListContractor, setPriceListContractor] = useState<IPrice[]>([]);
   const [priceListClient, setPriceListClient] = useState<IPrice[]>([]);
 
@@ -72,6 +79,7 @@ const AddOrderForm: React.FC = () => {
   const allDrivers = useSelector((state: RootState) => state.driver.drivers);
   const allClients = useSelector((state: RootState) => state.client.clients);
   const allTrucks = useSelector((state: RootState) => state.truck.trucks);
+  const [highlight, setHighlight] = useState(false);
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
@@ -91,14 +99,33 @@ const AddOrderForm: React.FC = () => {
   const myValue = Form.useWatch("client_price_id", form);
   const isIntenal = selectedContractor?.type === CONTRACTOR_TYPES.internal;
 
+  useEffect(() => {
+    if (selectedContractor !== null) {
+      setHighlight(true);
+
+      const timer = setTimeout(() => setHighlight(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedContractor]);
+
   const handleSelectContractor = (value: string) => {
     const filterContractor = contractors.find((item) => item.id === value);
     setSelectedContractor(filterContractor);
-    form.setFieldsValue({ driver_id: undefined, truck_id: undefined });
+    form.setFieldsValue({
+      driver_id: undefined,
+      truck_id: undefined,
+      price_for_contractor: undefined,
+      contractor_price_id: undefined,
+    });
   };
 
   const handleSelectClient = (clientId: string) => {
-    setClientId(clientId);
+    const filterClient = allClients.find((item) => item.id === clientId);
+    setSelectedClientId(filterClient);
+    form.setFieldsValue({
+      price_from_client: undefined,
+      client_price_id: undefined,
+    });
     fetchPricings(clientId, "client");
   };
 
@@ -135,7 +162,7 @@ const AddOrderForm: React.FC = () => {
   const handleSelectPriceClient = async (priceId: string) => {
     try {
       const { data } = await http.get(
-        `${apiRoutes.prices}/${clientId}/${priceId}`
+        `${apiRoutes.prices}/${selectedClient?.id}/${priceId}`
       );
       setSelectedPriceClient(data.data);
     } catch (error) {
@@ -263,8 +290,8 @@ const AddOrderForm: React.FC = () => {
     try {
       let ownerId: string = selectedContractor?.id as string;
       const isClientType = ownerType === "client";
-      if (isClientType) {
-        ownerId = clientId;
+      if (isClientType && selectedClient) {
+        ownerId = selectedClient.id;
       }
 
       const filterFileName = (
@@ -350,7 +377,6 @@ const AddOrderForm: React.FC = () => {
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        style={{ maxWidth: 800, margin: "0 auto" }}
         initialValues={{
           trip_count: 1,
           trip_salary: 0,
@@ -358,8 +384,17 @@ const AddOrderForm: React.FC = () => {
           unit: "weight",
         }}
       >
-        <Row gutter={[8, 8]}>
-          <Col xs={24} sm={12}>
+        <Row gutter={[16, 8]}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+            <Form.Item label="Ngày tạo" name="order_time">
+              <DatePicker
+                size="large"
+                className="w-full"
+                format={"DD-MM-YYYY"}
+              />
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Nhà thầu"
               name="contractor_id"
@@ -378,16 +413,8 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item label="Ngày tạo" name="order_time">
-              <DatePicker
-                size="large"
-                className="w-full"
-                format={"DD-MM-YYYY"}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24} sm={12}>
+
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Chọn Lái xe"
               name="driver_id"
@@ -407,7 +434,7 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Chọn xe tải"
               name="truck_id"
@@ -428,7 +455,7 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Nhãn hàng"
               name="client"
@@ -447,12 +474,12 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label={
                 <div>
                   Bảng giá nhãn hàng{" "}
-                  {clientId && (
+                  {selectedClient && (
                     <Upload
                       name="avatar"
                       className="avatar-uploader cursor-pointer"
@@ -475,7 +502,7 @@ const AddOrderForm: React.FC = () => {
               <Select
                 size="large"
                 placeholder="Chọn Bảng Giá"
-                disabled={!clientId}
+                disabled={!selectedClient}
                 onChange={handleSelectPriceClient}
               >
                 {priceListClient &&
@@ -487,49 +514,46 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          {selectedContractor && selectedContractor.type !== "internal" && (
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label={
-                  <div>
-                    Bảng giá cho nhà thầu{" "}
-                    {selectedContractor?.id && (
-                      <Upload
-                        name="avatar"
-                        className="avatar-uploader cursor-pointer"
-                        customRequest={({ file, onSuccess, onError }: any) => {
-                          handleFileUpload(file, "contractor")
-                            .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
-                            .catch((err) => onError?.(err)); // Handle errors
-                        }}
-                        showUploadList={false}
-                        accept=".xlsx,.xls"
-                      >
-                        <Link to={""}>(Thêm giá khác?)</Link>
-                      </Upload>
-                    )}
-                  </div>
-                }
-                name="contractor_price_id"
-                // rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+            <Form.Item
+              label={
+                <div>
+                  Bảng giá nhà thầu{" "}
+                  {selectedContractor?.id && (
+                    <Upload
+                      name="avatar"
+                      className="avatar-uploader cursor-pointer"
+                      customRequest={({ file, onSuccess, onError }: any) => {
+                        handleFileUpload(file, "contractor")
+                          .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
+                          .catch((err) => onError?.(err)); // Handle errors
+                      }}
+                      showUploadList={false}
+                      accept=".xlsx,.xls"
+                    >
+                      <Link to={""}>(Thêm giá khác?)</Link>
+                    </Upload>
+                  )}
+                </div>
+              }
+              name="contractor_price_id"
+            >
+              <Select
+                size="large"
+                placeholder="Chọn Bảng Giá"
+                disabled={!selectedContractor?.id}
+                onChange={handleSelectPriceContractor}
               >
-                <Select
-                  size="large"
-                  placeholder="Chọn Bảng Giá"
-                  disabled={!selectedContractor?.id}
-                  onChange={handleSelectPriceContractor}
-                >
-                  {priceListContractor &&
-                    priceListContractor.map((priceTable, index) => (
-                      <Option key={priceTable.id} value={priceTable.id}>
-                        {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
-                      </Option>
-                    ))}
-                </Select>
-              </Form.Item>
-            </Col>
-          )}
-          <Col xs={24} sm={12}>
+                {priceListContractor &&
+                  priceListContractor.map((priceTable, index) => (
+                    <Option key={priceTable.id} value={priceTable.id}>
+                      {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
+                    </Option>
+                  ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Đơn vị tính"
               name="unit"
@@ -550,35 +574,33 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
           {unitSelected === "weight" && (
-            <Col xs={24} sm={12}>
-              <Form.Item label="Số tấn của hàng" name="package_weight">
-                <Input
-                  size="large"
-                  type="number"
-                  min={0}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  placeholder="Nhập số tấn"
-                />
+            <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+              <Form.Item
+                label="Số tấn của hàng"
+                name="package_weight"
+                rules={[{ required: true, message: "Nhập số tấn của hàng" }]}
+              >
+                <InputNumber size="large" placeholder="Nhập số tấn" />
               </Form.Item>
             </Col>
           )}
           {unitSelected === "volumn" && (
-            <Col xs={24} sm={12}>
-              <Form.Item label="Số khối của hàng" name="package_volumn">
-                <Input
-                  size="large"
-                  type="number"
-                  min={0}
-                  onWheel={(e) => e.currentTarget.blur()}
-                  placeholder="Nhập số khối"
-                />
+            <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+              <Form.Item
+                label="Số khối của hàng"
+                name="package_volumn"
+                rules={[{ required: true, message: "Nhập số khối của hàng" }]}
+              >
+                <InputNumber size="large" placeholder="Nhập số khối" />
               </Form.Item>
             </Col>
           )}
+
           <Divider />
-          <Col xs={24} sm={12}>
+
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
-              label="Điểm đóng hàng"
+              label="Tỉnh đóng hàng"
               name="pickup_province"
               rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
             >
@@ -598,8 +620,10 @@ const AddOrderForm: React.FC = () => {
                 ))}
               </Select>
             </Form.Item>
+          </Col>
 
-            <Form.Item name="pickup_district">
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+            <Form.Item name="pickup_district" label="Huyện đóng hàng">
               <Select
                 size="large"
                 placeholder="Chọn quận/huyện"
@@ -615,9 +639,10 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
+
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
-              label="Điểm trả hàng"
+              label="Tỉnh trả hàng"
               name="delivery_province"
               rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
             >
@@ -637,7 +662,14 @@ const AddOrderForm: React.FC = () => {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item name="delivery_district">
+          </Col>
+
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+            <Form.Item
+              name="delivery_district"
+              label="Huyện trả hàng"
+              rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
+            >
               <Select
                 size="large"
                 placeholder="Chọn quận/huyện"
@@ -653,245 +685,157 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
+
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
-              label="Lương chuyến"
-              name="trip_salary"
+              label="Cước vận chuyển-nhãn hàng"
+              name="price_from_client"
               normalize={(value) => (value ? Number(value) : value)}
+              rules={[{ required: true, message: "Hãy nhập giá từ nhãn hàng" }]}
             >
-              <Input
+              <InputNumber
                 size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập lương chuyến"
-                onWheel={(e) => e.currentTarget.blur()}
+                placeholder="Nhập giá"
+                className={`w-full ${
+                  highlight ? "bg-[#009900] animate-pulse" : "bg-transparent"
+                }`}
               />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+            <Form.Item
+              label="Cước vận chuyển-nhà thầu"
+              name="price_for_contractor"
+              normalize={(value) => (value ? Number(value) : value)}
+              rules={[{ required: true, message: "Hãy nhập giá cho nhà thầu" }]}
+            >
+              <InputNumber size="large" placeholder="Nhập giá" />
+            </Form.Item>
+          </Col>
+
+          <Divider />
+
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Lương theo ngày"
               name="daily_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập Lương theo ngày"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập Lương theo ngày" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Số điểm"
               name="point_count"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập số điểm"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập số điểm" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Lương điểm"
               name="point_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập lương điểm"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập lương điểm" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Phí thu hồi"
               name="recovery_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                onWheel={(e) => e.currentTarget.blur()}
-                placeholder="Nhập phí thu hồi"
-              />
+              <InputNumber size="large" placeholder="Nhập phí thu hồi" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Lương bốc xếp"
               name="loading_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập lương" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Tiền ăn"
               name="meal_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập tiền ăn" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Vé bãi"
               name="parking_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập vé bãi"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập vé bãi" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Tiền lưu ca"
               name="standby_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập phí lưu ca"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập phí lưu ca" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Chi khác"
               name="other_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập Chi khác"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập Chi khác" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Đổ dầu ngoài"
               name="outside_oil_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập phí đổ dầu ngoài"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập phí đổ dầu ngoài" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Chi dầu"
               name="oil_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập chi dầu"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập chi dầu" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
             <Form.Item
               label="Thu cước"
               name="charge_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập thu cước"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập thu cước" />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Giá từ nhãn hàng"
-              name="price_from_client"
-              normalize={(value) => (value ? Number(value) : value)}
-              rules={[{ required: true, message: "Hãy nhập giá từ nhãn hàng" }]}
-            >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập giá"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Giá áp cho nhà thầu"
-              name="price_for_contractor"
-              normalize={(value) => (value ? Number(value) : value)}
-              rules={[{ required: true, message: "Hãy nhập giá cho nhà thầu" }]}
-            >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập giá"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
-            </Form.Item>
-          </Col>
-          <Col xs={24}>
+          <Col xs={24} xl={8}>
             <Form.Item label="Ghi chú" name="notes">
               <TextArea
                 size="large"

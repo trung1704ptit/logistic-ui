@@ -4,7 +4,6 @@ import {
   BreadcrumbProps,
   Form,
   Space,
-  InputNumber,
   Button,
   message,
 } from "antd";
@@ -16,6 +15,7 @@ import BasePageContainer from "@/components/layout/pageContainer";
 import { useEffect, useState } from "react";
 import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
+import InputNumber from "@/components/InputNumber";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -92,7 +92,10 @@ const DriverListPage = () => {
               name="kpi_threshold"
               rules={[{ required: true, message: "Hãy nhập số KPI" }]}
             >
-              <InputNumber size="large" placeholder="Ví dụ 45"  className="w-full" />
+              <InputNumber
+                size="large"
+                placeholder="Ví dụ 45"
+              />
             </Form.Item>
           </Col>
           <Col xs={24} sm={8}>
@@ -101,7 +104,11 @@ const DriverListPage = () => {
               name="kpi_bonus"
               rules={[{ required: true, message: "Hãy nhập tiền KPI" }]}
             >
-              <InputNumber size="large" placeholder="Ví dụ 500000"  className="w-full" />
+              <InputNumber
+                size="large"
+                placeholder="Ví dụ 500000"
+                className="w-full"
+              />
             </Form.Item>
           </Col>
           <Col xs={24}>

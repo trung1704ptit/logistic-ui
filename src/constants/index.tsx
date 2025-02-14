@@ -1,13 +1,12 @@
 import { ConfigProviderProps } from "antd/es/config-provider";
-import enUSIntl from "antd/locale/en_US";
-
+import viVNIntl from "antd/locale/vi_VN";
 export const antdConfig: ConfigProviderProps = {
   theme: {
     token: {
       colorPrimary: CONFIG.theme.accentColor,
     },
   },
-  locale: enUSIntl,
+  locale: viVNIntl,
 };
 
 export const priceKeys = {
