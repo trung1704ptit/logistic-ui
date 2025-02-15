@@ -17,12 +17,7 @@ import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
 
-import {
-  findPrice,
-  NotificationType,
-  searchByLabel,
-  showNotification,
-} from "@/lib/utils";
+import { findPrice, searchByLabel } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import dayjs from "dayjs";
@@ -72,14 +67,20 @@ const AddOrderForm: React.FC = () => {
   const [priceListContractor, setPriceListContractor] = useState<IPrice[]>([]);
   const [priceListClient, setPriceListClient] = useState<IPrice[]>([]);
 
-  const [pickupDistricts, setPickupDistricts] = useState<string[]>([]);
-  const [deliveryDistricts, setDeliveryDistricts] = useState<string[]>([]);
+  const [pickupDistrictList, setPickupDistrictList] = useState<string[]>([]);
+  const [deliveryDistrictList, setDeliveryDistrictList] = useState<string[]>(
+    []
+  );
   const [unitSelected, setUnitSelected] = useState("weight");
   const [isReview, setIsReview] = useState(false);
   const allDrivers = useSelector((state: RootState) => state.driver.drivers);
   const allClients = useSelector((state: RootState) => state.client.clients);
   const allTrucks = useSelector((state: RootState) => state.truck.trucks);
-  const [highlight, setHighlight] = useState(false);
+  const [highlightPriceFromClient, setHighlightPriceFromClient] =
+    useState(false);
+  const [highlightPriceForContractor, setHighlightPriceForContractor] =
+    useState(false);
+
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
@@ -96,17 +97,14 @@ const AddOrderForm: React.FC = () => {
   });
   const navigate = useNavigate();
 
-  const myValue = Form.useWatch("client_price_id", form);
+  const packageWeight = Form.useWatch("package_weight", form);
+  const packageVolumn = Form.useWatch("package_volumn", form);
+  const pickupProvince = Form.useWatch("pickup_province", form);
+  const pickupDistrict = Form.useWatch("pickup_district", form);
+  const deliveryProvince = Form.useWatch("delivery_province", form);
+  const deliveryDistrict = Form.useWatch("delivery_district", form);
+
   const isIntenal = selectedContractor?.type === CONTRACTOR_TYPES.internal;
-
-  useEffect(() => {
-    if (selectedContractor !== null) {
-      setHighlight(true);
-
-      const timer = setTimeout(() => setHighlight(false), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedContractor]);
 
   const handleSelectContractor = (value: string) => {
     const filterContractor = contractors.find((item) => item.id === value);
@@ -181,7 +179,7 @@ const AddOrderForm: React.FC = () => {
           .filter((item) => item.from_city === value)
           .map((item) => item.from_district) || [];
 
-      setPickupDistricts([...new Set(districts)]);
+      setPickupDistrictList([...new Set(districts)]);
       form.setFieldValue("pickup_district", null);
     } else {
       const districts =
@@ -189,46 +187,36 @@ const AddOrderForm: React.FC = () => {
           .filter((item) => item.to_city === value)
           .map((item) => item.to_district) || [];
 
-      setDeliveryDistricts([...new Set(districts)]);
+      setDeliveryDistrictList([...new Set(districts)]);
       form.setFieldValue("delivery_district", null);
     }
-    form.setFieldValue("trip_salary", null);
+    // form.setFieldValue("trip_salary", null);
   };
 
-  const handleDistrictChange = () => {
-    const truckId = form.getFieldValue("truck_id");
-    const priceId = form.getFieldValue("price_id");
-    const pickupProvince = form.getFieldValue("pickup_province");
-    const pickupDistrict = form.getFieldValue("pickup_district");
-    const deliveryProvince = form.getFieldValue("delivery_province");
-    const deliveryDistrict = form.getFieldValue("delivery_district");
-    if (
-      truckId &&
-      priceId &&
-      pickupProvince &&
-      pickupDistrict &&
-      deliveryProvince &&
-      deliveryDistrict
-    ) {
-      const selectedTruck = allTrucks.find(
-        (item) => item.id === form.getFieldValue("truck_id")
-      );
-      const singlePriceRow = selectedPriceContractor?.price_details.find(
-        (item) =>
-          item.from_city === pickupProvince &&
-          item.from_district === pickupDistrict &&
-          item.to_city === deliveryProvince &&
-          item.to_district === deliveryDistrict
-      );
-      if (selectedTruck && singlePriceRow) {
-        const tripSalary = findPrice(
-          singlePriceRow.weight_prices,
-          `${selectedTruck.capacity}T`
-        );
-        form.setFieldValue("trip_salary", tripSalary);
-      }
-    }
-  };
+  // const handleDistrictChange = () => {
+  //   const truckId = form.getFieldValue("truck_id");
+  //   const priceId = form.getFieldValue("price_id");
+  //   const pickupProvince = form.getFieldValue("pickup_province");
+  //   const pickupDistrict = form.getFieldValue("pickup_district");
+  //   const deliveryProvince = form.getFieldValue("delivery_province");
+  //   const deliveryDistrict = form.getFieldValue("delivery_district");
+  //   if (
+  //     truckId &&
+  //     priceId &&
+  //     pickupProvince &&
+  //     pickupDistrict &&
+  //     deliveryProvince &&
+  //     deliveryDistrict
+  //   ) {
+  //     const singlePriceRow = selectedPriceContractor?.price_details.find(
+  //       (item) =>
+  //         item.from_city === pickupProvince &&
+  //         item.from_district === pickupDistrict &&
+  //         item.to_city === deliveryProvince &&
+  //         item.to_district === deliveryDistrict
+  //     );
+  //   }
+  // };
 
   const fetchPricings = async (ownerId: string, ownerType: string) => {
     try {
@@ -369,7 +357,93 @@ const AddOrderForm: React.FC = () => {
 
   const handleUnitSelect = (value: string) => {
     setUnitSelected(value);
+    form.setFieldValue("package_volumn", undefined);
+    form.setFieldValue("package_weight", undefined);
   };
+
+  // watch changes, update the price_from_client
+  useEffect(() => {
+    // change the client selected selected
+    // change the pickup_province, pickup_district, delivery_province, delivery_district
+    if (
+      selectedPriceClient &&
+      (packageWeight || packageVolumn) &&
+      pickupDistrict &&
+      deliveryProvince &&
+      pickupDistrict &&
+      deliveryDistrict
+    ) {
+      setHighlightPriceFromClient(true);
+
+      const priceFound = selectedPriceClient?.price_details.find(
+        (item) =>
+          item.from_city === pickupProvince &&
+          item.from_district === pickupDistrict &&
+          item.to_city === deliveryProvince &&
+          item.to_district === deliveryDistrict
+      );
+      if (priceFound) {
+        const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
+        const priceCalculated = findPrice(priceFound.weight_prices, value);
+        form.setFieldValue("price_from_client", priceCalculated);
+      }
+
+      const timer = setTimeout(() => setHighlightPriceFromClient(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    selectedPriceClient,
+    packageWeight,
+    packageVolumn,
+    pickupProvince,
+    pickupDistrict,
+    deliveryProvince,
+    deliveryDistrict,
+  ]);
+
+  // watch changes, update the price_for_contractor
+  useEffect(() => {
+    // change contractor price selected
+    // change the pickup_province, pickup_district, delivery_province, delivery_district
+    if (
+      selectedContractor &&
+      (packageWeight || packageVolumn) &&
+      pickupDistrict &&
+      deliveryProvince &&
+      pickupDistrict &&
+      deliveryDistrict
+    ) {
+      setHighlightPriceForContractor(true);
+
+      const priceFound = selectedPriceContractor?.price_details.find(
+        (item) =>
+          item.from_city === pickupProvince &&
+          item.from_district === pickupDistrict &&
+          item.to_city === deliveryProvince &&
+          item.to_district === deliveryDistrict
+      );
+
+      if (priceFound) {
+        const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
+        const priceCalculated = findPrice(priceFound.weight_prices, value);
+        form.setFieldValue("price_for_contractor", priceCalculated);
+      }
+
+      const timer = setTimeout(
+        () => setHighlightPriceForContractor(false),
+        1000
+      );
+      return () => clearTimeout(timer);
+    }
+  }, [
+    selectedPriceContractor,
+    packageWeight,
+    packageVolumn,
+    pickupProvince,
+    pickupDistrict,
+    deliveryProvince,
+    deliveryDistrict,
+  ]);
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -384,8 +458,8 @@ const AddOrderForm: React.FC = () => {
           unit: "weight",
         }}
       >
-        <Row gutter={[16, 8]}>
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+        <Row gutter={[16, 0]}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item label="Ngày tạo" name="order_time">
               <DatePicker
                 size="large"
@@ -394,7 +468,7 @@ const AddOrderForm: React.FC = () => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Nhà thầu"
               name="contractor_id"
@@ -414,7 +488,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Chọn Lái xe"
               name="driver_id"
@@ -434,7 +508,7 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Chọn xe tải"
               name="truck_id"
@@ -455,7 +529,7 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Nhãn hàng"
               name="client"
@@ -474,7 +548,7 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label={
                 <div>
@@ -491,7 +565,7 @@ const AddOrderForm: React.FC = () => {
                       showUploadList={false}
                       accept=".xlsx,.xls"
                     >
-                      <Link to={""}>(Thêm giá khác?)</Link>
+                      <Link to={""}>Thêm mới?</Link>
                     </Upload>
                   )}
                 </div>
@@ -514,7 +588,7 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label={
                 <div>
@@ -531,7 +605,7 @@ const AddOrderForm: React.FC = () => {
                       showUploadList={false}
                       accept=".xlsx,.xls"
                     >
-                      <Link to={""}>(Thêm giá khác?)</Link>
+                      <Link to={""}>Thêm mới?</Link>
                     </Upload>
                   )}
                 </div>
@@ -553,7 +627,7 @@ const AddOrderForm: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Đơn vị tính"
               name="unit"
@@ -574,7 +648,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
           {unitSelected === "weight" && (
-            <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item
                 label="Số tấn của hàng"
                 name="package_weight"
@@ -585,7 +659,7 @@ const AddOrderForm: React.FC = () => {
             </Col>
           )}
           {unitSelected === "volumn" && (
-            <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item
                 label="Số khối của hàng"
                 name="package_volumn"
@@ -598,7 +672,7 @@ const AddOrderForm: React.FC = () => {
 
           <Divider />
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Tỉnh đóng hàng"
               name="pickup_province"
@@ -622,16 +696,16 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
-            <Form.Item name="pickup_district" label="Huyện đóng hàng">
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item name="pickup_district" label="Huyện đóng hàng"  rules={[{ required: true, message: "Hãy chọn Huyện" }]}>
               <Select
                 size="large"
                 placeholder="Chọn quận/huyện"
                 showSearch
                 filterOption={searchByLabel}
-                onChange={handleDistrictChange}
+                // onChange={handleDistrictChange}
               >
-                {pickupDistricts.map((district) => (
+                {pickupDistrictList.map((district) => (
                   <Option key={district} value={district}>
                     {district}
                   </Option>
@@ -640,7 +714,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Tỉnh trả hàng"
               name="delivery_province"
@@ -664,20 +738,20 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               name="delivery_district"
               label="Huyện trả hàng"
-              rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
+              rules={[{ required: true, message: "Hãy chọn Huyện" }]}
             >
               <Select
                 size="large"
                 placeholder="Chọn quận/huyện"
                 showSearch
                 filterOption={searchByLabel}
-                onChange={handleDistrictChange}
+                // onChange={handleDistrictChange}
               >
-                {deliveryDistricts.map((district) => (
+                {deliveryDistrictList.map((district) => (
                   <Option key={district} value={district}>
                     {district}
                   </Option>
@@ -686,7 +760,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Cước vận chuyển-nhãn hàng"
               name="price_from_client"
@@ -697,26 +771,36 @@ const AddOrderForm: React.FC = () => {
                 size="large"
                 placeholder="Nhập giá"
                 className={`w-full ${
-                  highlight ? "bg-[#009900] animate-pulse" : "bg-transparent"
+                  highlightPriceFromClient
+                    ? "bg-orange-500 animate-pulse"
+                    : "bg-transparent"
                 }`}
               />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Cước vận chuyển-nhà thầu"
               name="price_for_contractor"
               normalize={(value) => (value ? Number(value) : value)}
               rules={[{ required: true, message: "Hãy nhập giá cho nhà thầu" }]}
             >
-              <InputNumber size="large" placeholder="Nhập giá" />
+              <InputNumber
+                size="large"
+                placeholder="Nhập giá"
+                className={`w-full ${
+                  highlightPriceForContractor
+                    ? "bg-orange-500 animate-pulse"
+                    : "bg-transparent"
+                }`}
+              />
             </Form.Item>
           </Col>
 
           <Divider />
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Lương theo ngày"
               name="daily_salary"
@@ -726,7 +810,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Số điểm"
               name="point_count"
@@ -736,7 +820,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Lương điểm"
               name="point_salary"
@@ -746,7 +830,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Phí thu hồi"
               name="recovery_fee"
@@ -756,7 +840,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Lương bốc xếp"
               name="loading_salary"
@@ -766,7 +850,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Tiền ăn"
               name="meal_fee"
@@ -776,7 +860,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Vé bãi"
               name="parking_fee"
@@ -786,7 +870,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Tiền lưu ca"
               name="standby_fee"
@@ -796,7 +880,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Chi khác"
               name="other_salary"
@@ -806,7 +890,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Đổ dầu ngoài"
               name="outside_oil_fee"
@@ -816,7 +900,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Chi dầu"
               name="oil_fee"
@@ -826,7 +910,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8} md={6} lg={6} xl={4}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Thu cước"
               name="charge_fee"

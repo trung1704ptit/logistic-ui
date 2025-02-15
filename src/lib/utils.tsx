@@ -85,18 +85,20 @@ export const removeKeysInPrice = () => {
 };
 
 export function findPrice(data: any, keyInput: string) {
-  console.log(data, keyInput);
   if (data && keyInput) {
-    // Parse the weight key input
-    const weight = parseFloat(keyInput.replace(SHORT_KEYS.ton, ""));
+    const lastChar = keyInput.slice(-1);
+
+    const value = parseFloat(keyInput.replace(lastChar, ""));
 
     // Iterate through the data to find the matching range
     for (const range of Object.keys(data)) {
-      const [min, max] = range
-        .split("-")
-        .map((str) => parseFloat(str.replace(SHORT_KEYS.ton, "")));
-      if (weight >= min && weight <= max) {
-        return data[range]; // Return the price for the matching range
+      if (range.includes(lastChar)) {
+        const [min, max] = range
+          .split("-")
+          .map((str) => parseFloat(str.replace(lastChar, "")));
+        if (value >= min && value <= max) {
+          return data[range]; // Return the price for the matching range
+        }
       }
     }
   }
