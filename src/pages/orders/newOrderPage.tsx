@@ -34,6 +34,7 @@ import { IDriver } from "@/interfaces/driver";
 import { IContractor } from "@/interfaces/contractor";
 import { IClient } from "@/interfaces/client";
 import InputNumber from "@/components/InputNumber";
+import SelectWithInput from "@/components/SelectWithInput";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -399,12 +400,14 @@ const AddOrderForm: React.FC = () => {
           item.to_district === deliveryDistrict
       );
 
+      let key = isIntenal ? "trip_salary" : "price_for_contractor";
+
       if (priceFound) {
         const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
         const priceCalculated = findPrice(priceFound.weight_prices, value);
-        form.setFieldValue("price_for_contractor", priceCalculated);
+        form.setFieldValue(key, priceCalculated);
       } else {
-        form.setFieldValue("price_for_contractor", 0);
+        form.setFieldValue(key, 0);
       }
 
       const timer = setTimeout(
@@ -657,7 +660,8 @@ const AddOrderForm: React.FC = () => {
               name="pickup_province"
               rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
             >
-              <Select
+
+              {/* <Select
                 size="large"
                 placeholder="Chọn tỉnh/thành phố"
                 filterOption={searchByLabel}
@@ -671,7 +675,20 @@ const AddOrderForm: React.FC = () => {
                     {province}
                   </Option>
                 ))}
-              </Select>
+              </Select> */}
+
+              <SelectWithInput
+                size="large"
+                placeholder="Chọn tỉnh/thành phố"
+                filterOption={searchByLabel}
+                showSearch
+                onChange={(value: string) =>
+                  handleProvinceChange(value, "pickup_province")
+                }
+                options={locationLabels.allPickupProvinces}
+              />
+
+
             </Form.Item>
           </Col>
 
@@ -681,19 +698,13 @@ const AddOrderForm: React.FC = () => {
               label="Huyện đóng hàng"
               rules={[{ required: true, message: "Hãy chọn Huyện" }]}
             >
-              <Select
+              <SelectWithInput
                 size="large"
                 placeholder="Chọn quận/huyện"
                 showSearch
                 filterOption={searchByLabel}
-                // onChange={handleDistrictChange}
-              >
-                {pickupDistrictList.map((district) => (
-                  <Option key={district} value={district}>
-                    {district}
-                  </Option>
-                ))}
-              </Select>
+                options={pickupDistrictList}
+              />
             </Form.Item>
           </Col>
 
@@ -703,21 +714,16 @@ const AddOrderForm: React.FC = () => {
               name="delivery_province"
               rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
             >
-              <Select
+              <SelectWithInput
                 size="large"
                 showSearch
                 placeholder="Chọn tỉnh/thành phố"
                 filterOption={searchByLabel}
-                onChange={(value) =>
+                onChange={(value: string) =>
                   handleProvinceChange(value, "delivery_province")
                 }
-              >
-                {locationLabels.allDeliveryProvinces.map((province) => (
-                  <Option key={province} value={province}>
-                    {province}
-                  </Option>
-                ))}
-              </Select>
+                options={locationLabels.allDeliveryProvinces}
+              />
             </Form.Item>
           </Col>
 
@@ -727,19 +733,13 @@ const AddOrderForm: React.FC = () => {
               label="Huyện trả hàng"
               rules={[{ required: true, message: "Hãy chọn Huyện" }]}
             >
-              <Select
+              <SelectWithInput
                 size="large"
                 placeholder="Chọn quận/huyện"
                 showSearch
                 filterOption={searchByLabel}
-                // onChange={handleDistrictChange}
-              >
-                {deliveryDistrictList.map((district) => (
-                  <Option key={district} value={district}>
-                    {district}
-                  </Option>
-                ))}
-              </Select>
+                options={deliveryDistrictList}
+              />
             </Form.Item>
           </Col>
 
@@ -939,6 +939,7 @@ const AddOrderForm: React.FC = () => {
               data={form.getFieldsValue()}
               isReadOnly={false}
               onClose={() => setIsReview(false)}
+              client={selectedClient}
             />
           )}
           <Col xs={24}>

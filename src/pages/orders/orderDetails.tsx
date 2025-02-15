@@ -10,6 +10,7 @@ import { apiRoutes } from "@/routes/api";
 import dayjs from "dayjs";
 import { webRoutes } from "@/routes/web";
 import { useNavigate } from "react-router-dom";
+import { IClient } from "@/interfaces/client";
 
 const { Text } = Typography;
 
@@ -18,6 +19,7 @@ interface ReviewProps {
   orderId?: string | null;
   onClose: () => void;
   data: IOrder;
+  client?: IClient
 }
 
 const ReviewComponent: React.FC<ReviewProps> = ({
@@ -25,6 +27,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
   isReadOnly,
   orderId,
   onClose,
+  client,
 }) => {
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
@@ -76,7 +79,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
       name: "Tài xế",
       value: driver?.full_name,
     },
-    { name: "Nhãn hàng", value: data.client },
+    { name: "Nhãn hàng", value: client?.name },
     {
       name: "Lấy hàng",
       value: `${data.pickup_province} - ${data.pickup_district}`,
