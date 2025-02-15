@@ -83,7 +83,6 @@ const DriverListPage = () => {
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        style={{ maxWidth: 800, margin: "0 auto" }}
       >
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={8}>
@@ -107,6 +106,20 @@ const DriverListPage = () => {
               <InputNumber
                 size="large"
                 placeholder="Ví dụ 500000"
+                className="w-full"
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={8}>
+            <Form.Item
+              label="Thuế VAT %"
+              name="vat"
+              rules={[{ required: true, message: "Hãy nhập thuế VAT" }]}
+            >
+              <InputNumber
+                size="large"
+                placeholder="Ví dụ 8"
                 className="w-full"
               />
             </Form.Item>

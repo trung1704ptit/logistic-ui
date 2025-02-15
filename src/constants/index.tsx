@@ -92,3 +92,8 @@ export const CONTRACTOR_TYPES = {
   internal: 'internal',
   external: 'external'
 }
+
+export const OWNER_TYPES = {
+  client: 'client',
+  contractor: 'contractor'
+}

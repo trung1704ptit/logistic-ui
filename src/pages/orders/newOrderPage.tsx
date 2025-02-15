@@ -25,7 +25,7 @@ import http from "@/lib/http";
 import { IPrice, IPriceDetail } from "@/interfaces/price";
 import { apiRoutes } from "@/routes/api";
 import * as XLSX from "xlsx";
-import { CONTRACTOR_TYPES, priceKeys, priceKeysBlackList } from "@/constants";
+import { CONTRACTOR_TYPES, OWNER_TYPES, priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
 import { AiOutlineExport } from "react-icons/ai";
 import OrderDetails from "./orderDetails";
@@ -190,39 +190,13 @@ const AddOrderForm: React.FC = () => {
       setDeliveryDistrictList([...new Set(districts)]);
       form.setFieldValue("delivery_district", null);
     }
-    // form.setFieldValue("trip_salary", null);
   };
-
-  // const handleDistrictChange = () => {
-  //   const truckId = form.getFieldValue("truck_id");
-  //   const priceId = form.getFieldValue("price_id");
-  //   const pickupProvince = form.getFieldValue("pickup_province");
-  //   const pickupDistrict = form.getFieldValue("pickup_district");
-  //   const deliveryProvince = form.getFieldValue("delivery_province");
-  //   const deliveryDistrict = form.getFieldValue("delivery_district");
-  //   if (
-  //     truckId &&
-  //     priceId &&
-  //     pickupProvince &&
-  //     pickupDistrict &&
-  //     deliveryProvince &&
-  //     deliveryDistrict
-  //   ) {
-  //     const singlePriceRow = selectedPriceContractor?.price_details.find(
-  //       (item) =>
-  //         item.from_city === pickupProvince &&
-  //         item.from_district === pickupDistrict &&
-  //         item.to_city === deliveryProvince &&
-  //         item.to_district === deliveryDistrict
-  //     );
-  //   }
-  // };
 
   const fetchPricings = async (ownerId: string, ownerType: string) => {
     try {
       const res = await http.get(`/prices/${ownerId}?ownerType=${ownerType}`);
       if (res.status === 200) {
-        if (ownerType === "contractor") {
+        if (ownerType === OWNER_TYPES.contractor) {
           setPriceListContractor(res.data.data);
         } else {
           setPriceListClient(res.data.data);
@@ -386,6 +360,8 @@ const AddOrderForm: React.FC = () => {
         const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
         const priceCalculated = findPrice(priceFound.weight_prices, value);
         form.setFieldValue("price_from_client", priceCalculated);
+      } else {
+        form.setFieldValue("price_from_client", 0);
       }
 
       const timer = setTimeout(() => setHighlightPriceFromClient(false), 1000);
@@ -427,6 +403,8 @@ const AddOrderForm: React.FC = () => {
         const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
         const priceCalculated = findPrice(priceFound.weight_prices, value);
         form.setFieldValue("price_for_contractor", priceCalculated);
+      } else {
+        form.setFieldValue("price_for_contractor", 0);
       }
 
       const timer = setTimeout(
@@ -459,15 +437,6 @@ const AddOrderForm: React.FC = () => {
         }}
       >
         <Row gutter={[16, 0]}>
-          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-            <Form.Item label="Ngày tạo" name="order_time">
-              <DatePicker
-                size="large"
-                className="w-full"
-                format={"DD-MM-YYYY"}
-              />
-            </Form.Item>
-          </Col>
           <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Nhà thầu"
@@ -592,7 +561,7 @@ const AddOrderForm: React.FC = () => {
             <Form.Item
               label={
                 <div>
-                  Bảng giá nhà thầu{" "}
+                  {isIntenal ? "Bảng tính lương " : "Bảng giá nhà thầu "}
                   {selectedContractor?.id && (
                     <Upload
                       name="avatar"
@@ -670,6 +639,16 @@ const AddOrderForm: React.FC = () => {
             </Col>
           )}
 
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item label="Ngày tạo" name="order_time">
+              <DatePicker
+                size="large"
+                className="w-full"
+                format={"DD-MM-YYYY"}
+              />
+            </Form.Item>
+          </Col>
+
           <Divider />
 
           <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
@@ -697,7 +676,11 @@ const AddOrderForm: React.FC = () => {
           </Col>
 
           <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-            <Form.Item name="pickup_district" label="Huyện đóng hàng"  rules={[{ required: true, message: "Hãy chọn Huyện" }]}>
+            <Form.Item
+              name="pickup_district"
+              label="Huyện đóng hàng"
+              rules={[{ required: true, message: "Hãy chọn Huyện" }]}
+            >
               <Select
                 size="large"
                 placeholder="Chọn quận/huyện"
@@ -779,24 +762,47 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-            <Form.Item
-              label="Cước vận chuyển-nhà thầu"
-              name="price_for_contractor"
-              normalize={(value) => (value ? Number(value) : value)}
-              rules={[{ required: true, message: "Hãy nhập giá cho nhà thầu" }]}
-            >
-              <InputNumber
-                size="large"
-                placeholder="Nhập giá"
-                className={`w-full ${
-                  highlightPriceForContractor
-                    ? "bg-orange-500 animate-pulse"
-                    : "bg-transparent"
-                }`}
-              />
-            </Form.Item>
-          </Col>
+          {isIntenal ? (
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item
+                label="Luơng chuyến"
+                name="trip_salary"
+                normalize={(value) => (value ? Number(value) : value)}
+                rules={[{ required: true, message: "Hãy nhập lương chuyến" }]}
+              >
+                <InputNumber
+                  size="large"
+                  placeholder="Nhập lương chuyến"
+                  className={`w-full ${
+                    highlightPriceForContractor
+                      ? "bg-orange-500 animate-pulse"
+                      : "bg-transparent"
+                  }`}
+                />
+              </Form.Item>
+            </Col>
+          ) : (
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item
+                label="Cước vận chuyển-nhà thầu"
+                name="price_for_contractor"
+                normalize={(value) => (value ? Number(value) : value)}
+                rules={[
+                  { required: true, message: "Hãy nhập giá cho nhà thầu" },
+                ]}
+              >
+                <InputNumber
+                  size="large"
+                  placeholder="Nhập giá"
+                  className={`w-full ${
+                    highlightPriceForContractor
+                      ? "bg-orange-500 animate-pulse"
+                      : "bg-transparent"
+                  }`}
+                />
+              </Form.Item>
+            </Col>
+          )}
 
           <Divider />
 
