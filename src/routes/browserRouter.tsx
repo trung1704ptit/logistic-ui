@@ -50,7 +50,7 @@ const UpdateTruckPage = loadable(() => import('@/pages/trucks/updateTruckPage'),
 const ReportPage = loadable(() => import('@/pages/reports/reportPage'), {
   fallback: fallbackElement,
 });
-const PayslipPage  = loadable(() => import('@/pages/payslips/payslipPage'), {
+const PayslipPage  = loadable(() => import('@/pages/payslips/Payslips'), {
   fallback: fallbackElement,
 });
 

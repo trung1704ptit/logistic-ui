@@ -6,7 +6,7 @@ import BasePageContainer from "@/components/layout/pageContainer";
 import { useEffect, useState } from "react";
 import ErrorMessage from "@/components/Alert/Error";
 import InputNumber from "@/components/InputNumber";
-import { fetchSettings, updateSettings } from "@/store/slices/settingSlice";
+import { updateSettings } from "@/store/slices/settingSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store";
 
@@ -38,10 +38,10 @@ const DriverListPage = () => {
       message.success("Cập nhật thành công");
     } catch (error) {
       setIsError(true);
+    } finally {
+      setIsLoading(false)
     }
   };
-
-  console.log('settings:', settings)
 
   useEffect(() => {
     form.setFieldsValue(settings)

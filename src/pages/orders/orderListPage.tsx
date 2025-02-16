@@ -23,6 +23,9 @@ const TruckListPage = () => {
   const d = new Date();
   const [searchParams, setSearchParams] = useSearchParams();
   const drivers = useSelector((state: RootState) => state.driver.drivers);
+  const contractors = useSelector(
+    (state: RootState) => state.contractor.contractors
+  );
 
   const handleDeleteOrder = (order: any) => {
     Modal.confirm({
@@ -66,7 +69,7 @@ const TruckListPage = () => {
       searchParams.set("month", (d.getMonth() + 1).toString());
       searchParams.set("year", d.getFullYear().toString());
       searchParams.set("driver_id", "all");
-
+      searchParams.set("contractor_id", "all");
       setSearchParams(searchParams);
     }
   }, [searchParams]);
@@ -75,10 +78,11 @@ const TruckListPage = () => {
     try {
       setIsLoading(true);
       const driverId = searchParams.get("driver_id");
+      const contractorId = searchParams.get("contractor_id");
       const month = searchParams.get("month");
       const year = searchParams.get("year");
       const res = await http.get(
-        `${apiRoutes.orders}?year=${year}&month=${month}&driver_id=${driverId}`
+        `${apiRoutes.orders}?year=${year}&month=${month}&contractor_id=${contractorId}&driver_id=${driverId}`
       );
       if (res && res.data) {
         console.log(res.data.data);
@@ -133,7 +137,11 @@ const TruckListPage = () => {
       align: "center",
       render: (_, row) => (
         <>
-          {row?.truck?.license_plate && <>{row?.truck?.license_plate} - {row?.truck?.capacity}T</>}
+          {row?.truck?.license_plate && (
+            <>
+              {row?.truck?.license_plate} - {row?.truck?.capacity}T
+            </>
+          )}
         </>
       ),
     },
@@ -142,7 +150,7 @@ const TruckListPage = () => {
       dataIndex: "client_id",
       sorter: false,
       align: "center",
-      render: (_, row) => <span>{row.client.name}</span>
+      render: (_, row) => <span>{row.client.name}</span>,
     },
     {
       title: "Điểm lấy",
@@ -238,6 +246,22 @@ const TruckListPage = () => {
                     );
                   })}
                 </Select>
+                <Select
+                  placeholder="Nhà thầu"
+                  className="w-[180px]"
+                  value={searchParams.get("contractor_id")}
+                  onChange={(val) => handleChangeFilter("contractor_id", val)}
+                >
+                  <Select.Option key={"all"} value="all">
+                    Tất cả
+                  </Select.Option>
+                  {contractors.map((item) => (
+                    <Select.Option key={item.id} value={item.id}>
+                      {item.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+
                 <Select
                   placeholder="Tài xế"
                   className="w-[180px]"

@@ -8,27 +8,22 @@ import {
   Space,
   Form,
   Typography,
-  Divider,
-  Card,
   message,
 } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IDriver } from "@/interfaces/driver";
-import { IPayslip } from "@/interfaces/payslip";
 import { webRoutes } from "@/routes/web";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { apiRoutes } from "@/routes/api";
 import http from "@/lib/http";
-import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { IOrder } from "@/interfaces/order";
-import SummarizeForm from "./SummarizeForm";
 import * as XLSX from "xlsx";
-import { KEYS_ORDER, KEYS_PAYSLIP } from "@/constants";
+import { CONTRACTOR_TYPES, KEYS_ORDER, KEYS_PAYSLIP } from "@/constants";
 import moment from "moment";
 import { IContractor } from "@/interfaces/contractor";
-
-const { Text } = Typography;
+import InternalSumary from "./InternalSumary";
+import ExternalSumary from "./ExternalSumary";
 
 const breadcrumb = {
   items: [
@@ -49,8 +44,68 @@ function summarizeByDriverId(data: IOrder[]) {
   data.forEach((entry) => {
     const { driver_id, driver, contractor, contractor_id, ...fields } = entry;
 
-    if (!summary[driver_id]) {
-      summary[driver_id] = {
+    if (driver?.full_name) {
+      if (!summary[driver_id]) {
+        summary[driver_id] = {
+          driver_id,
+          contractor_id,
+          driver,
+          contractor,
+          total_trips: 0,
+          trip_salary: 0,
+          price_for_contractor: 0,
+          daily_salary: 0,
+          point_salary: 0,
+          meal_fee: 0,
+          standby_fee: 0,
+          parking_fee: 0,
+          loading_salary: 0,
+          recovery_fee: 0,
+          other_salary: 0,
+          oil_fee: 0,
+          outside_oil_fee: 0,
+          total_salary: 0,
+          charge_fee: 0,
+        };
+      }
+
+      summary[driver_id].total_trips += 1;
+      summary[driver_id].trip_salary += fields.trip_salary || 0;
+      summary[driver_id].price_for_contractor +=
+        fields.price_for_contractor || 0;
+      summary[driver_id].meal_fee += fields.meal_fee || 0;
+      summary[driver_id].parking_fee += fields.parking_fee || 0;
+      summary[driver_id].daily_salary += fields.daily_salary || 0;
+      summary[driver_id].point_salary += fields.point_salary || 0;
+      summary[driver_id].standby_fee += fields.standby_fee || 0;
+      summary[driver_id].loading_salary += fields.loading_salary || 0;
+      summary[driver_id].recovery_fee += fields.recovery_fee || 0;
+      summary[driver_id].other_salary += fields.other_salary || 0;
+      summary[driver_id].oil_fee += fields.oil_fee || 0;
+      summary[driver_id].outside_oil_fee += fields.outside_oil_fee || 0;
+      summary[driver_id].total_salary += fields.total_salary || 0;
+      summary[driver_id].charge_fee += fields.charge_fee || 0;
+    }
+  });
+
+  return Object.values(summary);
+}
+
+function summarizeByContractor(
+  data: IOrder[],
+  selectedContractor?: IContractor
+) {
+  const summary: any = {};
+
+  const filterData = data.filter(
+    (item) => item.contractor_id === selectedContractor?.id
+  );
+
+  filterData.forEach((entry) => {
+    const { driver_id, driver, contractor, contractor_id, ...fields } = entry;
+
+    if (!summary[contractor_id]) {
+      summary[contractor_id] = {
         driver_id,
         contractor_id,
         driver,
@@ -73,21 +128,22 @@ function summarizeByDriverId(data: IOrder[]) {
       };
     }
 
-    summary[driver_id].total_trips += 1;
-    summary[driver_id].trip_salary += fields.trip_salary || 0;
-    summary[driver_id].price_for_contractor += fields.price_for_contractor || 0;
-    summary[driver_id].meal_fee += fields.meal_fee || 0;
-    summary[driver_id].parking_fee += fields.parking_fee || 0;
-    summary[driver_id].daily_salary += fields.daily_salary || 0;
-    summary[driver_id].point_salary += fields.point_salary || 0;
-    summary[driver_id].standby_fee += fields.standby_fee || 0;
-    summary[driver_id].loading_salary += fields.loading_salary || 0;
-    summary[driver_id].recovery_fee += fields.recovery_fee || 0;
-    summary[driver_id].other_salary += fields.other_salary || 0;
-    summary[driver_id].oil_fee += fields.oil_fee || 0;
-    summary[driver_id].outside_oil_fee += fields.outside_oil_fee || 0;
-    summary[driver_id].total_salary += fields.total_salary || 0;
-    summary[driver_id].charge_fee += fields.charge_fee || 0;
+    summary[contractor_id].total_trips += 1;
+    summary[contractor_id].trip_salary += fields.trip_salary || 0;
+    summary[contractor_id].price_for_contractor +=
+      fields.price_for_contractor || 0;
+    summary[contractor_id].meal_fee += fields.meal_fee || 0;
+    summary[contractor_id].parking_fee += fields.parking_fee || 0;
+    summary[contractor_id].daily_salary += fields.daily_salary || 0;
+    summary[contractor_id].point_salary += fields.point_salary || 0;
+    summary[contractor_id].standby_fee += fields.standby_fee || 0;
+    summary[contractor_id].loading_salary += fields.loading_salary || 0;
+    summary[contractor_id].recovery_fee += fields.recovery_fee || 0;
+    summary[contractor_id].other_salary += fields.other_salary || 0;
+    summary[contractor_id].oil_fee += fields.oil_fee || 0;
+    summary[contractor_id].outside_oil_fee += fields.outside_oil_fee || 0;
+    summary[contractor_id].total_salary += fields.total_salary || 0;
+    summary[contractor_id].charge_fee += fields.charge_fee || 0;
   });
 
   return Object.values(summary);
@@ -105,8 +161,6 @@ const PayslipAdmin: React.FC = () => {
   const [selectedContractor, setSelectedContractor] = useState<IContractor>();
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
   const [filteredDrivers, setFilteredDrivers] = useState<IDriver[]>([]);
-  const [payslipData, setPayslipData] = useState<IPayslip | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const [orderListSummarized, setOrderListSummarized] = useState<any>([]);
   const [orderListRaw, setOrderListRaw] = useState<any>([]);
@@ -128,24 +182,40 @@ const PayslipAdmin: React.FC = () => {
     }
   }, [selectedContractor, drivers]);
 
+  const fetchPayslips = async (c?: IContractor) => {
+    const values = await form.validateFields();
+    const payslipRes = await http.get(
+      `${apiRoutes.payslips}?year=${values.year}&month=${
+        values.month
+      }&contractor_id=${c ? c.id : selectedContractor?.id}`
+    );
+
+    if (payslipRes && payslipRes.data) {
+      const payslipData = payslipRes.data.data;
+      setPayslipList(payslipData);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+      const selectedContractor = handleSelectContractor(values.contractor_id);
       setIsLoading(true);
       const orderRes = await http.get(
-        `${apiRoutes.orders}?year=${values.year}&month=${values.month}`
+        `${apiRoutes.orders}?year=${values.year}&month=${values.month}&contractor_id=${selectedContractor?.id}`
       );
-      const payslipRes = await http.get(
-        `${apiRoutes.payslips}?year=${values.year}&month=${values.month}`
-      );
-
-      if (payslipRes && payslipRes.data) {
-        const payslipData = payslipRes.data.data;
-        setPayslipList(payslipData);
-      }
+      fetchPayslips(selectedContractor);
 
       if (orderRes && orderRes.data) {
-        const orderData: any = summarizeByDriverId(orderRes.data.data);
+        let orderData = {};
+        if (selectedContractor?.type === CONTRACTOR_TYPES.internal) {
+          orderData = summarizeByDriverId(orderRes.data.data);
+        } else {
+          orderData = summarizeByContractor(
+            orderRes.data.data,
+            selectedContractor
+          );
+        }
         setOrderListSummarized(orderData);
         setOrderListRaw(orderRes.data.data);
       }
@@ -156,16 +226,21 @@ const PayslipAdmin: React.FC = () => {
     }
   };
 
-  const hanleViewOrderListByDriver = (driverId: string) => {
-    const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}`;
+  // const hanleViewOrderListByDriver = (driverId: string) => {
+  //   const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}`;
+  //   window.open(url, "_blank");
+  // };
+
+  const hanleViewOrderListByContractor = (driverId: string) => {
+    const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&contractor_id=${driverId}&driver_id=all`;
     window.open(url, "_blank");
   };
 
   const handleSelectContractor = (contractorId: string) => {
-    const filterItem = contractors.find(item => item.id === contractorId);
-    setSelectedContractor(filterItem)
-  }
-
+    const filterItem = contractors.find((item) => item.id === contractorId);
+    setSelectedContractor(filterItem);
+    return filterItem;
+  };
 
   const exportExcel = (driver: IDriver) => {
     const orderRecords = orderListRaw.filter(
@@ -176,11 +251,15 @@ const PayslipAdmin: React.FC = () => {
       (item: any) => item.driver_id === driver.id
     );
 
-    exportSingleDriverToExcel(orderRecords, payslipRecords, driver)
-  }
+    exportSingleDriverToExcel(orderRecords, payslipRecords, driver);
+  };
 
-  const exportSingleDriverToExcel = (orderRecords: any, payslipRecords: any, driver ?: any) => {
-    const payslipRows = payslipRecords.map((payslip: any) => 
+  const exportSingleDriverToExcel = (
+    orderRecords: any,
+    payslipRecords: any,
+    driver?: any
+  ) => {
+    const payslipRows = payslipRecords.map((payslip: any) =>
       KEYS_PAYSLIP.map((keyItem) => {
         let result = undefined;
         if (keyItem.value === "contractor_id") {
@@ -192,10 +271,10 @@ const PayslipAdmin: React.FC = () => {
         } else {
           result = payslip[keyItem.value];
         }
-  
-        return result
+
+        return result;
       })
-    )
+    );
 
     const orderRows = orderRecords.map((order: any) =>
       KEYS_ORDER.map((keyItem) => {
@@ -221,80 +300,39 @@ const PayslipAdmin: React.FC = () => {
       ...payslipRows,
     ];
 
-    const data = [[["DANH SÁCH ĐƠN HÀNG"],[],[],[],[],[]], ...firstSection, blankRows,blankRows, blankRows, blankRows, [["TỔNG LƯƠNG"],[],[],[],[]],...secondSection];
+    const data = [
+      [["DANH SÁCH ĐƠN HÀNG"], [], [], [], [], []],
+      ...firstSection,
+      blankRows,
+      blankRows,
+      blankRows,
+      blankRows,
+      [["TỔNG LƯƠNG"], [], [], [], []],
+      ...secondSection,
+    ];
 
     // Create a worksheet from the data array
     const worksheet = XLSX.utils.aoa_to_sheet(data);
 
     // Create a workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, driver?.full_name || `Bảng lương ${selectedMonth}-${selectedYear}`);
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      driver?.full_name || `Bảng lương ${selectedMonth}-${selectedYear}`
+    );
 
     XLSX.writeFile(
       workbook,
-      `${driver?.full_name || 'Bảng lương'}-${selectedMonth}-${selectedYear}.xlsx`
+      `${
+        driver?.full_name || "Bảng lương"
+      }-${selectedMonth}-${selectedYear}.xlsx`
     );
   };
 
   const exportAllDriverToExcel = () => {
-    exportSingleDriverToExcel(orderListRaw, payslipList)
-  }
-
-  const columns: ProColumns[] = [
-    {
-      title: "Tài xế",
-      dataIndex: "driver_id",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-      render: (_, row) => <>{row.driver?.full_name}</>,
-    },
-    {
-      title: "Lương cơ bản",
-      dataIndex: "fixed_salary",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-      render: (_, row) => row?.driver?.fixed_salary?.toLocaleString(),
-    },
-    {
-      title: "Số chuyến",
-      dataIndex: "total_trips",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-    },
-    {
-      title: "Thực lĩnh",
-      dataIndex: "final_salary",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-      render: (_, row) => (
-        <span className="text-red-600 font-bold">
-          {row?.final_salary?.toLocaleString()}
-        </span>
-      ),
-    },
-    {
-      title: "Hành động",
-      align: "center",
-      key: "actions",
-      render: (_, row) => (
-        <Space>
-          <Button
-            type="dashed"
-            onClick={() => hanleViewOrderListByDriver(row.driver_id)}
-          >
-            Chi tiết
-          </Button>
-          <Button type="dashed" onClick={() => exportExcel(row.driver)}>
-            Tải xuống Excel
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+    exportSingleDriverToExcel(orderListRaw, payslipList);
+  };
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -346,7 +384,7 @@ const PayslipAdmin: React.FC = () => {
               <Select
                 placeholder="Chọn nhà thầu"
                 style={{ width: "100%" }}
-                onChange={handleSelectContractor}
+                // onChange={handleSelectContractor}
               >
                 {contractors.map((contractor) => (
                   <Select.Option key={contractor.id} value={contractor.id}>
@@ -383,14 +421,16 @@ const PayslipAdmin: React.FC = () => {
           <Button type="primary" onClick={handleSubmit}>
             Tổng hợp lương
           </Button>
-          <Button type="dashed" onClick={() => {
-            if (!selectedContractor || !selectedMonth || !selectedYear) {
-              message.error("Vui lòng lựa chọn nhà thầu, tháng, năm!")
-              return;
-            }
-            exportAllDriverToExcel()
-          }
-          }>
+          <Button
+            type="dashed"
+            onClick={() => {
+              if (!selectedContractor || !selectedMonth || !selectedYear) {
+                message.error("Vui lòng lựa chọn nhà thầu, tháng, năm!");
+                return;
+              }
+              exportAllDriverToExcel();
+            }}
+          >
             Tải xuống Excel
           </Button>
         </Space>
@@ -400,73 +440,27 @@ const PayslipAdmin: React.FC = () => {
       ) : (
         orderListSummarized && (
           <>
-            <ProTable
-              columns={columns}
-              cardBordered={false}
-              bordered={true}
-              scroll={{ x: true }}
-              tableLayout={"fixed"}
-              rowSelection={false}
-              pagination={false}
-              dataSource={payslipList}
-              dateFormatter="string"
-              rowKey="id"
-              search={false}
-              size="small"
-              options={{
-                reload: false,
-                density: false,
-                setting: false,
-              }}
-              cardProps={{
-                title: (
-                  <h4>
-                    Bảng tổng hợp lương{" "}
-                    {selectedMonth && selectedYear && (
-                      <>
-                        {selectedMonth}-{selectedYear}
-                      </>
-                    )}
-                  </h4>
-                ),
-              }}
-            />
-            <Text italic>Bảng thống kê đã tính tổng các lương và phụ cấp</Text>
-
-            <Divider />
-
-            {orderListSummarized.map((item: any) => {
-              const existPayslip = payslipList.find(
-                (p: any) => p.driver_id === item.driver_id
-              );
-
-              return (
-                <Card
-                  styles={{
-                    header: {
-                      backgroundColor: "#f1f1f1",
-                    },
-                  }}
-                  size="small"
-                  key={item.driver_id}
-                  title={`${
-                    item?.driver?.full_name
-                  }, Tháng ${form.getFieldValue("month")}-${form.getFieldValue(
-                    "year"
-                  )} - ${existPayslip?.submitted ? "Đã lưu" : "Chưa lưu"}`}
-                  className="mb-8"
-                >
-                  <SummarizeForm
-                    data={{
-                      ...item,
-                      existPayslip: existPayslip,
-                    }}
-                    year={selectedYear}
-                    month={selectedMonth}
-                  />
-                </Card>
-              );
-            })}
+            {selectedContractor?.type === CONTRACTOR_TYPES.internal ? (
+              <InternalSumary
+                orderListSummarized={orderListSummarized}
+                payslipList={payslipList}
+                orderListRaw={orderListRaw}
+                selectedYear={selectedYear}
+                selectedMonth={selectedMonth}
+                form={form}
+                fetchPayslips={fetchPayslips}
+              />
+            ) : (
+              <ExternalSumary
+                orderListSummarized={orderListSummarized}
+                payslipList={payslipList}
+                orderListRaw={orderListRaw}
+                selectedYear={selectedYear}
+                selectedMonth={selectedMonth}
+                form={form}
+                fetchPayslips={fetchPayslips}
+              />
+            )}
           </>
         )
       )}

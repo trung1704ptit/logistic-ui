@@ -13,11 +13,12 @@ import { useEffect, useState } from "react";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
 import { message } from "antd/lib";
+import InputNumber from "@/components/InputNumber";
 
 const { Text } = Typography;
 const { TextArea } = Input;
 
-const SummarizeForm = (props: any) => {
+const SummaryFormDriver = (props: any) => {
   const [finalSalary, setFinalSalary] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -67,21 +68,23 @@ const SummarizeForm = (props: any) => {
         };
 
         if (props?.data?.existPayslip) {
-          await http.put(`${apiRoutes.payslips}/${props.data?.existPayslip?.id}`, payload);
+          await http.put(
+            `${apiRoutes.payslips}/${props.data?.existPayslip?.id}`,
+            payload
+          );
         } else {
           await http.post(apiRoutes.payslips, payload);
         }
 
-        message.success(
-          `Lưu lương cho ${props.data.driver.full_name} thành công`
-        );
+        message.success('Đã lưu dữ liệu cước');
+        props.fetchPayslips();
         window.scrollTo({
           top: 0,
           behavior: "smooth",
         });
       } catch (error) {
         message.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
-        console.log(error)
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -144,7 +147,7 @@ const SummarizeForm = (props: any) => {
           <Col xs={12} sm={6}>
             <label className="font-medium">Tài xế:</label>
             <br />
-            <Text>{props.data.driver.full_name}</Text>
+            <Text>{props?.data?.driver?.full_name}</Text>
           </Col>
 
           <Col xs={12} sm={6}>
@@ -173,12 +176,10 @@ const SummarizeForm = (props: any) => {
               className="mb-0 font-medium"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                type="number"
+              <InputNumber
                 min={0}
                 placeholder="Nhập lương"
                 className="md:w-[50%] w-[100%]"
-                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
@@ -190,12 +191,10 @@ const SummarizeForm = (props: any) => {
               className="mb-0 font-medium"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                type="number"
+              <InputNumber
                 min={0}
                 placeholder="Nhập lương"
                 className="md:w-[50%] w-[100%]"
-                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
@@ -207,12 +206,10 @@ const SummarizeForm = (props: any) => {
               className="mb-0 font-medium"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                type="number"
+              <InputNumber
                 min={0}
                 placeholder="Nhập lương"
                 className="md:w-[50%] w-[100%]"
-                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
@@ -224,12 +221,10 @@ const SummarizeForm = (props: any) => {
               className="mb-0 font-medium"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                type="number"
+              <InputNumber
                 min={0}
                 placeholder="Nhập lương"
                 className="md:w-[50%] w-[100%]"
-                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
@@ -265,12 +260,10 @@ const SummarizeForm = (props: any) => {
               className="mb-0 font-medium"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                type="number"
+              <InputNumber
                 min={0}
                 placeholder="Nhập lương"
                 className="md:w-[50%] w-[100%]"
-                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
@@ -300,11 +293,10 @@ const SummarizeForm = (props: any) => {
               className="mb-0 font-medium"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
+              <InputNumber
                 type="number"
                 min={0}
                 className="md:w-[50%] w-[100%]"
-                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
@@ -322,12 +314,10 @@ const SummarizeForm = (props: any) => {
               className="mb-0 font-medium"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                type="number"
+              <InputNumber
                 min={0}
                 className="md:w-[50%] w-[100%]"
                 placeholder="Nhập lương"
-                onWheel={(e) => e.currentTarget.blur()}
               />
             </Form.Item>
           </Col>
@@ -351,7 +341,7 @@ const SummarizeForm = (props: any) => {
           <Divider className="m-0" />
 
           <Col xs={24}>
-            <Space size="large">
+            <Space size="middle">
               <strong className="text-lg">
                 <label className="font-medium">Thực lĩnh: </label>
                 <Text className="text-red-600 text-lg">
@@ -366,6 +356,14 @@ const SummarizeForm = (props: any) => {
               >
                 Lưu lại
               </Button>
+              <Button
+                type="dashed"
+                onClick={() =>
+                  props.hanleViewOrderListByDriver(props.data.driver.id)
+                }
+              >
+                Chi tiết
+              </Button>
               {props?.data?.existPayslip && <span>Đã lưu</span>}
             </Space>
           </Col>
@@ -373,8 +371,9 @@ const SummarizeForm = (props: any) => {
       </Form>
     );
   } catch (error) {
+    console.log(error);
     return null;
   }
 };
 
-export default SummarizeForm;
+export default SummaryFormDriver;

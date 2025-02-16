@@ -104,6 +104,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     { name: "Phí thu hồi", value: data.recovery_fee },
     { name: "Lương bốc xếp", value: data.loading_salary },
     { name: "Tiền ăn", value: data.meal_fee },
+    { name: "Chi khác", value: data.other_salary },
     { name: "Phí lưu ca", value: data.standby_fee },
     { name: "Vé bãi", value: data.parking_fee },
     { name: "Đổ dầu ngoài", value: data.outside_oil_fee },
