@@ -1,21 +1,14 @@
-import {
-  Row,
-  Col,
-  BreadcrumbProps,
-  Form,
-  Space,
-  Button,
-  message,
-} from "antd";
+import { Row, Col, BreadcrumbProps, Form, Space, Button, message } from "antd";
 import { PlusOutlined, CloseOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { apiRoutes } from "@/routes/api";
 import { webRoutes } from "@/routes/web";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { useEffect, useState } from "react";
-import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
 import InputNumber from "@/components/InputNumber";
+import { fetchSettings, updateSettings } from "@/store/slices/settingSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -35,43 +28,24 @@ const DriverListPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const settings = useSelector((state: RootState) => state.setting.settings);
 
-  const handleSubmit = async (values: ISetting) => {
+  const handleSubmit = (payload: ISetting) => {
     try {
       setIsLoading(true);
-      setIsError(false);
-      const payload = {
-        settings: values,
-      };
-      const res = await http.post(apiRoutes.settings, payload);
-      if (res && res.data) {
-        message.success("Cập nhật cài đặt thành công");
-      }
+      dispatch(updateSettings(payload) as any);
+      message.success("Cập nhật thành công");
     } catch (error) {
       setIsError(true);
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const fetchSettings = async () => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      const res = await http.get(apiRoutes.settings);
-      if (res && res?.data) {
-        form.setFieldsValue(res.data.data.settings);
-      }
-    } catch (error) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  console.log('settings:', settings)
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    form.setFieldsValue(settings)
+  }, [settings, form]);
 
   const handleCancel = () => {
     navigate(-1);
@@ -79,11 +53,7 @@ const DriverListPage = () => {
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSubmit}
-      >
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={8} xl={6}>
             <Form.Item
@@ -91,10 +61,7 @@ const DriverListPage = () => {
               name="kpi_threshold"
               rules={[{ required: true, message: "Hãy nhập số KPI" }]}
             >
-              <InputNumber
-                size="large"
-                placeholder="Ví dụ 45"
-              />
+              <InputNumber size="large" placeholder="Ví dụ 45" />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12} md={8} xl={6}>

@@ -26,6 +26,7 @@ import SummarizeForm from "./SummarizeForm";
 import * as XLSX from "xlsx";
 import { KEYS_ORDER, KEYS_PAYSLIP } from "@/constants";
 import moment from "moment";
+import { IContractor } from "@/interfaces/contractor";
 
 const { Text } = Typography;
 
@@ -56,6 +57,7 @@ function summarizeByDriverId(data: IOrder[]) {
         contractor,
         total_trips: 0,
         trip_salary: 0,
+        price_for_contractor: 0,
         daily_salary: 0,
         point_salary: 0,
         meal_fee: 0,
@@ -73,6 +75,7 @@ function summarizeByDriverId(data: IOrder[]) {
 
     summary[driver_id].total_trips += 1;
     summary[driver_id].trip_salary += fields.trip_salary || 0;
+    summary[driver_id].price_for_contractor += fields.price_for_contractor || 0;
     summary[driver_id].meal_fee += fields.meal_fee || 0;
     summary[driver_id].parking_fee += fields.parking_fee || 0;
     summary[driver_id].daily_salary += fields.daily_salary || 0;
@@ -99,9 +102,7 @@ const PayslipAdmin: React.FC = () => {
   );
   const drivers = useSelector((state: RootState) => state.driver.drivers);
 
-  const [selectedContractor, setSelectedContractor] = useState<string | null>(
-    null
-  );
+  const [selectedContractor, setSelectedContractor] = useState<IContractor>();
   const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
   const [filteredDrivers, setFilteredDrivers] = useState<IDriver[]>([]);
   const [payslipData, setPayslipData] = useState<IPayslip | null>(null);
@@ -119,7 +120,7 @@ const PayslipAdmin: React.FC = () => {
   useEffect(() => {
     if (selectedContractor) {
       const filtered = drivers.filter(
-        (driver) => driver.contractor_id === selectedContractor
+        (driver) => driver.contractor_id === selectedContractor.id
       );
 
       setFilteredDrivers(filtered);
@@ -159,6 +160,11 @@ const PayslipAdmin: React.FC = () => {
     const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}`;
     window.open(url, "_blank");
   };
+
+  const handleSelectContractor = (contractorId: string) => {
+    const filterItem = contractors.find(item => item.id === contractorId);
+    setSelectedContractor(filterItem)
+  }
 
 
   const exportExcel = (driver: IDriver) => {
@@ -340,7 +346,7 @@ const PayslipAdmin: React.FC = () => {
               <Select
                 placeholder="Chọn nhà thầu"
                 style={{ width: "100%" }}
-                onChange={(val) => setSelectedContractor(val)}
+                onChange={handleSelectContractor}
               >
                 {contractors.map((contractor) => (
                   <Select.Option key={contractor.id} value={contractor.id}>

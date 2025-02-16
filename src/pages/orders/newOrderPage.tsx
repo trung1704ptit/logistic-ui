@@ -113,7 +113,8 @@ const AddOrderForm: React.FC = () => {
     form.setFieldsValue({
       driver_id: undefined,
       truck_id: undefined,
-      price_for_contractor: undefined,
+      price_for_contractor: 0,
+      trip_salary: 0,
       contractor_price_id: undefined,
       order_type: filterContractor?.type
     });
@@ -129,7 +130,7 @@ const AddOrderForm: React.FC = () => {
     fetchPricings(clientId, "client");
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = () => {
     setIsReview(true);
   };
 
@@ -485,7 +486,6 @@ const AddOrderForm: React.FC = () => {
             <Form.Item
               label="Chọn xe tải"
               name="truck_id"
-              // rules={[{ required: true, message: "Hãy chọn xe tải!" }]}
             >
               <Select
                 size="large"
@@ -532,8 +532,8 @@ const AddOrderForm: React.FC = () => {
                       className="avatar-uploader cursor-pointer"
                       customRequest={({ file, onSuccess, onError }: any) => {
                         handleFileUpload(file, "client")
-                          .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
-                          .catch((err) => onError?.(err)); // Handle errors
+                          .then(() => onSuccess?.(null, file))
+                          .catch((err) => onError?.(err));
                       }}
                       showUploadList={false}
                       accept=".xlsx,.xls"
@@ -544,7 +544,6 @@ const AddOrderForm: React.FC = () => {
                 </div>
               }
               name="client_price_id"
-              // rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
             >
               <Select
                 size="large"
@@ -661,23 +660,6 @@ const AddOrderForm: React.FC = () => {
               name="pickup_province"
               rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
             >
-
-              {/* <Select
-                size="large"
-                placeholder="Chọn tỉnh/thành phố"
-                filterOption={searchByLabel}
-                showSearch
-                onChange={(value) =>
-                  handleProvinceChange(value, "pickup_province")
-                }
-              >
-                {locationLabels.allPickupProvinces.map((province) => (
-                  <Option key={province} value={province}>
-                    {province}
-                  </Option>
-                ))}
-              </Select> */}
-
               <SelectWithInput
                 size="large"
                 placeholder="Chọn tỉnh/thành phố"
