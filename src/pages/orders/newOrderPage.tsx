@@ -115,6 +115,7 @@ const AddOrderForm: React.FC = () => {
       truck_id: undefined,
       price_for_contractor: undefined,
       contractor_price_id: undefined,
+      order_type: filterContractor?.type
     });
   };
 
@@ -504,7 +505,7 @@ const AddOrderForm: React.FC = () => {
           <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Nhãn hàng"
-              name="client"
+              name="client_id"
               rules={[{ required: true, message: "Hãy chọn nhãn hàng!" }]}
             >
               <Select
@@ -848,7 +849,7 @@ const AddOrderForm: React.FC = () => {
 
           <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
-              label="Lương bốc xếp"
+              label="Bốc xếp"
               name="loading_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >

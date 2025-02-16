@@ -133,15 +133,16 @@ const TruckListPage = () => {
       align: "center",
       render: (_, row) => (
         <>
-          {row?.truck?.license_plate} - {row?.truck?.capacity}T
+          {row?.truck?.license_plate && <>{row?.truck?.license_plate} - {row?.truck?.capacity}T</>}
         </>
       ),
     },
     {
       title: "Nhãn hàng",
-      dataIndex: "client",
+      dataIndex: "client_id",
       sorter: false,
       align: "center",
+      render: (_, row) => <span>{row.client.name}</span>
     },
     {
       title: "Điểm lấy",

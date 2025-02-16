@@ -108,8 +108,8 @@ export function findPrice(data: any, keyInput: string) {
 
 export function getTotalOrder(data: IOrder) {
   if (data) {
-    console.log(data);
     return (
+      data.price_for_contractor +
       data.trip_salary +
       data.daily_salary +
       data.point_salary +

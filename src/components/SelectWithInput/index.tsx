@@ -50,10 +50,11 @@ const SelectWithInput = (props: any) => {
               size="small"
             />
             <Button
-              type="text"
+              type="primary"
               icon={<PlusOutlined />}
               onClick={addItem}
               size="small"
+              disabled={!name}
             >
               Thêm mới
             </Button>

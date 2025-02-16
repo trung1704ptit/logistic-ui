@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Typography, Modal, List, Button, message } from "antd";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -19,7 +19,7 @@ interface ReviewProps {
   orderId?: string | null;
   onClose: () => void;
   data: IOrder;
-  client?: IClient
+  client?: IClient;
 }
 
 const ReviewComponent: React.FC<ReviewProps> = ({
@@ -46,6 +46,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     trip_salary: data.trip_salary || 0,
     daily_salary: data.daily_salary || 0,
     point_salary: data.point_salary || 0,
+    point_count: data.point_count || 0,
     recovery_fee: data.recovery_fee || 0,
     loading_salary: data.loading_salary || 0,
     meal_fee: data.meal_fee || 0,
@@ -53,6 +54,10 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     standby_fee: data.standby_fee || 0,
     parking_fee: data.parking_fee || 0,
     outside_oil_fee: data.outside_oil_fee || 0,
+    price_for_contractor: data.price_for_contractor || 0,
+    price_from_client: data.price_from_client || 0,
+    oil_fee: data.oil_fee || 0,
+    charge_fee: data.charge_fee || 0,
   };
 
   const contractor = data.contractor
@@ -73,7 +78,9 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     },
     {
       name: "Xe tải",
-      value: `${truck?.license_plate} - ${truck?.capacity}T`,
+      value: truck?.license_plate
+        ? `${truck?.license_plate} - ${truck?.capacity}T`
+        : "",
     },
     {
       name: "Tài xế",
@@ -89,6 +96,8 @@ const ReviewComponent: React.FC<ReviewProps> = ({
       value: `${data.delivery_province} - ${data.delivery_district}`,
     },
     { name: "Lương chuyến", value: data.trip_salary },
+    { name: "Giá cước từ nhãn hàng", value: data.price_from_client },
+    { name: "Cước chuyến cho nhà thầu", value: data.price_for_contractor },
     { name: "Lương theo ngày", value: data.daily_salary },
     { name: "Số điểm", value: data.point_count },
     { name: "Lương điểm", value: data.point_salary },
@@ -181,10 +190,11 @@ const ReviewComponent: React.FC<ReviewProps> = ({
           )}
         />
       </div>
-
-      <Typography.Text italic>
-        Chi dầu và Thu cước không được tính vào lương
-      </Typography.Text>
+      {data.order_type === "internal" && (
+        <Typography.Text italic>
+          Chi dầu và Thu cước không được tính vào lương
+        </Typography.Text>
+      )}
 
       <div>
         <List

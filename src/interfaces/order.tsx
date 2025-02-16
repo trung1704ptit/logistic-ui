@@ -6,6 +6,7 @@ export interface IOrder {
   id?: string;
   contractor_id: string;
   order_time: string;
+  order_type: string;
   client: string;
   driver_id: string;
   truck_id: string;
@@ -18,6 +19,8 @@ export interface IOrder {
   package_weight?: number;
   package_volumn?: number;
   trip_salary: number;
+  price_for_contractor: number;
+  price_from_client: number;
   daily_salary: number;
   point_count: number;
   point_salary: number;

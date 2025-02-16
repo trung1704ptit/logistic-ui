@@ -85,7 +85,7 @@ const DriverListPage = () => {
         onFinish={handleSubmit}
       >
         <Row gutter={[16, 16]}>
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={12} md={8} xl={6}>
             <Form.Item
               label="Số chuyến đạt KPI tháng"
               name="kpi_threshold"
@@ -97,7 +97,7 @@ const DriverListPage = () => {
               />
             </Form.Item>
           </Col>
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={12} md={8} xl={6}>
             <Form.Item
               label="Tiền thưởng khi đạt KPI tháng"
               name="kpi_bonus"
@@ -111,7 +111,7 @@ const DriverListPage = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={8}>
+          <Col xs={24} sm={12} md={8} xl={6}>
             <Form.Item
               label="Thuế VAT %"
               name="vat"
