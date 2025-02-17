@@ -47,9 +47,7 @@ const NewTruckPage = loadable(() => import('@/pages/trucks/newTruckPage'), {
 const UpdateTruckPage = loadable(() => import('@/pages/trucks/updateTruckPage'), {
   fallback: fallbackElement,
 });
-const ReportPage = loadable(() => import('@/pages/reports/reportPage'), {
-  fallback: fallbackElement,
-});
+
 const PayslipPage  = loadable(() => import('@/pages/payslips/Payslips'), {
   fallback: fallbackElement,
 });
@@ -196,10 +194,6 @@ export const browserRouter = createBrowserRouter([
       {
         path: webRoutes.updateClient,
         element: <UpdateClientPage />,
-      },
-      {
-        path: webRoutes.reports,
-        element: <ReportPage />,
       },
       {
         path: webRoutes.payslip,
