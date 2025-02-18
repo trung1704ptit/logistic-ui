@@ -11,9 +11,9 @@ export interface SettingState {
 
 const initialState: SettingState = {
   settings: {
-    kpi_threshold: 0,
-    kpi_bonus: 0,
-    vat: 0,
+    kpi_threshold: 45,
+    kpi_bonus: 500000,
+    vat: 8,
   },
   loading: false,
   error: null,
