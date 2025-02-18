@@ -27,7 +27,7 @@ export const sidebar = [
   {
     path: webRoutes.payslip,
     key: webRoutes.payslip,
-    name: "Bảng lương",
+    name: "Bảng cước xe",
     icon: <BsCurrencyDollar />,
   },
   {

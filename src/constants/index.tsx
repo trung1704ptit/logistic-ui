@@ -32,9 +32,9 @@ export const SHORT_KEYS = {
   volumn: "K",
 };
 
-export const KEYS_ORDER = [
-  { label: "Tài xế", value: "driver_id" },
+export const ORDER_KEYS = [
   { label: "Nhà thầu", value: "contractor_id" },
+  { label: "Tài xế", value: "driver_id" },
   { label: "Xe tải", value: "truck_id" },
   { label: "Thời gian", value: "order_time" },
   { label: "Nhãn hàng", value: "client" },
@@ -44,6 +44,8 @@ export const KEYS_ORDER = [
   { label: "Huyện giao hàng", value: "delivery_district" },
   { label: "Số chuyến", value: "trip_count" },
   { label: "Lương chuyến", value: "trip_salary" },
+  { label: "Giá cước-nhãn hàng", value: "price_from_client" },
+  { label: "Giá cước-nhà thầu", value: "price_for_contractor" },
   { label: "Lương ngày", value: "daily_salary" },
   { label: "Số điểm", value: "point_count" },
   { label: "Lương điểm", value: "point_salary" },
@@ -60,9 +62,9 @@ export const KEYS_ORDER = [
   { label: "Tổng lương", value: "total_salary" },
 ];
 
-export const KEYS_PAYSLIP = [
-  { label: "Tài xế", value: "driver_id" },
+export const PAYSLIP_KEYS = [
   { label: "Nhà thầu", value: "contractor_id" },
+  { label: "Tài xế", value: "driver_id" },
   { label: "Thời gian", value: "month_year" },
   { label: "Lương trách nhiệm xe", value: "take_care_truck_salary" },
   { label: "Phụ cấp làm ngày CN", value: "allowance_sunday_salary" },

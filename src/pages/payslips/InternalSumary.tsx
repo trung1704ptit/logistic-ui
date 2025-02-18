@@ -4,7 +4,7 @@ import { webRoutes } from "@/routes/web";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
 import SummaryFormDriver from "./SummaryFormDriver";
 import * as XLSX from "xlsx";
-import { KEYS_ORDER, KEYS_PAYSLIP } from "@/constants";
+import { ORDER_KEYS, PAYSLIP_KEYS } from "@/constants";
 import moment from "moment";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
@@ -43,7 +43,7 @@ const InternalSumary = ({
     driver?: any
   ) => {
     const payslipRows = payslipRecords.map((payslip: any) =>
-      KEYS_PAYSLIP.map((keyItem) => {
+      PAYSLIP_KEYS.map((keyItem) => {
         let result = undefined;
         if (keyItem.value === "contractor_id") {
           result = payslip.contractor.name;
@@ -60,7 +60,7 @@ const InternalSumary = ({
     );
 
     const orderRows = orderRecords.map((order: any) =>
-      KEYS_ORDER.map((keyItem) => {
+      ORDER_KEYS.map((keyItem) => {
         if (keyItem.value === "contractor_id") {
           return order.contractor.name;
         } else if (keyItem.value === "driver_id") {
@@ -74,12 +74,12 @@ const InternalSumary = ({
       })
     );
 
-    const firstSection = [KEYS_ORDER.map((item) => item.label), ...orderRows];
+    const firstSection = [ORDER_KEYS.map((item) => item.label), ...orderRows];
 
     const blankRows = Array(8).fill([]);
 
     const secondSection = [
-      KEYS_PAYSLIP.map((item) => item.label),
+      PAYSLIP_KEYS.map((item) => item.label),
       ...payslipRows,
     ];
 
@@ -102,13 +102,13 @@ const InternalSumary = ({
     XLSX.utils.book_append_sheet(
       workbook,
       worksheet,
-      driver?.full_name || `Bảng lương ${selectedMonth}-${selectedYear}`
+      driver?.full_name || `Bảng cước ${selectedMonth}-${selectedYear}`
     );
 
     XLSX.writeFile(
       workbook,
       `${
-        driver?.full_name || "Bảng lương"
+        driver?.full_name || "Bảng cước"
       }-${selectedMonth}-${selectedYear}.xlsx`
     );
   };
@@ -116,7 +116,7 @@ const InternalSumary = ({
   const handleDeletePayslip = async (payslipId: string) => {
     try {
       await http.delete(`${apiRoutes.payslips}/${payslipId}`);
-      message.success("Đã xóa bảng lương");
+      message.success("Đã xóa Bảng cước");
       fetchPayslips()
     } catch (error) {
       console.log("Error:", error);
@@ -175,8 +175,8 @@ const InternalSumary = ({
             Tải xuống Excel
           </Button>
           <Popconfirm
-            title="Xóa bảng lương"
-            description="Bạn có thực sự muốn xóa bảng lương?"
+            title="Xóa Bảng cước"
+            description="Bạn có thực sự muốn xóa Bảng cước?"
             onConfirm={() => handleDeletePayslip(row.id)}
             okText="Xóa"
             cancelText="Thoát"

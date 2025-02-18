@@ -12,12 +12,11 @@ import { webRoutes } from "@/routes/web";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
 import SummaryFormContractor from "./SummaryFormContractor";
 import * as XLSX from "xlsx";
-import { KEYS_ORDER, KEYS_PAYSLIP } from "@/constants";
+import { ORDER_KEYS, PAYSLIP_KEYS } from "@/constants";
 import moment from "moment";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
-
-const { Text } = Typography;
+import { IContractor } from "@/interfaces/contractor";
 
 const ExternalSumary = ({
   orderListSummarized,
@@ -33,25 +32,25 @@ const ExternalSumary = ({
     window.open(url, "_blank");
   };
 
-  const exportExcel = (driver: IDriver) => {
+  const exportExcel = (contractor: IContractor) => {
     const orderRecords = orderListRaw.filter(
-      (item: any) => item.driver_id === driver.id
+      (item: any) => item.contractor_id === contractor.id
     );
 
     const payslipRecords = payslipList.filter(
-      (item: any) => item.driver_id === driver.id
+      (item: any) => item.contractor_id === contractor.id
     );
 
-    exportSingleDriverToExcel(orderRecords, payslipRecords, driver);
+    exportContractorOrderToExcel(orderRecords, payslipRecords, contractor);
   };
 
-  const exportSingleDriverToExcel = (
+  const exportContractorOrderToExcel = (
     orderRecords: any,
     payslipRecords: any,
-    driver?: any
+    contractor?: any
   ) => {
     const payslipRows = payslipRecords.map((payslip: any) =>
-      KEYS_PAYSLIP.map((keyItem) => {
+      PAYSLIP_KEYS.map((keyItem) => {
         let result = undefined;
         if (keyItem.value === "contractor_id") {
           result = payslip.contractor.name;
@@ -68,13 +67,13 @@ const ExternalSumary = ({
     );
 
     const orderRows = orderRecords.map((order: any) =>
-      KEYS_ORDER.map((keyItem) => {
+      ORDER_KEYS.map((keyItem) => {
         if (keyItem.value === "contractor_id") {
           return order.contractor.name;
         } else if (keyItem.value === "driver_id") {
-          return order?.driver?.full_name;
+          return order?.driver?.full_name || "";
         } else if (keyItem.value === "truck_id") {
-          return `${order.truck.license_plate} ${order.truck.capacity}T`;
+          return order.truck.license_plate ? `${order.truck.license_plate} ${order.truck.capacity}T` : '';
         } else if (keyItem.value === "order_time") {
           return moment(order.order_time).format("DD-MM-YYYY");
         }
@@ -82,12 +81,12 @@ const ExternalSumary = ({
       })
     );
 
-    const firstSection = [KEYS_ORDER.map((item) => item.label), ...orderRows];
+    const firstSection = [ORDER_KEYS.map((item) => item.label), ...orderRows];
 
     const blankRows = Array(8).fill([]);
 
     const secondSection = [
-      KEYS_PAYSLIP.map((item) => item.label),
+      PAYSLIP_KEYS.map((item) => item.label),
       ...payslipRows,
     ];
 
@@ -102,33 +101,27 @@ const ExternalSumary = ({
       ...secondSection,
     ];
 
-    // Create a worksheet from the data array
     const worksheet = XLSX.utils.aoa_to_sheet(data);
 
-    // Create a workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(
       workbook,
       worksheet,
-      driver?.full_name || `Bảng lương ${selectedMonth}-${selectedYear}`
+      contractor?.name || `Bảng cước ${selectedMonth}-${selectedYear}`
     );
 
     XLSX.writeFile(
       workbook,
       `${
-        driver?.full_name || "Bảng lương"
+        contractor?.name || "Bảng cước"
       }-${selectedMonth}-${selectedYear}.xlsx`
     );
   };
 
-  //   const exportAllDriverToExcel = () => {
-  //     exportSingleDriverToExcel(orderListRaw, payslipList);
-  //   };
-
   const handleDeletePayslip = async (payslipId: string) => {
     try {
       await http.delete(`${apiRoutes.payslips}/${payslipId}`);
-      message.success("Đã xóa bảng lương");
+      message.success("Đã xóa Bảng cước");
       fetchPayslips();
     } catch (error) {
       console.log("Error:", error);
@@ -175,12 +168,12 @@ const ExternalSumary = ({
           >
             Chi tiết
           </Button>
-          <Button type="dashed" onClick={() => exportExcel(row.driver)}>
+          <Button type="dashed" onClick={() => exportExcel(row.contractor)}>
             Tải xuống Excel
           </Button>
           <Popconfirm
-            title="Xóa bảng lương"
-            description="Bạn có thực sự muốn xóa bảng lương?"
+            title="Xóa Bảng cước"
+            description="Bạn có thực sự muốn xóa Bảng cước?"
             onConfirm={() => handleDeletePayslip(row.id)}
             okText="Xóa"
             cancelText="Thoát"

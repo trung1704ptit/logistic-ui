@@ -116,19 +116,19 @@ const TruckListPage = () => {
       render: (_, row) => <>{moment(row?.order_time).format("DD-MM-YYYY")}</>,
     },
     {
+      title: "Nhà thầu",
+      dataIndex: "contractor_id",
+      sorter: false,
+      align: "center",
+      render: (_, row) => <>{row?.contractor?.name}</>,
+    },
+    {
       title: "Tài xế",
       dataIndex: "driver_id",
       sorter: false,
       align: "center",
       ellipsis: true,
       render: (_, row) => <>{row?.driver?.full_name}</>,
-    },
-    {
-      title: "Nhà thầu",
-      dataIndex: "contractor_id",
-      sorter: false,
-      align: "center",
-      render: (_, row) => <>{row?.contractor?.name}</>,
     },
     {
       title: "Xe tải",
@@ -165,7 +165,7 @@ const TruckListPage = () => {
       align: "center",
     },
     {
-      title: "Tổng lương",
+      title: "Tổng Cước",
       dataIndex: "total_salary",
       sorter: false,
       align: "center",

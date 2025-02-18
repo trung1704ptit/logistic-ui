@@ -19,7 +19,7 @@ import { apiRoutes } from "@/routes/api";
 import http from "@/lib/http";
 import { IOrder } from "@/interfaces/order";
 import * as XLSX from "xlsx";
-import { CONTRACTOR_TYPES, KEYS_ORDER, KEYS_PAYSLIP } from "@/constants";
+import { CONTRACTOR_TYPES, ORDER_KEYS, PAYSLIP_KEYS } from "@/constants";
 import moment from "moment";
 import { IContractor } from "@/interfaces/contractor";
 import InternalSumary from "./InternalSumary";
@@ -182,12 +182,12 @@ const PayslipAdmin: React.FC = () => {
     }
   }, [selectedContractor, drivers]);
 
-  const fetchPayslips = async (c?: IContractor) => {
+  const fetchPayslips = async (contractor?: IContractor) => {
     const values = await form.validateFields();
     const payslipRes = await http.get(
       `${apiRoutes.payslips}?year=${values.year}&month=${
         values.month
-      }&contractor_id=${c ? c.id : selectedContractor?.id}`
+      }&contractor_id=${contractor?.id || selectedContractor?.id}`
     );
 
     if (payslipRes && payslipRes.data) {
@@ -260,7 +260,7 @@ const PayslipAdmin: React.FC = () => {
     driver?: any
   ) => {
     const payslipRows = payslipRecords.map((payslip: any) =>
-      KEYS_PAYSLIP.map((keyItem) => {
+      PAYSLIP_KEYS.map((keyItem) => {
         let result = undefined;
         if (keyItem.value === "contractor_id") {
           result = payslip.contractor.name;
@@ -277,7 +277,7 @@ const PayslipAdmin: React.FC = () => {
     );
 
     const orderRows = orderRecords.map((order: any) =>
-      KEYS_ORDER.map((keyItem) => {
+      ORDER_KEYS.map((keyItem) => {
         if (keyItem.value === "contractor_id") {
           return order.contractor.name;
         } else if (keyItem.value === "driver_id") {
@@ -291,12 +291,12 @@ const PayslipAdmin: React.FC = () => {
       })
     );
 
-    const firstSection = [KEYS_ORDER.map((item) => item.label), ...orderRows];
+    const firstSection = [ORDER_KEYS.map((item) => item.label), ...orderRows];
 
     const blankRows = Array(8).fill([]);
 
     const secondSection = [
-      KEYS_PAYSLIP.map((item) => item.label),
+      PAYSLIP_KEYS.map((item) => item.label),
       ...payslipRows,
     ];
 
@@ -319,13 +319,13 @@ const PayslipAdmin: React.FC = () => {
     XLSX.utils.book_append_sheet(
       workbook,
       worksheet,
-      driver?.full_name || `Bảng lương ${selectedMonth}-${selectedYear}`
+      driver?.full_name || `Bảng cước ${selectedMonth}-${selectedYear}`
     );
 
     XLSX.writeFile(
       workbook,
       `${
-        driver?.full_name || "Bảng lương"
+        driver?.full_name || "Bảng cước"
       }-${selectedMonth}-${selectedYear}.xlsx`
     );
   };
@@ -419,7 +419,7 @@ const PayslipAdmin: React.FC = () => {
         </Row>
         <Space>
           <Button type="primary" onClick={handleSubmit}>
-            Tổng hợp lương
+            Tổng hợp cước
           </Button>
           <Button
             type="dashed"
