@@ -55,7 +55,7 @@ export const fetchSettings = () => async (dispatch: AppDispatch) => {
 };
 
 export const updateSettings =
-  (payload: ISetting) => async (dispatch: AppDispatch) => {
+  (payload: { settings: ISetting }) => async (dispatch: AppDispatch) => {
     dispatch(fetchStart());
     try {
       const res = await http.post(apiRoutes.settings, payload);

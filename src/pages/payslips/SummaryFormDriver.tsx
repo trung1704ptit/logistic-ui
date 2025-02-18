@@ -14,6 +14,8 @@ import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
 import { message } from "antd/lib";
 import InputNumber from "@/components/InputNumber";
+import { RootState } from "@/store";
+import { useSelector } from "react-redux";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -21,7 +23,9 @@ const { TextArea } = Input;
 const SummaryFormDriver = (props: any) => {
   const [finalSalary, setFinalSalary] = useState(0);
   const [loading, setLoading] = useState(false);
-
+  const settings = useSelector((state: RootState) => state.setting.settings);
+  const KPIThreshold = settings?.kpi_threshold || 45;
+  const KPIBonus = settings?.kpi_bonus || 500000;
   try {
     const [form] = Form.useForm();
     const handleSubmit = async () => {
@@ -76,7 +80,7 @@ const SummaryFormDriver = (props: any) => {
           await http.post(apiRoutes.payslips, payload);
         }
 
-        message.success('Đã lưu dữ liệu cước');
+        message.success("Đã lưu dữ liệu cước");
         props.fetchPayslips();
         window.scrollTo({
           top: 0,
@@ -137,7 +141,7 @@ const SummaryFormDriver = (props: any) => {
           allowance_sunday_salary: 0,
           allowance_daily_salary: 0,
           allowance_phone_salary: 0,
-          kpi_salary: props.data.total_trips >= 45 ? 500000 : 0,
+          kpi_salary: props.data.total_trips >= KPIThreshold ? KPIBonus : 0,
           deposit_salary: 0,
           other_salary: props.data.other_salary,
           notes: "",

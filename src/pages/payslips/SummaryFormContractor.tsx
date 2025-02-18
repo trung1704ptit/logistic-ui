@@ -139,7 +139,7 @@ import InputNumber from "@/components/InputNumber";
             allowance_sunday_salary: 0,
             allowance_daily_salary: 0,
             allowance_phone_salary: 0,
-            kpi_salary: props.data.total_trips >= 45 ? 500000 : 0,
+            kpi_salary: 0,
             deposit_salary: 0,
             other_salary: props.data.other_salary,
             notes: "",

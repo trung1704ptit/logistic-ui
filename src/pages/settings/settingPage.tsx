@@ -34,7 +34,7 @@ const DriverListPage = () => {
   const handleSubmit = (payload: ISetting) => {
     try {
       setIsLoading(true);
-      dispatch(updateSettings(payload) as any);
+      dispatch(updateSettings({ settings: payload }) as any);
       message.success("Cập nhật thành công");
     } catch (error) {
       setIsError(true);
