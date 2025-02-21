@@ -11,19 +11,19 @@ export const antdConfig: ConfigProviderProps = {
 
 export const priceKeys = {
   notes: "Ghi chú",
-  fromCity: "Tỉnh đóng hàng",
-  fromDistrict: "Huyện đóng hàng",
-  toCity: "Tỉnh trả hàng",
-  toDistrcit: "Huyện trả hàng",
+  pickupProvince: "Tỉnh đóng hàng",
+  pickupDistrict: "Huyện đóng hàng",
+  deliveryProvince: "Tỉnh trả hàng",
+  deliveryDistrict: "Huyện trả hàng",
   numOfOrder: "STT",
 };
 
 export const priceKeysBlackList = [
   priceKeys.notes,
-  priceKeys.fromCity,
-  priceKeys.fromDistrict,
-  priceKeys.toCity,
-  priceKeys.toDistrcit,
+  priceKeys.pickupProvince,
+  priceKeys.pickupDistrict,
+  priceKeys.deliveryProvince,
+  priceKeys.deliveryDistrict,
   priceKeys.numOfOrder,
 ];
 
@@ -99,3 +99,5 @@ export const OWNER_TYPES = {
   client: 'client',
   contractor: 'contractor'
 }
+
+export const DEFAULT_PRICE = '-';

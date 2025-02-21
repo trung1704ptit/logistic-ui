@@ -15,7 +15,7 @@ import { CloseOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { findPrice, searchByLabel } from "@/lib/utils";
 import { useSelector } from "react-redux";
@@ -25,11 +25,16 @@ import http from "@/lib/http";
 import { IPrice, IPriceDetail } from "@/interfaces/price";
 import { apiRoutes } from "@/routes/api";
 import * as XLSX from "xlsx";
-import { priceKeys, priceKeysBlackList } from "@/constants";
+import { CONTRACTOR_TYPES, OWNER_TYPES, priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
 import { AiOutlineExport } from "react-icons/ai";
 import OrderDetails from "./orderDetails";
-import { IOrder } from "@/interfaces/order";
+import { ITruck } from "@/interfaces/truck";
+import { IDriver } from "@/interfaces/driver";
+import { IContractor } from "@/interfaces/contractor";
+import { IClient } from "@/interfaces/client";
+import InputNumber from "@/components/InputNumber";
+import SelectWithInput from "@/components/SelectWithInput";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -56,67 +61,86 @@ const breadcrumb: BreadcrumbProps = {
   ],
 };
 
-const UpdateOrder: React.FC = () => {
+const UpdateOrderForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [contractorId, setContractorId] = useState<string>();
-  const [pricesTable, setPricesTable] = useState<IPrice[]>([]);
-  const [pickupDistricts, setPickupDistricts] = useState<string[]>([]);
-  const [deliveryDistricts, setDeliveryDistricts] = useState<string[]>([]);
-  const [unitSelected, setUnitSelected] = useState("");
-  const [isReview, setIsReview] = useState(false);
-  const { search } = useLocation();
-  const params = new URLSearchParams(search);
-  const orderId = params.get("id"); // Access the truck ID from the query string
+  const [selectedContractor, setSelectedContractor] = useState<IContractor>();
+  const [selectedClient, setSelectedClientId] = useState<IClient>();
+  const [priceListContractor, setPriceListContractor] = useState<IPrice[]>([]);
+  const [priceListClient, setPriceListClient] = useState<IPrice[]>([]);
 
-  const drivers = useSelector((state: RootState) => state.driver.drivers);
+  const [pickupDistrictList, setPickupDistrictList] = useState<string[]>([]);
+  const [deliveryDistrictList, setDeliveryDistrictList] = useState<string[]>(
+    []
+  );
+  const [unitSelected, setUnitSelected] = useState("weight");
+  const [isReview, setIsReview] = useState(false);
+  const allDrivers = useSelector((state: RootState) => state.driver.drivers);
+  const allClients = useSelector((state: RootState) => state.client.clients);
+  const allTrucks = useSelector((state: RootState) => state.truck.trucks);
+  const [highlightPriceFromClient, setHighlightPriceFromClient] =
+    useState(false);
+  const [highlightPriceForContractor, setHighlightPriceForContractor] =
+    useState(false);
+
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
-  const [selectedPriceTable, setSelectedPriceTable] = useState<IPrice>();
+  const [trucks, setTrucks] = useState<ITruck[]>([]);
+  const [drivers, setDrivers] = useState<IDriver[]>([]);
+
+  const [selectedPriceClient, setSelectedPriceClient] = useState<IPrice>();
+  const [selectedPriceContractor, setSelectedPriceContractor] =
+    useState<IPrice>();
+
   const [locationLabels, setLocationLabels] = useState<ILocationLabels>({
     allDeliveryProvinces: [],
     allPickupProvinces: [],
   });
-  const trucks = useSelector((state: RootState) => state.truck.trucks);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getOrderDetail(orderId as string);
-  }, [orderId]);
+  const packageWeight = Form.useWatch("package_weight", form);
+  const packageVolumn = Form.useWatch("package_volumn", form);
+  const pickupProvince = Form.useWatch("pickup_province", form);
+  const pickupDistrict = Form.useWatch("pickup_district", form);
+  const deliveryProvince = Form.useWatch("delivery_province", form);
+  const deliveryDistrict = Form.useWatch("delivery_district", form);
 
-  const getOrderDetail = async (orderId: string) => {
-    try {
-      const res = await http.get(`${apiRoutes.orders}/${orderId}`);
-      if (res && res.data.data) {
-        const data: IOrder = res.data.data
-        form.setFieldsValue({
-          ...data,
-          order_time: dayjs(data.order_time)
-        });
-        setContractorId(data.contractor_id);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const isIntenal = selectedContractor?.type === CONTRACTOR_TYPES.internal;
 
   const handleSelectContractor = (value: string) => {
-    setContractorId(value);
-    form.setFieldsValue({ driver_id: undefined, truck_id: undefined });
+    const filterContractor = contractors.find((item) => item.id === value);
+    setSelectedContractor(filterContractor);
+    form.setFieldsValue({
+      driver_id: undefined,
+      truck_id: undefined,
+      price_for_contractor: 0,
+      trip_salary: 0,
+      contractor_price_id: undefined,
+      order_type: filterContractor?.type
+    });
   };
 
-  const handleSubmit = (values: any) => {
-    console.log(values);
+  const handleSelectClient = (clientId: string) => {
+    const filterClient = allClients.find((item) => item.id === clientId);
+    setSelectedClientId(filterClient);
+    form.setFieldsValue({
+      price_from_client: undefined,
+      client_price_id: undefined,
+    });
+    fetchPricings(clientId, "client");
+  };
+
+  const handleSubmit = () => {
     setIsReview(true);
   };
 
   const updateLocationLabels = (data: any) => {
-    setSelectedPriceTable(data);
+    setSelectedPriceContractor(data);
     const allPickupProvinces: string[] = data.price_details.map(
-      (item: IPriceDetail) => item.from_city
+      (item: IPriceDetail) => item.pickup_province
     );
     const allDeliveryProvinces: string[] = data.price_details.map(
-      (item: IPriceDetail) => item.to_city
+      (item: IPriceDetail) => item.delivery_province
     );
 
     setLocationLabels({
@@ -125,12 +149,23 @@ const UpdateOrder: React.FC = () => {
     });
   };
 
-  const handleSelectPriceTable = async (priceId: string) => {
+  const handleSelectPriceContractor = async (priceId: string) => {
     try {
       const { data } = await http.get(
-        `${apiRoutes.prices}/${contractorId}/${priceId}`
+        `${apiRoutes.prices}/${selectedContractor?.id}/${priceId}`
       );
       updateLocationLabels(data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSelectPriceClient = async (priceId: string) => {
+    try {
+      const { data } = await http.get(
+        `${apiRoutes.prices}/${selectedClient?.id}/${priceId}`
+      );
+      setSelectedPriceClient(data.data);
     } catch (error) {
       console.log(error);
     }
@@ -143,64 +178,32 @@ const UpdateOrder: React.FC = () => {
   const handleProvinceChange = (value: string, field: string) => {
     if (field === "pickup_province") {
       const districts =
-        selectedPriceTable?.price_details
-          .filter((item) => item.from_city === value)
-          .map((item) => item.from_district) || [];
+        selectedPriceContractor?.price_details
+          .filter((item) => item.pickup_province === value)
+          .map((item) => item.pickup_district) || [];
 
-      setPickupDistricts([...new Set(districts)]);
+      setPickupDistrictList([...new Set(districts)]);
       form.setFieldValue("pickup_district", null);
     } else {
       const districts =
-        selectedPriceTable?.price_details
-          .filter((item) => item.to_city === value)
-          .map((item) => item.to_district) || [];
+        selectedPriceContractor?.price_details
+          .filter((item) => item.delivery_province === value)
+          .map((item) => item.delivery_district) || [];
 
-      setDeliveryDistricts([...new Set(districts)]);
+      setDeliveryDistrictList([...new Set(districts)]);
       form.setFieldValue("delivery_district", null);
     }
-    form.setFieldValue("trip_salary", null);
   };
 
-  const handleDistrictChange = () => {
-    const truckId = form.getFieldValue("truck_id");
-    const priceId = form.getFieldValue("price_id");
-    const pickupProvince = form.getFieldValue("pickup_province");
-    const pickupDistrict = form.getFieldValue("pickup_district");
-    const deliveryProvince = form.getFieldValue("delivery_province");
-    const deliveryDistrict = form.getFieldValue("delivery_district");
-    if (
-      truckId &&
-      priceId &&
-      pickupProvince &&
-      pickupDistrict &&
-      deliveryProvince &&
-      deliveryDistrict
-    ) {
-      const selectedTruck = trucks.find(
-        (item) => item.id === form.getFieldValue("truck_id")
-      );
-      const singlePriceRow = selectedPriceTable?.price_details.find(
-        (item) =>
-          item.from_city === pickupProvince &&
-          item.from_district === pickupDistrict &&
-          item.to_city === deliveryProvince &&
-          item.to_district === deliveryDistrict
-      );
-      if (selectedTruck && singlePriceRow) {
-        const tripSalary = findPrice(
-          singlePriceRow.weight_prices,
-          `${selectedTruck.capacity}T`
-        );
-        form.setFieldValue("trip_salary", tripSalary);
-      }
-    }
-  };
-
-  const fetchPricings = async () => {
+  const fetchPricings = async (ownerId: string, ownerType: string) => {
     try {
-      const response = await http.get(`/prices/${contractorId}`);
-      if (response.status === 200) {
-        setPricesTable(response.data.data);
+      const res = await http.get(`/prices/${ownerId}?ownerType=${ownerType}`);
+      if (res.status === 200) {
+        if (ownerType === OWNER_TYPES.contractor) {
+          setPriceListContractor(res.data.data);
+        } else {
+          setPriceListClient(res.data.data);
+        }
       }
     } catch (error) {
       console.error("Error fetching pricings:", error);
@@ -208,11 +211,25 @@ const UpdateOrder: React.FC = () => {
   };
 
   useEffect(() => {
-    if (contractorId) {
-      fetchPricings();
-    }
-  }, [contractorId]);
+    if (selectedContractor?.id) {
+      // filter prices
+      fetchPricings(selectedContractor?.id, "contractor");
 
+      // filter trucks
+      const trucksFiltered = allTrucks.filter(
+        (item) => item.contractor_id === selectedContractor?.id
+      );
+      setTrucks(trucksFiltered);
+
+      // filter drivers
+      const driversFiltered = allDrivers.filter(
+        (item) => item.contractor_id === selectedContractor?.id
+      );
+      setDrivers(driversFiltered);
+    }
+  }, [selectedContractor?.id]);
+
+  // Utility function to parse Excel file locally
   const parseExcelFile = (file: any): Promise<any> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -234,22 +251,23 @@ const UpdateOrder: React.FC = () => {
     });
   };
 
-  const handleFileUpload = async (file: any) => {
+  const handleFileUpload = async (file: any, ownerType: string) => {
     try {
-      const timestamp = new Date().getTime();
-      const formattedDate = new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      })
-        .format(new Date())
-        .replace(/\//g, "_"); // Replace "/" with "_" to get "DD_MM_YYYY"
+      let ownerId: string = selectedContractor?.id as string;
+      const isClientType = ownerType === "client";
+      if (isClientType && selectedClient) {
+        ownerId = selectedClient.id;
+      }
 
-      // Combine timestamp and formatted date in the filename
-      const originalExtension = file.name.split(".").pop();
-      const newFileName = `${timestamp}_${formattedDate}.${originalExtension}`;
+      const filterFileName = (
+        isClientType ? priceListClient : priceListContractor
+      ).filter((item) => item.file_name.includes(file.name));
+      let filename = file.name;
+      if (filterFileName.length > 0) {
+        filename = `${filterFileName.length}-${file.name}`;
+      }
 
-      const renamedFile = new File([file], newFileName, { type: file.type });
+      const renamedFile = new File([file], filename, { type: file.type });
       const jsonData = await parseExcelFile(renamedFile);
 
       // Step 1: Prepare the file for upload
@@ -269,10 +287,10 @@ const UpdateOrder: React.FC = () => {
       }
 
       const prices = jsonData.map((item: any) => ({
-        from_city: item[priceKeys.fromCity],
-        from_district: item[priceKeys.fromDistrict],
-        to_city: item[priceKeys.toCity],
-        to_district: item[priceKeys.toDistrcit],
+        pickup_province: item[priceKeys.pickupProvince] || 'Mặc định',
+        pickup_district: item[priceKeys.pickupDistrict] || 'Mặc định',
+        delivery_province: item[priceKeys.deliveryProvince] || 'Mặc định',
+        delivery_district: item[priceKeys.deliveryDistrict] || 'Mặc định',
         weight_prices: {
           ...omit(item, priceKeysBlackList),
         },
@@ -280,8 +298,9 @@ const UpdateOrder: React.FC = () => {
       }));
 
       const data = {
-        contractor_id: contractorId,
-        file_name: newFileName,
+        owner_id: ownerId,
+        owner_type: ownerType,
+        file_name: filename,
         prices,
       };
 
@@ -289,7 +308,7 @@ const UpdateOrder: React.FC = () => {
 
       // Step 4: Send parsed data to the API
       const pricesRes = await http.post(
-        `${apiRoutes.prices}/${contractorId}`,
+        `${apiRoutes.prices}/${ownerId}`,
         data,
         {
           headers: {
@@ -297,13 +316,16 @@ const UpdateOrder: React.FC = () => {
           },
         }
       );
-      fetchPricings();
 
       message.success(`Đã tải lên bảng giá excel ${renamedFile.name}`);
+      await fetchPricings(ownerId, ownerType);
 
       if (pricesRes?.data?.data) {
-        form.setFieldsValue({ prices: pricesRes?.data?.data?.id });
-        message.info(`Đang áp dụng bảng giá mới ${renamedFile.name}`);
+        if (isClientType) {
+          form.setFieldsValue({ client_price_id: undefined });
+        } else {
+          form.setFieldsValue({ contractor_price_id: undefined });
+        }
       }
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
@@ -312,7 +334,99 @@ const UpdateOrder: React.FC = () => {
 
   const handleUnitSelect = (value: string) => {
     setUnitSelected(value);
+    form.setFieldValue("package_volumn", undefined);
+    form.setFieldValue("package_weight", undefined);
   };
+
+  // watch changes, update the price_from_client
+  useEffect(() => {
+    // change the client selected selected
+    // change the pickup_province, pickup_district, delivery_province, delivery_district
+    if (
+      selectedPriceClient &&
+      (packageWeight || packageVolumn) &&
+      pickupDistrict &&
+      deliveryProvince &&
+      pickupDistrict &&
+      deliveryDistrict
+    ) {
+      setHighlightPriceFromClient(true);
+
+      const priceFound = selectedPriceClient?.price_details.find(
+        (item) =>
+          item.pickup_province === pickupProvince &&
+          item.pickup_district === pickupDistrict &&
+          item.delivery_province === deliveryProvince &&
+          item.delivery_district === deliveryDistrict
+      );
+      if (priceFound) {
+        const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
+        const priceCalculated = findPrice(priceFound.weight_prices, value);
+        form.setFieldValue("price_from_client", priceCalculated);
+      } else {
+        form.setFieldValue("price_from_client", 0);
+      }
+
+      const timer = setTimeout(() => setHighlightPriceFromClient(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [
+    selectedPriceClient,
+    packageWeight,
+    packageVolumn,
+    pickupProvince,
+    pickupDistrict,
+    deliveryProvince,
+    deliveryDistrict,
+  ]);
+
+  // watch changes, update the price_for_contractor
+  useEffect(() => {
+    // change contractor price selected
+    // change the pickup_province, pickup_district, delivery_province, delivery_district
+    if (
+      selectedContractor &&
+      (packageWeight || packageVolumn) &&
+      pickupDistrict &&
+      deliveryProvince &&
+      pickupDistrict &&
+      deliveryDistrict
+    ) {
+      setHighlightPriceForContractor(true);
+
+      const priceFound = selectedPriceContractor?.price_details.find(
+        (item) =>
+          item.pickup_province === pickupProvince &&
+          item.pickup_district === pickupDistrict &&
+          item.delivery_province === deliveryProvince &&
+          item.delivery_district === deliveryDistrict
+      );
+
+      let key = isIntenal ? "trip_salary" : "price_for_contractor";
+
+      if (priceFound) {
+        const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
+        const priceCalculated = findPrice(priceFound.weight_prices, value);
+        form.setFieldValue(key, priceCalculated);
+      } else {
+        form.setFieldValue(key, 0);
+      }
+
+      const timer = setTimeout(
+        () => setHighlightPriceForContractor(false),
+        1000
+      );
+      return () => clearTimeout(timer);
+    }
+  }, [
+    selectedPriceContractor,
+    packageWeight,
+    packageVolumn,
+    pickupProvince,
+    pickupDistrict,
+    deliveryProvince,
+    deliveryDistrict,
+  ]);
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -320,7 +434,6 @@ const UpdateOrder: React.FC = () => {
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        style={{ maxWidth: 800, margin: "0 auto" }}
         initialValues={{
           trip_count: 1,
           trip_salary: 0,
@@ -328,8 +441,8 @@ const UpdateOrder: React.FC = () => {
           unit: "weight",
         }}
       >
-        <Row gutter={[8, 8]}>
-          <Col xs={24} sm={12}>
+        <Row gutter={[16, 0]}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Nhà thầu"
               name="contractor_id"
@@ -349,38 +462,18 @@ const UpdateOrder: React.FC = () => {
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
-            <Form.Item label="Ngày tạo" name="order_time">
-              <DatePicker
-                size="large"
-                className="w-full"
-                format={"DD-MM-YYYY"}
-              />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
-              label="Nhãn hàng"
-              name="client"
-              rules={[{ required: true, message: "Hãy nhập tên nhãn hàng!" }]}
-            >
-              <Input size="large" placeholder="Nhập tên nhãn hàng" />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Lái xe"
+              label="Chọn Lái xe"
               name="driver_id"
-              rules={[{ required: true, message: "Hãy chọn lái xe!" }]}
+              // rules={[{ required: true, message: "Hãy chọn lái xe!" }]}
             >
               <Select
                 size="large"
                 placeholder="Chọn lái xe"
-                disabled={!contractorId}
+                disabled={!selectedContractor?.id}
               >
-                {contractorId &&
+                {selectedContractor?.id &&
                   drivers.map((driver) => (
                     <Option key={driver.id} value={driver.id}>
                       {driver.full_name}
@@ -389,19 +482,17 @@ const UpdateOrder: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Chọn xe tải"
               name="truck_id"
-              rules={[{ required: true, message: "Hãy chọn xe tải!" }]}
             >
               <Select
                 size="large"
                 placeholder="Chọn xe tải"
-                disabled={!contractorId}
+                disabled={!selectedContractor?.id}
               >
-                {contractorId &&
+                {selectedContractor?.id &&
                   trucks.map((truck) => (
                     <Option key={truck.id} value={truck.id}>
                       {truck.license_plate} - {truck.capacity}T / {truck.volume}
@@ -411,40 +502,57 @@ const UpdateOrder: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item
+              label="Nhãn hàng"
+              name="client_id"
+              rules={[{ required: true, message: "Hãy chọn nhãn hàng!" }]}
+            >
+              <Select
+                size="large"
+                placeholder="Chọn nhãn hàng"
+                onChange={handleSelectClient}
+              >
+                {allClients.map((client) => (
+                  <Option key={client.id} value={client.id}>
+                    {client.name}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label={
                 <div>
-                  Chọn bảng giá{" "}
-                  {contractorId && (
+                  Bảng giá nhãn hàng{" "}
+                  {selectedClient && (
                     <Upload
                       name="avatar"
                       className="avatar-uploader cursor-pointer"
                       customRequest={({ file, onSuccess, onError }: any) => {
-                        handleFileUpload(file)
-                          .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
-                          .catch((err) => onError?.(err)); // Handle errors
+                        handleFileUpload(file, "client")
+                          .then(() => onSuccess?.(null, file))
+                          .catch((err) => onError?.(err));
                       }}
                       showUploadList={false}
                       accept=".xlsx,.xls"
                     >
-                      <Link to={""}>(Thêm bảng giá khác?)</Link>
+                      <Link to={""}>Thêm mới?</Link>
                     </Upload>
                   )}
                 </div>
               }
-              name="price_id"
-              rules={[{ required: true, message: "Hãy chọn bảng giá!" }]}
+              name="client_price_id"
             >
               <Select
                 size="large"
                 placeholder="Chọn Bảng Giá"
-                disabled={!contractorId}
-                onChange={handleSelectPriceTable}
+                disabled={!selectedClient}
+                onChange={handleSelectPriceClient}
               >
-                {pricesTable &&
-                  pricesTable.map((priceTable, index) => (
+                {priceListClient &&
+                  priceListClient.map((priceTable, index) => (
                     <Option key={priceTable.id} value={priceTable.id}>
                       {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
                     </Option>
@@ -452,89 +560,46 @@ const UpdateOrder: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
-          <Divider />
-
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
-              label="Điểm đóng hàng"
-              name="pickup_province"
-              rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
+              label={
+                <div>
+                  {isIntenal ? "Bảng tính lương " : "Bảng giá nhà thầu "}
+                  {selectedContractor?.id && (
+                    <Upload
+                      name="avatar"
+                      className="avatar-uploader cursor-pointer"
+                      customRequest={({ file, onSuccess, onError }: any) => {
+                        handleFileUpload(file, "contractor")
+                          .then(() => onSuccess?.(null, file)) // Indicate success to antd Upload
+                          .catch((err) => onError?.(err)); // Handle errors
+                      }}
+                      showUploadList={false}
+                      accept=".xlsx,.xls"
+                    >
+                      <Link to={""}>Thêm mới?</Link>
+                    </Upload>
+                  )}
+                </div>
+              }
+              name="contractor_price_id"
             >
               <Select
                 size="large"
-                placeholder="Chọn tỉnh/thành phố"
-                filterOption={searchByLabel}
-                showSearch
-                onChange={(value) =>
-                  handleProvinceChange(value, "pickup_province")
-                }
+                placeholder="Chọn Bảng Giá"
+                disabled={!selectedContractor?.id}
+                onChange={handleSelectPriceContractor}
               >
-                {locationLabels.allPickupProvinces.map((province) => (
-                  <Option key={province} value={province}>
-                    {province}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-
-            <Form.Item name="pickup_district">
-              <Select
-                size="large"
-                placeholder="Chọn quận/huyện"
-                showSearch
-                filterOption={searchByLabel}
-                onChange={handleDistrictChange}
-              >
-                {pickupDistricts.map((district) => (
-                  <Option key={district} value={district}>
-                    {district}
-                  </Option>
-                ))}
+                {priceListContractor &&
+                  priceListContractor.map((priceTable, index) => (
+                    <Option key={priceTable.id} value={priceTable.id}>
+                      {priceTable.file_name} {index === 0 ? "(Mới nhất)" : ""}
+                    </Option>
+                  ))}
               </Select>
             </Form.Item>
           </Col>
-
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Điểm trả hàng"
-              name="delivery_province"
-              rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
-            >
-              <Select
-                size="large"
-                showSearch
-                placeholder="Chọn tỉnh/thành phố"
-                filterOption={searchByLabel}
-                onChange={(value) =>
-                  handleProvinceChange(value, "delivery_province")
-                }
-              >
-                {locationLabels.allDeliveryProvinces.map((province) => (
-                  <Option key={province} value={province}>
-                    {province}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-            <Form.Item name="delivery_district">
-              <Select
-                size="large"
-                placeholder="Chọn quận/huyện"
-                showSearch
-                filterOption={searchByLabel}
-                onChange={handleDistrictChange}
-              >
-                {deliveryDistricts.map((district) => (
-                  <Option key={district} value={district}>
-                    {district}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Đơn vị tính"
               name="unit"
@@ -543,7 +608,6 @@ const UpdateOrder: React.FC = () => {
               <Select
                 size="large"
                 placeholder="Chọn đơn vị tính"
-                disabled={!contractorId}
                 onChange={handleUnitSelect}
               >
                 <Option key="weight" value="weight">
@@ -555,245 +619,296 @@ const UpdateOrder: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-
           {unitSelected === "weight" && (
-            <Col xs={24} sm={12}>
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item
-                label="Số tấn thực của hàng (Nếu có)"
+                label="Số tấn của hàng"
                 name="package_weight"
+                rules={[{ required: true, message: "Nhập số tấn của hàng" }]}
               >
-                <Input
-                  size="large"
-                  type="number"
-                  min={0}
-                  onWheel={(e) => e.currentTarget.blur()}
-                />
+                <InputNumber size="large" placeholder="Nhập số tấn" />
               </Form.Item>
             </Col>
           )}
-
           {unitSelected === "volumn" && (
-            <Col xs={24} sm={12}>
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item
-                label="Số khối thực của hàng (Nếu có)"
+                label="Số khối của hàng"
                 name="package_volumn"
+                rules={[{ required: true, message: "Nhập số khối của hàng" }]}
               >
-                <Input
-                  size="large"
-                  type="number"
-                  min={0}
-                  onWheel={(e) => e.currentTarget.blur()}
-                />
+                <InputNumber size="large" placeholder="Nhập số khối" />
               </Form.Item>
             </Col>
           )}
 
-          <Col xs={24} sm={12}>
-            <Form.Item
-              label="Lương chuyến"
-              name="trip_salary"
-              normalize={(value) => (value ? Number(value) : value)}
-            >
-              <Input
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item label="Ngày tạo" name="order_time">
+              <DatePicker
                 size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập lương chuyến"
-                onWheel={(e) => e.currentTarget.blur()}
+                className="w-full"
+                format={"DD-MM-YYYY"}
               />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Divider />
+
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item
+              label="Tỉnh đóng hàng"
+              name="pickup_province"
+              rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
+            >
+              <SelectWithInput
+                size="large"
+                placeholder="Chọn tỉnh/thành phố"
+                filterOption={searchByLabel}
+                showSearch
+                onChange={(value: string) =>
+                  handleProvinceChange(value, "pickup_province")
+                }
+                options={locationLabels.allPickupProvinces}
+              />
+
+
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item
+              name="pickup_district"
+              label="Huyện đóng hàng"
+              rules={[{ required: true, message: "Hãy chọn Huyện" }]}
+            >
+              <SelectWithInput
+                size="large"
+                placeholder="Chọn quận/huyện"
+                showSearch
+                filterOption={searchByLabel}
+                options={pickupDistrictList}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item
+              label="Tỉnh trả hàng"
+              name="delivery_province"
+              rules={[{ required: true, message: "Hãy chọn tỉnh/thành phố!" }]}
+            >
+              <SelectWithInput
+                size="large"
+                showSearch
+                placeholder="Chọn tỉnh/thành phố"
+                filterOption={searchByLabel}
+                onChange={(value: string) =>
+                  handleProvinceChange(value, "delivery_province")
+                }
+                options={locationLabels.allDeliveryProvinces}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item
+              name="delivery_district"
+              label="Huyện trả hàng"
+              rules={[{ required: true, message: "Hãy chọn Huyện" }]}
+            >
+              <SelectWithInput
+                size="large"
+                placeholder="Chọn quận/huyện"
+                showSearch
+                filterOption={searchByLabel}
+                options={deliveryDistrictList}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+            <Form.Item
+              label="Cước vận chuyển-nhãn hàng"
+              name="price_from_client"
+              normalize={(value) => (value ? Number(value) : value)}
+              rules={[{ required: true, message: "Hãy nhập giá từ nhãn hàng" }]}
+            >
+              <InputNumber
+                size="large"
+                placeholder="Nhập giá"
+                className={`w-full ${
+                  highlightPriceFromClient
+                    ? "bg-orange-500 animate-pulse"
+                    : "bg-transparent"
+                }`}
+              />
+            </Form.Item>
+          </Col>
+
+          {isIntenal ? (
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item
+                label="Luơng chuyến"
+                name="trip_salary"
+                normalize={(value) => (value ? Number(value) : value)}
+                rules={[{ required: true, message: "Hãy nhập lương chuyến" }]}
+              >
+                <InputNumber
+                  size="large"
+                  placeholder="Nhập lương chuyến"
+                  className={`w-full ${
+                    highlightPriceForContractor
+                      ? "bg-orange-500 animate-pulse"
+                      : "bg-transparent"
+                  }`}
+                />
+              </Form.Item>
+            </Col>
+          ) : (
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item
+                label="Cước vận chuyển-nhà thầu"
+                name="price_for_contractor"
+                normalize={(value) => (value ? Number(value) : value)}
+                rules={[
+                  { required: true, message: "Hãy nhập giá cho nhà thầu" },
+                ]}
+              >
+                <InputNumber
+                  size="large"
+                  placeholder="Nhập giá"
+                  className={`w-full ${
+                    highlightPriceForContractor
+                      ? "bg-orange-500 animate-pulse"
+                      : "bg-transparent"
+                  }`}
+                />
+              </Form.Item>
+            </Col>
+          )}
+
+          <Divider />
+
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Lương theo ngày"
               name="daily_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập Lương theo ngày"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập Lương theo ngày" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Số điểm"
               name="point_count"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập số điểm"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập số điểm" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Lương điểm"
               name="point_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập lương điểm"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập lương điểm" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Phí thu hồi"
               name="recovery_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập phí thu hồi" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
-              label="Lương bốc xếp"
+              label="Bốc xếp"
               name="loading_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập lương" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Tiền ăn"
               name="meal_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập tiền ăn" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Vé bãi"
               name="parking_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập vé bãi"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập vé bãi" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Tiền lưu ca"
               name="standby_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập phí lưu ca"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập phí lưu ca" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Chi khác"
               name="other_salary"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập Chi khác"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập Chi khác" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Đổ dầu ngoài"
               name="outside_oil_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập phí đổ dầu ngoài"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập phí đổ dầu ngoài" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Chi dầu"
               name="oil_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập chi dầu"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập chi dầu" />
             </Form.Item>
           </Col>
 
-          <Col xs={24} sm={12}>
+          <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
             <Form.Item
               label="Thu cước"
               name="charge_fee"
               normalize={(value) => (value ? Number(value) : value)}
             >
-              <Input
-                size="large"
-                type="number"
-                min={0}
-                placeholder="Nhập thu cước"
-                onWheel={(e) => e.currentTarget.blur()}
-              />
+              <InputNumber size="large" placeholder="Nhập thu cước" />
             </Form.Item>
           </Col>
-
-          <Col xs={24}>
+          <Col xs={24} xl={8}>
             <Form.Item label="Ghi chú" name="notes">
               <TextArea
                 size="large"
@@ -802,16 +917,14 @@ const UpdateOrder: React.FC = () => {
               />
             </Form.Item>
           </Col>
-
           {isReview && (
             <OrderDetails
               data={form.getFieldsValue()}
               isReadOnly={false}
               onClose={() => setIsReview(false)}
-              orderId={orderId}
+              client={selectedClient}
             />
           )}
-
           <Col xs={24}>
             <Form.Item>
               <Space>
@@ -838,4 +951,4 @@ const UpdateOrder: React.FC = () => {
   );
 };
 
-export default UpdateOrder;
+export default UpdateOrderForm;

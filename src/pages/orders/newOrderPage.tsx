@@ -137,10 +137,10 @@ const AddOrderForm: React.FC = () => {
   const updateLocationLabels = (data: any) => {
     setSelectedPriceContractor(data);
     const allPickupProvinces: string[] = data.price_details.map(
-      (item: IPriceDetail) => item.from_city
+      (item: IPriceDetail) => item.pickup_province
     );
     const allDeliveryProvinces: string[] = data.price_details.map(
-      (item: IPriceDetail) => item.to_city
+      (item: IPriceDetail) => item.delivery_province
     );
 
     setLocationLabels({
@@ -179,16 +179,16 @@ const AddOrderForm: React.FC = () => {
     if (field === "pickup_province") {
       const districts =
         selectedPriceContractor?.price_details
-          .filter((item) => item.from_city === value)
-          .map((item) => item.from_district) || [];
+          .filter((item) => item.pickup_province === value)
+          .map((item) => item.pickup_district) || [];
 
       setPickupDistrictList([...new Set(districts)]);
       form.setFieldValue("pickup_district", null);
     } else {
       const districts =
         selectedPriceContractor?.price_details
-          .filter((item) => item.to_city === value)
-          .map((item) => item.to_district) || [];
+          .filter((item) => item.delivery_province === value)
+          .map((item) => item.delivery_district) || [];
 
       setDeliveryDistrictList([...new Set(districts)]);
       form.setFieldValue("delivery_district", null);
@@ -287,10 +287,10 @@ const AddOrderForm: React.FC = () => {
       }
 
       const prices = jsonData.map((item: any) => ({
-        from_city: item[priceKeys.fromCity],
-        from_district: item[priceKeys.fromDistrict],
-        to_city: item[priceKeys.toCity],
-        to_district: item[priceKeys.toDistrcit],
+        pickup_province: item[priceKeys.pickupProvince] || 'Mặc định',
+        pickup_district: item[priceKeys.pickupDistrict] || 'Mặc định',
+        delivery_province: item[priceKeys.deliveryProvince] || 'Mặc định',
+        delivery_district: item[priceKeys.deliveryDistrict] || 'Mặc định',
         weight_prices: {
           ...omit(item, priceKeysBlackList),
         },
@@ -354,10 +354,10 @@ const AddOrderForm: React.FC = () => {
 
       const priceFound = selectedPriceClient?.price_details.find(
         (item) =>
-          item.from_city === pickupProvince &&
-          item.from_district === pickupDistrict &&
-          item.to_city === deliveryProvince &&
-          item.to_district === deliveryDistrict
+          item.pickup_province === pickupProvince &&
+          item.pickup_district === pickupDistrict &&
+          item.delivery_province === deliveryProvince &&
+          item.delivery_district === deliveryDistrict
       );
       if (priceFound) {
         const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
@@ -396,10 +396,10 @@ const AddOrderForm: React.FC = () => {
 
       const priceFound = selectedPriceContractor?.price_details.find(
         (item) =>
-          item.from_city === pickupProvince &&
-          item.from_district === pickupDistrict &&
-          item.to_city === deliveryProvince &&
-          item.to_district === deliveryDistrict
+          item.pickup_province === pickupProvince &&
+          item.pickup_district === pickupDistrict &&
+          item.delivery_province === deliveryProvince &&
+          item.delivery_district === deliveryDistrict
       );
 
       let key = isIntenal ? "trip_salary" : "price_for_contractor";

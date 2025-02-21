@@ -10,7 +10,7 @@ import * as XLSX from "xlsx";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IContractor } from "@/interfaces/contractor";
-import { priceKeys, priceKeysBlackList } from "@/constants";
+import { DEFAULT_PRICE, priceKeys, priceKeysBlackList } from "@/constants";
 import { omit } from "lodash";
 import moment from "moment";
 import { apiRoutes } from "@/routes/api";
@@ -95,10 +95,10 @@ const PricingListPage = () => {
       }
 
       const prices = jsonData.map((item: any) => ({
-        from_city: item[priceKeys.fromCity],
-        from_district: item[priceKeys.fromDistrict],
-        to_city: item[priceKeys.toCity],
-        to_district: item[priceKeys.toDistrcit],
+        pickup_province: item[priceKeys.pickupProvince] || DEFAULT_PRICE,
+        pickup_district: item[priceKeys.pickupDistrict] || DEFAULT_PRICE,
+        delivery_province: item[priceKeys.deliveryProvince] || DEFAULT_PRICE,
+        delivery_district: item[priceKeys.deliveryDistrict] || DEFAULT_PRICE,
         weight_prices: {
           ...omit(item, priceKeysBlackList),
         },

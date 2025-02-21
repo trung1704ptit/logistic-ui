@@ -10,10 +10,10 @@ export interface IPrice {
 
 export interface IPriceDetail {
   id: string;
-  from_city: string;
-  to_city: string;
-  from_district: string;
-  to_district: string;
+  pickup_province: string;
+  delivery_province: string;
+  pickup_district: string;
+  delivery_district: string;
   notes: string;
   weight_prices: any;
 }
