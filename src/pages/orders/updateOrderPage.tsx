@@ -71,7 +71,7 @@ const breadcrumb: BreadcrumbProps = {
 const UpdateOrderForm: React.FC = () => {
   const [form] = Form.useForm();
   const params = new URLSearchParams(location.search);
-  const [orderData, setOrderData] = useState<IOrder>();
+  const orderId = params.get("id");
   const [selectedContractor, setSelectedContractor] = useState<IContractor>();
   const [selectedClient, setSelectedClient] = useState<IClient>();
   const [priceListContractor, setPriceListContractor] = useState<IPrice[]>([]);
@@ -196,11 +196,9 @@ const UpdateOrderForm: React.FC = () => {
 
   const fetchOrder = async () => {
     try {
-      const orderId = params.get("id");
       const res = await http.get(`${apiRoutes.orders}/${orderId}`);
       if (res && res.data) {
         const data: IOrder = res.data.data;
-        setOrderData(data);
         form.setFieldsValue({
           ...data,
           order_time: dayjs(data.order_time),
@@ -221,7 +219,7 @@ const UpdateOrderForm: React.FC = () => {
 
   useEffect(() => {
     fetchOrder();
-  }, []);
+  }, [orderId]);
 
   const handleProvinceChange = (value: string, field: string) => {
     keepOriginPrices.current = false;
@@ -1007,7 +1005,7 @@ const UpdateOrderForm: React.FC = () => {
               isReadOnly={false}
               onClose={() => setIsReview(false)}
               client={selectedClient}
-              orderId={orderData?.id}
+              orderId={orderId}
             />
           )}
           <Col xs={24}>
