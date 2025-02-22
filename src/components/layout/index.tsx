@@ -63,6 +63,7 @@ const Layout = () => {
     <div className="h-screen">
       <ProLayout
         {...defaultProps}
+        siderWidth={180} 
         token={{
           sider: {
             colorMenuBackground: "white",
