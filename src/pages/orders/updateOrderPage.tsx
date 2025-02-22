@@ -144,7 +144,7 @@ const UpdateOrderForm: React.FC = () => {
     if (selectedClient?.id) {
       fetchPricings(selectedClient.id, "client");
     }
-  }, [selectedClient]);
+  }, [selectedClient?.id]);
 
   const handleSubmit = () => {
     setIsReview(true);
@@ -221,7 +221,7 @@ const UpdateOrderForm: React.FC = () => {
 
   useEffect(() => {
     fetchOrder();
-  }, [params]);
+  }, []);
 
   const handleProvinceChange = (value: string, field: string) => {
     keepOriginPrices.current = false;
