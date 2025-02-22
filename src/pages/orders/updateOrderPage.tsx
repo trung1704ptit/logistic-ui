@@ -71,7 +71,6 @@ const breadcrumb: BreadcrumbProps = {
 const UpdateOrderForm: React.FC = () => {
   const [form] = Form.useForm();
   const params = new URLSearchParams(location.search);
-  const [isLoading, setIsLoading] = useState(false);
   const [orderData, setOrderData] = useState<IOrder>();
   const [selectedContractor, setSelectedContractor] = useState<IContractor>();
   const [selectedClient, setSelectedClient] = useState<IClient>();
@@ -197,7 +196,6 @@ const UpdateOrderForm: React.FC = () => {
 
   const fetchOrder = async () => {
     try {
-      setIsLoading(true);
       const orderId = params.get("id");
       const res = await http.get(`${apiRoutes.orders}/${orderId}`);
       if (res && res.data) {
@@ -218,8 +216,6 @@ const UpdateOrderForm: React.FC = () => {
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -505,7 +501,7 @@ const UpdateOrderForm: React.FC = () => {
   ]);
 
   return (
-    <BasePageContainer breadcrumb={breadcrumb} loading={isLoading}>
+    <BasePageContainer breadcrumb={breadcrumb}>
       <Form
         form={form}
         layout="vertical"
