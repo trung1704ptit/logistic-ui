@@ -25,7 +25,13 @@ import http from "@/lib/http";
 import { IPrice, IPriceDetail } from "@/interfaces/price";
 import { apiRoutes } from "@/routes/api";
 import * as XLSX from "xlsx";
-import { CONTRACTOR_TYPES, OWNER_TYPES, priceKeys, priceKeysBlackList } from "@/constants";
+import {
+  CONTRACTOR_TYPES,
+  DEFAULT_PRICE,
+  OWNER_TYPES,
+  priceKeys,
+  priceKeysBlackList,
+} from "@/constants";
 import { omit } from "lodash";
 import { AiOutlineExport } from "react-icons/ai";
 import OrderDetails from "./orderDetails";
@@ -64,7 +70,7 @@ const breadcrumb: BreadcrumbProps = {
 const AddOrderForm: React.FC = () => {
   const [form] = Form.useForm();
   const [selectedContractor, setSelectedContractor] = useState<IContractor>();
-  const [selectedClient, setSelectedClientId] = useState<IClient>();
+  const [selectedClient, setSelectedClient] = useState<IClient>();
   const [priceListContractor, setPriceListContractor] = useState<IPrice[]>([]);
   const [priceListClient, setPriceListClient] = useState<IPrice[]>([]);
 
@@ -115,17 +121,17 @@ const AddOrderForm: React.FC = () => {
       truck_id: undefined,
       price_for_contractor: 0,
       trip_salary: 0,
-      contractor_price_id: undefined,
-      order_type: filterContractor?.type
+      price_for_contractor_id: undefined,
+      order_type: filterContractor?.type,
     });
   };
 
   const handleSelectClient = (clientId: string) => {
     const filterClient = allClients.find((item) => item.id === clientId);
-    setSelectedClientId(filterClient);
+    setSelectedClient(filterClient);
     form.setFieldsValue({
       price_from_client: undefined,
-      client_price_id: undefined,
+      price_from_client_id: undefined,
     });
     fetchPricings(clientId, "client");
   };
@@ -180,7 +186,8 @@ const AddOrderForm: React.FC = () => {
       const districts =
         selectedPriceContractor?.price_details
           .filter((item) => item.pickup_province === value)
-          .map((item) => item.pickup_district) || [];
+          .map((item) => item.pickup_district)
+          .sort() || [];
 
       setPickupDistrictList([...new Set(districts)]);
       form.setFieldValue("pickup_district", null);
@@ -188,7 +195,8 @@ const AddOrderForm: React.FC = () => {
       const districts =
         selectedPriceContractor?.price_details
           .filter((item) => item.delivery_province === value)
-          .map((item) => item.delivery_district) || [];
+          .map((item) => item.delivery_district)
+          .sort() || [];
 
       setDeliveryDistrictList([...new Set(districts)]);
       form.setFieldValue("delivery_district", null);
@@ -284,18 +292,29 @@ const AddOrderForm: React.FC = () => {
       } catch (error) {
         console.error("Error uploading file:", error);
         message.error("Có lỗi xảy ra trong quá trình tải file");
+        return;
       }
 
-      const prices = jsonData.map((item: any) => ({
-        pickup_province: item[priceKeys.pickupProvince] || 'Mặc định',
-        pickup_district: item[priceKeys.pickupDistrict] || 'Mặc định',
-        delivery_province: item[priceKeys.deliveryProvince] || 'Mặc định',
-        delivery_district: item[priceKeys.deliveryDistrict] || 'Mặc định',
-        weight_prices: {
-          ...omit(item, priceKeysBlackList),
-        },
-        notes: item[priceKeys.notes],
-      }));
+      const prices = jsonData
+        .filter((item: any) => {
+          return (
+            item[priceKeys.pickupProvince] && item[priceKeys.deliveryProvince]
+          );
+        })
+        .map((item: any) => ({
+          pickup_province:
+            item[priceKeys.pickupProvince]?.trim() || DEFAULT_PRICE,
+          pickup_district:
+            item[priceKeys.pickupDistrict]?.trim() || DEFAULT_PRICE,
+          delivery_province:
+            item[priceKeys.deliveryProvince]?.trim() || DEFAULT_PRICE,
+          delivery_district:
+            item[priceKeys.deliveryDistrict]?.trim() || DEFAULT_PRICE,
+          weight_prices: {
+            ...omit(item, priceKeysBlackList),
+          },
+          notes: item[priceKeys.notes],
+        }));
 
       const data = {
         owner_id: ownerId,
@@ -322,13 +341,14 @@ const AddOrderForm: React.FC = () => {
 
       if (pricesRes?.data?.data) {
         if (isClientType) {
-          form.setFieldsValue({ client_price_id: undefined });
+          form.setFieldsValue({ price_from_client_id: undefined });
         } else {
-          form.setFieldsValue({ contractor_price_id: undefined });
+          form.setFieldsValue({ price_for_contractor_id: undefined });
         }
       }
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
+      return;
     }
   };
 
@@ -385,7 +405,7 @@ const AddOrderForm: React.FC = () => {
     // change contractor price selected
     // change the pickup_province, pickup_district, delivery_province, delivery_district
     if (
-      selectedContractor &&
+      selectedPriceContractor &&
       (packageWeight || packageVolumn) &&
       pickupDistrict &&
       deliveryProvince &&
@@ -483,10 +503,7 @@ const AddOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-            <Form.Item
-              label="Chọn xe tải"
-              name="truck_id"
-            >
+            <Form.Item label="Chọn xe tải" name="truck_id">
               <Select
                 size="large"
                 placeholder="Chọn xe tải"
@@ -543,7 +560,7 @@ const AddOrderForm: React.FC = () => {
                   )}
                 </div>
               }
-              name="client_price_id"
+              name="price_from_client_id"
             >
               <Select
                 size="large"
@@ -582,7 +599,7 @@ const AddOrderForm: React.FC = () => {
                   )}
                 </div>
               }
-              name="contractor_price_id"
+              name="price_for_contractor_id"
             >
               <Select
                 size="large"
@@ -670,8 +687,6 @@ const AddOrderForm: React.FC = () => {
                 }
                 options={locationLabels.allPickupProvinces}
               />
-
-
             </Form.Item>
           </Col>
 

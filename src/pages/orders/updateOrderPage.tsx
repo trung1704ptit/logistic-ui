@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Form,
   Input,
@@ -15,7 +15,7 @@ import { CloseOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { findPrice, searchByLabel } from "@/lib/utils";
 import { useSelector } from "react-redux";
@@ -25,7 +25,13 @@ import http from "@/lib/http";
 import { IPrice, IPriceDetail } from "@/interfaces/price";
 import { apiRoutes } from "@/routes/api";
 import * as XLSX from "xlsx";
-import { CONTRACTOR_TYPES, OWNER_TYPES, priceKeys, priceKeysBlackList } from "@/constants";
+import {
+  CONTRACTOR_TYPES,
+  DEFAULT_PRICE,
+  OWNER_TYPES,
+  priceKeys,
+  priceKeysBlackList,
+} from "@/constants";
 import { omit } from "lodash";
 import { AiOutlineExport } from "react-icons/ai";
 import OrderDetails from "./orderDetails";
@@ -35,6 +41,7 @@ import { IContractor } from "@/interfaces/contractor";
 import { IClient } from "@/interfaces/client";
 import InputNumber from "@/components/InputNumber";
 import SelectWithInput from "@/components/SelectWithInput";
+import { IOrder } from "@/interfaces/order";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -63,8 +70,11 @@ const breadcrumb: BreadcrumbProps = {
 
 const UpdateOrderForm: React.FC = () => {
   const [form] = Form.useForm();
+  const params = new URLSearchParams(location.search);
+  const [isLoading, setIsLoading] = useState(false);
+  const [orderData, setOrderData] = useState<IOrder>();
   const [selectedContractor, setSelectedContractor] = useState<IContractor>();
-  const [selectedClient, setSelectedClientId] = useState<IClient>();
+  const [selectedClient, setSelectedClient] = useState<IClient>();
   const [priceListContractor, setPriceListContractor] = useState<IPrice[]>([]);
   const [priceListClient, setPriceListClient] = useState<IPrice[]>([]);
 
@@ -77,6 +87,8 @@ const UpdateOrderForm: React.FC = () => {
   const allDrivers = useSelector((state: RootState) => state.driver.drivers);
   const allClients = useSelector((state: RootState) => state.client.clients);
   const allTrucks = useSelector((state: RootState) => state.truck.trucks);
+  const keepOriginPrices = useRef(true);
+
   const [highlightPriceFromClient, setHighlightPriceFromClient] =
     useState(false);
   const [highlightPriceForContractor, setHighlightPriceForContractor] =
@@ -115,20 +127,25 @@ const UpdateOrderForm: React.FC = () => {
       truck_id: undefined,
       price_for_contractor: 0,
       trip_salary: 0,
-      contractor_price_id: undefined,
-      order_type: filterContractor?.type
+      price_for_contractor_id: undefined,
+      order_type: filterContractor?.type,
     });
   };
 
   const handleSelectClient = (clientId: string) => {
     const filterClient = allClients.find((item) => item.id === clientId);
-    setSelectedClientId(filterClient);
+    setSelectedClient(filterClient);
     form.setFieldsValue({
       price_from_client: undefined,
-      client_price_id: undefined,
+      price_from_client_id: undefined,
     });
-    fetchPricings(clientId, "client");
   };
+
+  useEffect(() => {
+    if (selectedClient?.id) {
+      fetchPricings(selectedClient.id, "client");
+    }
+  }, [selectedClient]);
 
   const handleSubmit = () => {
     setIsReview(true);
@@ -149,10 +166,13 @@ const UpdateOrderForm: React.FC = () => {
     });
   };
 
-  const handleSelectPriceContractor = async (priceId: string) => {
+  const handleSelectPriceContractor = async (
+    contractorId: string,
+    priceId: string
+  ) => {
     try {
       const { data } = await http.get(
-        `${apiRoutes.prices}/${selectedContractor?.id}/${priceId}`
+        `${apiRoutes.prices}/${contractorId}/${priceId}`
       );
       updateLocationLabels(data.data);
     } catch (error) {
@@ -160,10 +180,10 @@ const UpdateOrderForm: React.FC = () => {
     }
   };
 
-  const handleSelectPriceClient = async (priceId: string) => {
+  const handleSelectPriceClient = async (clientId: string, priceId: string) => {
     try {
       const { data } = await http.get(
-        `${apiRoutes.prices}/${selectedClient?.id}/${priceId}`
+        `${apiRoutes.prices}/${clientId}/${priceId}`
       );
       setSelectedPriceClient(data.data);
     } catch (error) {
@@ -175,7 +195,40 @@ const UpdateOrderForm: React.FC = () => {
     navigate(-1);
   };
 
+  const fetchOrder = async () => {
+    try {
+      setIsLoading(true);
+      const orderId = params.get("id");
+      const res = await http.get(`${apiRoutes.orders}/${orderId}`);
+      if (res && res.data) {
+        const data: IOrder = res.data.data;
+        setOrderData(data);
+        form.setFieldsValue({
+          ...data,
+          order_time: dayjs(data.order_time),
+        });
+
+        setSelectedContractor(data.contractor);
+        setSelectedClient(data.client);
+        handleSelectPriceContractor(
+          data.contractor_id,
+          data.price_for_contractor_id
+        );
+        handleSelectPriceClient(data.client.id, data.price_from_client_id);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrder();
+  }, [params]);
+
   const handleProvinceChange = (value: string, field: string) => {
+    keepOriginPrices.current = false;
     if (field === "pickup_province") {
       const districts =
         selectedPriceContractor?.price_details
@@ -193,6 +246,14 @@ const UpdateOrderForm: React.FC = () => {
       setDeliveryDistrictList([...new Set(districts)]);
       form.setFieldValue("delivery_district", null);
     }
+  };
+
+  const handleDistrictChange = () => {
+    keepOriginPrices.current = false;
+  };
+
+  const handleChangePackage = () => {
+    keepOriginPrices.current = false;
   };
 
   const fetchPricings = async (ownerId: string, ownerType: string) => {
@@ -284,18 +345,29 @@ const UpdateOrderForm: React.FC = () => {
       } catch (error) {
         console.error("Error uploading file:", error);
         message.error("Có lỗi xảy ra trong quá trình tải file");
+        return;
       }
 
-      const prices = jsonData.map((item: any) => ({
-        pickup_province: item[priceKeys.pickupProvince] || 'Mặc định',
-        pickup_district: item[priceKeys.pickupDistrict] || 'Mặc định',
-        delivery_province: item[priceKeys.deliveryProvince] || 'Mặc định',
-        delivery_district: item[priceKeys.deliveryDistrict] || 'Mặc định',
-        weight_prices: {
-          ...omit(item, priceKeysBlackList),
-        },
-        notes: item[priceKeys.notes],
-      }));
+      const prices = jsonData
+        .filter((item: any) => {
+          return (
+            item[priceKeys.pickupProvince] && item[priceKeys.deliveryProvince]
+          );
+        })
+        .map((item: any) => ({
+          pickup_province:
+            item[priceKeys.pickupProvince]?.trim() || DEFAULT_PRICE,
+          pickup_district:
+            item[priceKeys.pickupDistrict]?.trim() || DEFAULT_PRICE,
+          delivery_province:
+            item[priceKeys.deliveryProvince]?.trim() || DEFAULT_PRICE,
+          delivery_district:
+            item[priceKeys.deliveryDistrict]?.trim() || DEFAULT_PRICE,
+          weight_prices: {
+            ...omit(item, priceKeysBlackList),
+          },
+          notes: item[priceKeys.notes],
+        }));
 
       const data = {
         owner_id: ownerId,
@@ -322,13 +394,14 @@ const UpdateOrderForm: React.FC = () => {
 
       if (pricesRes?.data?.data) {
         if (isClientType) {
-          form.setFieldsValue({ client_price_id: undefined });
+          form.setFieldsValue({ price_from_client_id: undefined });
         } else {
-          form.setFieldsValue({ contractor_price_id: undefined });
+          form.setFieldsValue({ price_for_contractor_id: undefined });
         }
       }
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
+      return;
     }
   };
 
@@ -348,7 +421,8 @@ const UpdateOrderForm: React.FC = () => {
       pickupDistrict &&
       deliveryProvince &&
       pickupDistrict &&
-      deliveryDistrict
+      deliveryDistrict &&
+      !keepOriginPrices.current
     ) {
       setHighlightPriceFromClient(true);
 
@@ -378,6 +452,7 @@ const UpdateOrderForm: React.FC = () => {
     pickupDistrict,
     deliveryProvince,
     deliveryDistrict,
+    keepOriginPrices,
   ]);
 
   // watch changes, update the price_for_contractor
@@ -385,12 +460,13 @@ const UpdateOrderForm: React.FC = () => {
     // change contractor price selected
     // change the pickup_province, pickup_district, delivery_province, delivery_district
     if (
-      selectedContractor &&
+      selectedPriceContractor &&
       (packageWeight || packageVolumn) &&
       pickupDistrict &&
       deliveryProvince &&
       pickupDistrict &&
-      deliveryDistrict
+      deliveryDistrict &&
+      !keepOriginPrices.current
     ) {
       setHighlightPriceForContractor(true);
 
@@ -401,7 +477,6 @@ const UpdateOrderForm: React.FC = () => {
           item.delivery_province === deliveryProvince &&
           item.delivery_district === deliveryDistrict
       );
-
       let key = isIntenal ? "trip_salary" : "price_for_contractor";
 
       if (priceFound) {
@@ -426,10 +501,11 @@ const UpdateOrderForm: React.FC = () => {
     pickupDistrict,
     deliveryProvince,
     deliveryDistrict,
+    keepOriginPrices,
   ]);
 
   return (
-    <BasePageContainer breadcrumb={breadcrumb}>
+    <BasePageContainer breadcrumb={breadcrumb} loading={isLoading}>
       <Form
         form={form}
         layout="vertical"
@@ -483,10 +559,7 @@ const UpdateOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
-            <Form.Item
-              label="Chọn xe tải"
-              name="truck_id"
-            >
+            <Form.Item label="Chọn xe tải" name="truck_id">
               <Select
                 size="large"
                 placeholder="Chọn xe tải"
@@ -543,13 +616,15 @@ const UpdateOrderForm: React.FC = () => {
                   )}
                 </div>
               }
-              name="client_price_id"
+              name="price_from_client_id"
             >
               <Select
                 size="large"
                 placeholder="Chọn Bảng Giá"
                 disabled={!selectedClient}
-                onChange={handleSelectPriceClient}
+                onChange={(value: string) =>
+                  handleSelectPriceClient(selectedClient?.id as string, value)
+                }
               >
                 {priceListClient &&
                   priceListClient.map((priceTable, index) => (
@@ -582,13 +657,18 @@ const UpdateOrderForm: React.FC = () => {
                   )}
                 </div>
               }
-              name="contractor_price_id"
+              name="price_for_contractor_id"
             >
               <Select
                 size="large"
                 placeholder="Chọn Bảng Giá"
                 disabled={!selectedContractor?.id}
-                onChange={handleSelectPriceContractor}
+                onChange={(priceId) =>
+                  handleSelectPriceContractor(
+                    selectedContractor?.id as string,
+                    priceId
+                  )
+                }
               >
                 {priceListContractor &&
                   priceListContractor.map((priceTable, index) => (
@@ -626,7 +706,11 @@ const UpdateOrderForm: React.FC = () => {
                 name="package_weight"
                 rules={[{ required: true, message: "Nhập số tấn của hàng" }]}
               >
-                <InputNumber size="large" placeholder="Nhập số tấn" />
+                <InputNumber
+                  size="large"
+                  placeholder="Nhập số tấn"
+                  onChange={handleChangePackage}
+                />
               </Form.Item>
             </Col>
           )}
@@ -637,7 +721,11 @@ const UpdateOrderForm: React.FC = () => {
                 name="package_volumn"
                 rules={[{ required: true, message: "Nhập số khối của hàng" }]}
               >
-                <InputNumber size="large" placeholder="Nhập số khối" />
+                <InputNumber
+                  size="large"
+                  placeholder="Nhập số khối"
+                  onChange={handleChangePackage}
+                />
               </Form.Item>
             </Col>
           )}
@@ -670,8 +758,6 @@ const UpdateOrderForm: React.FC = () => {
                 }
                 options={locationLabels.allPickupProvinces}
               />
-
-
             </Form.Item>
           </Col>
 
@@ -687,6 +773,7 @@ const UpdateOrderForm: React.FC = () => {
                 showSearch
                 filterOption={searchByLabel}
                 options={pickupDistrictList}
+                onChange={handleDistrictChange}
               />
             </Form.Item>
           </Col>
@@ -721,6 +808,7 @@ const UpdateOrderForm: React.FC = () => {
                 placeholder="Chọn quận/huyện"
                 showSearch
                 filterOption={searchByLabel}
+                onChange={handleDistrictChange}
                 options={deliveryDistrictList}
               />
             </Form.Item>
@@ -923,6 +1011,7 @@ const UpdateOrderForm: React.FC = () => {
               isReadOnly={false}
               onClose={() => setIsReview(false)}
               client={selectedClient}
+              orderId={orderData?.id}
             />
           )}
           <Col xs={24}>

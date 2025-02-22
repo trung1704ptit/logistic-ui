@@ -1,3 +1,4 @@
+import { IClient } from "./client";
 import { IContractor } from "./contractor";
 import { IDriver } from "./driver";
 import { ITruck } from "./truck";
@@ -5,12 +6,14 @@ import { ITruck } from "./truck";
 export interface IOrder {
   id?: string;
   contractor_id: string;
+  contractor?: IContractor;
   order_time: string;
   order_type: string;
-  client: string;
+  client: IClient;
   driver_id: string;
   truck_id: string;
-  price_id: string;
+  driver?: IDriver
+  truck?: ITruck;
   pickup_province: string;
   pickup_district?: string;
   delivery_province: string;
@@ -21,6 +24,8 @@ export interface IOrder {
   trip_salary: number;
   price_for_contractor: number;
   price_from_client: number;
+  price_for_contractor_id: string;
+  price_from_client_id: string;
   daily_salary: number;
   point_count: number;
   point_salary: number;
@@ -35,9 +40,6 @@ export interface IOrder {
   other_salary: number;
   total_salary: number;
   notes?: string;
-  contractor?: IContractor;
-  driver?: IDriver
-  truck?: ITruck;
   created_at?: string;
   updated_at?: string;
 }

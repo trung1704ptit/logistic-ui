@@ -48,9 +48,7 @@ const PricingListPage = () => {
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
-  const clients = useSelector(
-    (state: RootState) => state.client.clients
-  );
+  const clients = useSelector((state: RootState) => state.client.clients);
   const [owner, setOwner] = useState<IContractor>();
 
   useEffect(() => {
@@ -69,10 +67,12 @@ const PricingListPage = () => {
 
   const handleFileUpload = async (file: any) => {
     try {
-      const filterFileName = pricings.filter(item => item.file_name.includes(file.name))
+      const filterFileName = pricings.filter((item) =>
+        item.file_name.includes(file.name)
+      );
       let filename = file.name;
       if (filterFileName.length > 0) {
-        filename = `${filterFileName.length}-${file.name}`
+        filename = `${filterFileName.length}-${file.name}`;
       }
 
       const renamedFile = new File([file], filename, { type: file.type });
@@ -92,19 +92,26 @@ const PricingListPage = () => {
       } catch (error) {
         console.error("Error uploading file:", error);
         message.error("Có lỗi xảy ra trong quá trình tải file");
+        return;
       }
 
-      const prices = jsonData.map((item: any) => ({
-        pickup_province: item[priceKeys.pickupProvince] || DEFAULT_PRICE,
-        pickup_district: item[priceKeys.pickupDistrict] || DEFAULT_PRICE,
-        delivery_province: item[priceKeys.deliveryProvince] || DEFAULT_PRICE,
-        delivery_district: item[priceKeys.deliveryDistrict] || DEFAULT_PRICE,
-        weight_prices: {
-          ...omit(item, priceKeysBlackList),
-        },
-        notes: item[priceKeys.notes],
-      }));
-
+      const prices = jsonData
+        .filter((item: any) => {
+          return (
+            item[priceKeys.pickupProvince] && item[priceKeys.deliveryProvince]
+          );
+        })
+        .map((item: any) => ({
+          pickup_province: item[priceKeys.pickupProvince]?.trim() || DEFAULT_PRICE,
+          pickup_district: item[priceKeys.pickupDistrict]?.trim() || DEFAULT_PRICE,
+          delivery_province: item[priceKeys.deliveryProvince]?.trim() || DEFAULT_PRICE,
+          delivery_district: item[priceKeys.deliveryDistrict]?.trim() || DEFAULT_PRICE,
+          weight_prices: {
+            ...omit(item, priceKeysBlackList),
+          },
+          notes: item[priceKeys.notes],
+        }));
+      
       const data = {
         owner_id: ownerId,
         owner_type: ownerType,
@@ -124,6 +131,7 @@ const PricingListPage = () => {
       message.success(`Đã tải lên bảng giá excel ${renamedFile.name}`);
     } catch (error) {
       message.error("Có lỗi xảy ra trong quá trình tải file");
+      return;
     }
   };
 
@@ -153,13 +161,15 @@ const PricingListPage = () => {
     try {
       setIsLoading(true);
       setTimeout(async () => {
-        const response = await http.get(`/prices/${ownerId}?ownerType=${ownerType}`);
+        const response = await http.get(
+          `/prices/${ownerId}?ownerType=${ownerType}`
+        );
         if (response.status === 200) {
           setPricings(response.data.data);
           setFilteredPricingList(response.data.data);
           setIsLoading(false);
         }
-      }, 1000);
+      }, 600);
     } catch (error) {
       console.error("Error fetching pricings:", error);
       messageApi.open({
@@ -180,9 +190,7 @@ const PricingListPage = () => {
       content: `Bạn có chắc muốn xóa bảng giá ${pricing.file_name}?`,
       onOk: async () => {
         try {
-          const res = await http.delete(
-            `/prices/${owner?.id}/${pricing.id}`
-          );
+          const res = await http.delete(`/prices/${owner?.id}/${pricing.id}`);
           if (res.status === 204) {
             messageApi.open({
               type: "success",

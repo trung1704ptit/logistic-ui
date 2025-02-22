@@ -129,7 +129,10 @@ const ReviewComponent: React.FC<ReviewProps> = ({
         res = await http.post(apiRoutes.orders, payload);
       }
       if (res && res.data) {
-        message.success("Đã tạo đơn hàng thành công");
+        const successMsg = orderId
+          ? "Cập nhật đơn hàng thành công"
+          : "Đã tạo đơn hàng thành công";
+        message.success(successMsg);
         navigate(webRoutes.orders);
       }
     } catch (error) {

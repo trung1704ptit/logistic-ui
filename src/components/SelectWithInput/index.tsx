@@ -28,8 +28,6 @@ const SelectWithInput = (props: any) => {
     }, 0);
   };
 
-  console.log("items:", items)
-
   return (
     <Select
       className="w-full"
