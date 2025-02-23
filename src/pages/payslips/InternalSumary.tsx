@@ -1,4 +1,13 @@
-import { Button, Space, Form, Typography, Divider, Card, message, Popconfirm } from "antd";
+import {
+  Button,
+  Space,
+  Form,
+  Typography,
+  Divider,
+  Card,
+  message,
+  Popconfirm,
+} from "antd";
 import { IDriver } from "@/interfaces/driver";
 import { webRoutes } from "@/routes/web";
 import { ProTable, ProColumns } from "@ant-design/pro-components";
@@ -8,6 +17,7 @@ import { ORDER_KEYS, PAYSLIP_KEYS } from "@/constants";
 import moment from "moment";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
+import { BsFileEarmarkExcel } from "react-icons/bs";
 
 const { Text } = Typography;
 
@@ -18,7 +28,7 @@ const InternalSumary = ({
   selectedYear,
   selectedMonth,
   form,
-  fetchPayslips
+  fetchPayslips,
 }: any) => {
   const hanleViewOrderListByDriver = (driverId: string) => {
     const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}&contractor_id=all`;
@@ -117,7 +127,7 @@ const InternalSumary = ({
     try {
       await http.delete(`${apiRoutes.payslips}/${payslipId}`);
       message.success("Đã xóa Bảng cước");
-      fetchPayslips()
+      fetchPayslips();
     } catch (error) {
       console.log("Error:", error);
     }
@@ -171,7 +181,11 @@ const InternalSumary = ({
           >
             Chi tiết
           </Button>
-          <Button type="dashed" onClick={() => exportExcel(row.driver)}>
+          <Button
+            type="dashed"
+            onClick={() => exportExcel(row.driver)}
+            icon={<BsFileEarmarkExcel />}
+          >
             Tải xuống Excel
           </Button>
           <Popconfirm
@@ -180,8 +194,8 @@ const InternalSumary = ({
             onConfirm={() => handleDeletePayslip(row.id)}
             okText="Xóa"
             cancelText="Thoát"
-            >
-          <Button>Xóa</Button>
+          >
+            <Button>Xóa</Button>
           </Popconfirm>
         </Space>
       ),

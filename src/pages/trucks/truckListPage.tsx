@@ -12,6 +12,7 @@ import { RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import http from "@/lib/http";
 import { fetchTrucks } from "@/store/slices/truckSlice";
+import { BsFileEarmarkExcel } from "react-icons/bs";
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,7 +41,7 @@ const TruckListPage = () => {
       onOk: async () => {
         try {
           const res = await http.delete(`/trucks/${truck.id}`);
-          console.log(res)
+          console.log(res);
           appDispatch(fetchTrucks() as any);
           if (res.status === 204) {
             messageApi.open({
@@ -203,6 +204,9 @@ const TruckListPage = () => {
                   Thêm xe tải
                 </Button>
               </Link>
+              <Button type="dashed" icon={<BsFileEarmarkExcel />}>
+                Tải lên danh sách
+              </Button>
             </Space>
           ),
         }}

@@ -19,6 +19,7 @@ import { IDriver } from "@/interfaces/driver";
 import moment from "moment";
 import ErrorMessage from "@/components/Alert/Error";
 import { fetchContractors } from "@/store/slices/contractorSlice";
+import { BsFileEarmarkExcel } from "react-icons/bs";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -339,7 +340,7 @@ const ContractorForm: React.FC = () => {
       <Card>
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Row gutter={16}>
-            <Col xs={24} sm={12}>
+            <Col xs={24} sm={12} lg={8} xl={6}>
               <Form.Item
                 label="Tên nhà thầu"
                 name="name"
@@ -348,7 +349,7 @@ const ContractorForm: React.FC = () => {
                 <Input placeholder="Nhập tên nhà thầu" size="large" />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12}>
+            <Col xs={24} sm={12} lg={8} xl={6}>
               <Form.Item
                 label="Số điện thoại"
                 name="phone"
@@ -362,7 +363,7 @@ const ContractorForm: React.FC = () => {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col xs={24} sm={12}>
+            <Col xs={24} sm={12} lg={8} xl={6}>
               <Form.Item
                 label="Địa chỉ"
                 name="address"
@@ -371,7 +372,7 @@ const ContractorForm: React.FC = () => {
                 <Input.TextArea placeholder="Nhập địa chỉ" rows={2} />
               </Form.Item>
             </Col>
-            <Col xs={24} sm={12}>
+            <Col xs={24} sm={12} lg={8} xl={6}>
               <Form.Item label="Ghi chú" name="note">
                 <Input.TextArea placeholder="Nhập ghi chú (nếu có)" rows={2} />
               </Form.Item>
@@ -381,6 +382,9 @@ const ContractorForm: React.FC = () => {
             <Space>
               <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
                 Cập nhật nhà thầu
+              </Button>
+              <Button type="default" icon={<BsFileEarmarkExcel />}>
+                Tải lên xe tải & tài xế
               </Button>
               <Button
                 type="default"

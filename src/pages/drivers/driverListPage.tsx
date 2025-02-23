@@ -14,6 +14,7 @@ import http from "@/lib/http";
 import { IDriver } from "@/interfaces/driver";
 import { BreadcrumbProps } from "antd";
 import Title from "antd/lib/typography/Title";
+import { BsFileEarmarkExcel } from "react-icons/bs";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -99,13 +100,6 @@ const DriverListPage = () => {
       sorter: false,
       align: "center",
     },
-    // {
-    //   title: "Ngày Cấp",
-    //   dataIndex: "issue_date", // Date string 'YYYY-MM-DD'
-    //   sorter: true,
-    //   align: "center",
-    //   render: (_, row) => moment(row.issue_date).format("DD-MM-YYYY"), // Render the string directly
-    // },
     {
       title: "Ngày Sinh",
       dataIndex: "date_of_birth", // Date string 'YYYY-MM-DD'
@@ -213,6 +207,9 @@ const DriverListPage = () => {
                   Thêm tài xế
                 </Button>
               </Link>
+              <Button type="dashed" icon={<BsFileEarmarkExcel />}>
+                  Tải lên danh sách
+              </Button>
             </Space>
           ),
         }}

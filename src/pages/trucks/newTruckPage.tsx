@@ -102,6 +102,7 @@ const AddTruckForm: React.FC = () => {
             <Form.Item
               label="Mét khối (m³)"
               name="volume"
+              rules={[{ required: true, message: "Hãy nhập số khối!" }]}
             >
               <Input size="large" placeholder="Nhập thể tích" />
             </Form.Item>

@@ -1,15 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Select,
-  Button,
-  Row,
-  Col,
-  Spin,
-  Space,
-  Form,
-  Typography,
-  message,
-} from "antd";
+import { Select, Button, Row, Col, Spin, Space, Form, message } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IDriver } from "@/interfaces/driver";
@@ -24,6 +14,7 @@ import moment from "moment";
 import { IContractor } from "@/interfaces/contractor";
 import InternalSumary from "./InternalSumary";
 import ExternalSumary from "./ExternalSumary";
+import { BsFileEarmarkExcel } from "react-icons/bs";
 
 const breadcrumb = {
   items: [
@@ -430,6 +421,7 @@ const PayslipAdmin: React.FC = () => {
               }
               exportAllDriverToExcel();
             }}
+            icon={<BsFileEarmarkExcel />}
           >
             Tải xuống Excel
           </Button>

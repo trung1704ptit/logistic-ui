@@ -17,6 +17,7 @@ import moment from "moment";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
 import { IContractor } from "@/interfaces/contractor";
+import { BsFileEarmarkExcel } from "react-icons/bs";
 
 const ExternalSumary = ({
   orderListSummarized,
@@ -73,7 +74,9 @@ const ExternalSumary = ({
         } else if (keyItem.value === "driver_id") {
           return order?.driver?.full_name || "";
         } else if (keyItem.value === "truck_id") {
-          return order.truck.license_plate ? `${order.truck.license_plate} ${order.truck.capacity}T` : '';
+          return order.truck.license_plate
+            ? `${order.truck.license_plate} ${order.truck.capacity}T`
+            : "";
         } else if (keyItem.value === "order_time") {
           return moment(order.order_time).format("DD-MM-YYYY");
         }
@@ -112,9 +115,7 @@ const ExternalSumary = ({
 
     XLSX.writeFile(
       workbook,
-      `${
-        contractor?.name || "Bảng cước"
-      }-${selectedMonth}-${selectedYear}.xlsx`
+      `${contractor?.name || "Bảng cước"}-${selectedMonth}-${selectedYear}.xlsx`
     );
   };
 
@@ -168,7 +169,11 @@ const ExternalSumary = ({
           >
             Chi tiết
           </Button>
-          <Button type="dashed" onClick={() => exportExcel(row.contractor)}>
+          <Button
+            type="dashed"
+            onClick={() => exportExcel(row.contractor)}
+            icon={<BsFileEarmarkExcel />}
+          >
             Tải xuống Excel
           </Button>
           <Popconfirm
