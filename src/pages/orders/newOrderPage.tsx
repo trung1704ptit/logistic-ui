@@ -17,7 +17,7 @@ import { BreadcrumbProps, Space } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useNavigate } from "react-router-dom";
 
-import { findPrice, searchByLabel } from "@/lib/utils";
+import { findPrice, parseExcelFile, searchByLabel } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import dayjs from "dayjs";
@@ -241,27 +241,6 @@ const AddOrderForm: React.FC = () => {
     }
   }, [selectedContractor?.id]);
 
-  // Utility function to parse Excel file locally
-  const parseExcelFile = (file: any): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = (e: any) => {
-        try {
-          const ab = e.target.result;
-          const wb = XLSX.read(ab, { type: "array" });
-          const ws = wb.Sheets[wb.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(ws);
-          resolve(jsonData);
-        } catch (error) {
-          reject(error);
-        }
-      };
-
-      reader.onerror = (error) => reject(error);
-      reader.readAsArrayBuffer(file);
-    });
-  };
 
   const handleFileUpload = async (file: any, ownerType: string) => {
     try {

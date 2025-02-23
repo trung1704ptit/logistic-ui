@@ -9,6 +9,7 @@ export const apiRoutes = {
   users: `${BACKEND_API_URL}/users`,
   reviews: `${BACKEND_API_URL}/unknown`,
   drivers: `${BACKEND_API_URL}/drivers`,
+  trucks: `${BACKEND_API_URL}/trucks`,
   files: `${BACKEND_API_URL}/files`,
   prices: `${BACKEND_API_URL}/prices`,
   orders: `${BACKEND_API_URL}/orders`,

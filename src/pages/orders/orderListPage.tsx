@@ -315,7 +315,7 @@ const TruckListPage = () => {
         rowSelection={false}
         pagination={{
           showQuickJumper: true,
-          pageSize: 30,
+          pageSize: 200,
         }}
         options={{
           reload: false,

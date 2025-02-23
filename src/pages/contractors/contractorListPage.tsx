@@ -183,7 +183,7 @@ const DriverListPage = () => {
         rowSelection={false}
         pagination={{
           showQuickJumper: true,
-          pageSize: 20,
+          pageSize: 200,
         }}
         request={async (params) => {
           const data = filteredContractorList?.slice(

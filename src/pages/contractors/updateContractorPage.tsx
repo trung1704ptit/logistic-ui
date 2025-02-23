@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, Select } from "antd";
+import { Form, Input, Button, Row, Col, Upload, message } from "antd";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { BreadcrumbProps, Space, Divider, Modal, Card } from "antd";
+import { BreadcrumbProps, Space, Modal, Card } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 import Title from "antd/lib/typography/Title";
-
+import dayjs from "dayjs";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { PlusOutlined } from "@ant-design/icons";
-import { removeVietnameseTones } from "@/lib/utils";
+import {
+  findSheetByName,
+  handleUploadDriverAndTruck,
+  parseExcelFileMultipleSheets,
+  removeVietnameseTones,
+} from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import { IContractor } from "@/interfaces/contractor";
@@ -20,6 +25,9 @@ import moment from "moment";
 import ErrorMessage from "@/components/Alert/Error";
 import { fetchContractors } from "@/store/slices/contractorSlice";
 import { BsFileEarmarkExcel } from "react-icons/bs";
+import { apiRoutes } from "@/routes/api";
+import { fetchTrucks } from "@/store/slices/truckSlice";
+import { fetchDrivers } from "@/store/slices/driverSlice";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -40,7 +48,8 @@ const breadcrumb: BreadcrumbProps = {
 
 const ContractorForm: React.FC = () => {
   const [form] = Form.useForm();
-  const [editingContractor, setEditingContractor] = useState<IContractor>();
+  const [loading, setLoading] = useState(true);
+  const [selectedContractor, setSelectedContractor] = useState<IContractor>();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -50,7 +59,7 @@ const ContractorForm: React.FC = () => {
   );
   const drivers = useSelector((state: RootState) => state.driver.drivers);
   const trucks = useSelector((state: RootState) => state.truck.trucks);
-
+  const contractorId = params.get("id");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredDriverList, setFilteredDriverList] = useState<IDriver[]>([]);
 
@@ -161,20 +170,20 @@ const ContractorForm: React.FC = () => {
 
   useEffect(() => {
     if (contractors) {
-      const contractorId = params.get("id");
       const contractor: IContractor | undefined = contractors.find(
         (item) => item.id === contractorId
       );
-      if (contractor && contractor.id !== editingContractor?.id) {
-        setEditingContractor(contractor);
+      if (contractor && contractor.id !== selectedContractor?.id) {
+        setLoading(false);
+        setSelectedContractor(contractor);
         setFilteredDriverList(contractor?.drivers || []);
         setFilteredTruckList(contractor?.trucks || []);
         form.setFieldsValue(contractor);
       }
     }
-  }, [contractors, params]);
+  }, [contractors, contractorId]);
 
-  const handleSearchTruck = (searchTerm: string) => {
+  const handleSearchTruck = (_: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
       searchTruckTerm.toLowerCase()
     );
@@ -191,12 +200,12 @@ const ContractorForm: React.FC = () => {
   };
 
   const handleSubmit = async (contractor: IContractor) => {
-    if (editingContractor) {
+    if (selectedContractor) {
       try {
         setIsUpdateLoading(true);
         setIsUpdateError(false);
         const res = await http.put(
-          `/contractors/${editingContractor.id}`,
+          `/contractors/${selectedContractor.id}`,
           contractor
         );
         if (res && res.data) {
@@ -336,7 +345,7 @@ const ContractorForm: React.FC = () => {
   };
 
   return (
-    <BasePageContainer breadcrumb={breadcrumb}>
+    <BasePageContainer breadcrumb={breadcrumb} loading={loading}>
       <Card>
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Row gutter={16}>
@@ -383,9 +392,26 @@ const ContractorForm: React.FC = () => {
               <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
                 Cập nhật nhà thầu
               </Button>
-              <Button type="default" icon={<BsFileEarmarkExcel />}>
-                Tải lên xe tải & tài xế
-              </Button>
+              <Upload
+                name="avatar"
+                className="avatar-uploader m-3 cursor-pointer"
+                customRequest={({ file }: any) => {
+                  setLoading(true)
+                  handleUploadDriverAndTruck(
+                    file,
+                    selectedContractor?.id as string
+                  ).then(() => {
+                    setLoading(false)
+                  });
+                }}
+                showUploadList={false}
+                accept=".xlsx,.xls"
+              >
+                <Button type="default" icon={<BsFileEarmarkExcel />}>
+                  Tải lên xe tải & tài xế
+                </Button>
+              </Upload>
+
               <Button
                 type="default"
                 icon={<CloseOutlined />}
@@ -435,7 +461,7 @@ const ContractorForm: React.FC = () => {
         rowSelection={false}
         pagination={{
           showQuickJumper: true,
-          pageSize: 20,
+          pageSize: 200,
         }}
         request={async (params) => {
           const data = filteredTruckList.slice(
@@ -488,18 +514,7 @@ const ContractorForm: React.FC = () => {
         tableLayout={"fixed"}
         pagination={{
           showQuickJumper: true,
-          pageSize: 50,
-        }}
-        request={async (params) => {
-          const data = filteredDriverList.slice(
-            ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
-            (params?.current ?? 1) * (params?.pageSize ?? 10)
-          );
-          return {
-            data,
-            success: true,
-            total: filteredDriverList.length,
-          } as RequestData<(typeof drivers)[0]>;
+          pageSize: 200,
         }}
         dataSource={filteredDriverList}
         dateFormatter="string"

@@ -11,6 +11,7 @@ import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
 import { fetchTrucks } from "@/store/slices/truckSlice";
 import { fetchContractors } from "@/store/slices/contractorSlice";
+import { apiRoutes } from "@/routes/api";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -53,7 +54,7 @@ const AddTruckForm: React.FC = () => {
       };
       setIsLoading(true);
       setIsError(false);
-      const res = await http.post("/trucks", payload);
+      const res = await http.post(apiRoutes.trucks, payload);
       if (res && res.data) {
         appDispatch(fetchTrucks());
         appDispatch(fetchContractors());

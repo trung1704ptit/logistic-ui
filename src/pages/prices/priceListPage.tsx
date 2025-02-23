@@ -6,7 +6,6 @@ import BasePageContainer from "@/components/layout/pageContainer";
 import { PlusOutlined } from "@ant-design/icons";
 import Title from "antd/lib/typography/Title";
 import http from "@/lib/http";
-import * as XLSX from "xlsx";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { IContractor } from "@/interfaces/contractor";
@@ -15,6 +14,7 @@ import { omit } from "lodash";
 import moment from "moment";
 import { apiRoutes } from "@/routes/api";
 import { IPrice } from "@/interfaces/price";
+import { parseExcelFile } from "@/lib/utils";
 
 const breadcrumb = {
   items: [
@@ -135,27 +135,6 @@ const PricingListPage = () => {
     }
   };
 
-  // Utility function to parse Excel file locally
-  const parseExcelFile = (file: any): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = (e: any) => {
-        try {
-          const ab = e.target.result;
-          const wb = XLSX.read(ab, { type: "array" });
-          const ws = wb.Sheets[wb.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(ws);
-          resolve(jsonData);
-        } catch (error) {
-          reject(error);
-        }
-      };
-
-      reader.onerror = (error) => reject(error);
-      reader.readAsArrayBuffer(file);
-    });
-  };
 
   const fetchPricings = async () => {
     try {
@@ -349,7 +328,7 @@ const PricingListPage = () => {
         rowSelection={false}
         pagination={{
           showQuickJumper: true,
-          pageSize: 20,
+          pageSize: 200,
         }}
         request={async (params) => {
           const data = filteredPricingList?.slice(

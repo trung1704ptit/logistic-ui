@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
-import { Button, Input, Space, Modal, message } from "antd";
+import { Button, Input, Space, Modal, message, Upload } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
@@ -15,6 +15,7 @@ import { IDriver } from "@/interfaces/driver";
 import { BreadcrumbProps } from "antd";
 import Title from "antd/lib/typography/Title";
 import { BsFileEarmarkExcel } from "react-icons/bs";
+import UploadDriverAndTruckExcel from "./uploadDriverAndTruckExcel";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -33,6 +34,7 @@ const breadcrumb: BreadcrumbProps = {
 const DriverListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const [openModal, setOpenModal] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   // Access drivers from Redux store
   const drivers = useSelector((state: RootState) => state.driver.drivers);
@@ -182,9 +184,19 @@ const DriverListPage = () => {
     setFilteredDriverList(filtered);
   };
 
+  const handleToggleModal = () => {
+    setOpenModal(!openModal);
+  };
+
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
       {contextHolder}
+      <UploadDriverAndTruckExcel
+        contractors={contractors}
+        handleCancel={handleToggleModal}
+        openModal={openModal}
+      />
+
       <ProTable
         columns={columns}
         cardBordered={false}
@@ -207,15 +219,20 @@ const DriverListPage = () => {
                   Thêm tài xế
                 </Button>
               </Link>
-              <Button type="dashed" icon={<BsFileEarmarkExcel />}>
-                  Tải lên danh sách
+
+              <Button
+                type="default"
+                icon={<BsFileEarmarkExcel />}
+                onClick={handleToggleModal}
+              >
+                Tải lên tài xế
               </Button>
             </Space>
           ),
         }}
         bordered={true}
         scroll={{ x: true }}
-        pagination={{ pageSize: 20 }}
+        pagination={{ pageSize: 50 }}
         request={async (params) => {
           const data = filteredDriverList.slice(
             ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),

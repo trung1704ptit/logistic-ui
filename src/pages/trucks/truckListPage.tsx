@@ -13,15 +13,19 @@ import { useDispatch, useSelector } from "react-redux";
 import http from "@/lib/http";
 import { fetchTrucks } from "@/store/slices/truckSlice";
 import { BsFileEarmarkExcel } from "react-icons/bs";
+import UploadDriverAndTruckExcel from "../drivers/uploadDriverAndTruckExcel";
 
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const appDispatch = useDispatch();
+  const [openModal, setOpenModal] = useState(false);
 
   const truckState = useSelector((state: RootState) => state.truck);
-  const contractorState = useSelector((state: RootState) => state.contractor);
+  const contractors = useSelector(
+    (state: RootState) => state.contractor.contractors
+  );
   const [filteredTruckList, setFilteredTruckList] = useState<ITruck[]>([]);
 
   const handleEditTruck = (truck: any) => {
@@ -132,7 +136,7 @@ const TruckListPage = () => {
       sorter: false,
       align: "center",
       render: (_, row) => {
-        const contractor = contractorState?.contractors?.find(
+        const contractor = contractors?.find(
           (contractor) => contractor.id === row.contractor_id
         );
         return contractor ? contractor.name : undefined;
@@ -161,6 +165,10 @@ const TruckListPage = () => {
     },
   ];
 
+  const handleToggleModal = () => {
+    setOpenModal(!openModal);
+  };
+
   return (
     <BasePageContainer
       breadcrumb={{
@@ -177,6 +185,11 @@ const TruckListPage = () => {
       }}
     >
       {contextHolder}
+      <UploadDriverAndTruckExcel
+        contractors={contractors}
+        handleCancel={handleToggleModal}
+        openModal={openModal}
+      />
       <ProTable
         columns={columns}
         cardBordered={false}
@@ -204,7 +217,11 @@ const TruckListPage = () => {
                   Thêm xe tải
                 </Button>
               </Link>
-              <Button type="dashed" icon={<BsFileEarmarkExcel />}>
+              <Button
+                type="default"
+                icon={<BsFileEarmarkExcel />}
+                onClick={handleToggleModal}
+              >
                 Tải lên danh sách
               </Button>
             </Space>
@@ -216,8 +233,7 @@ const TruckListPage = () => {
         tableLayout={"fixed"}
         rowSelection={false}
         pagination={{
-          showQuickJumper: true,
-          pageSize: 20,
+          pageSize: 50,
         }}
         request={async (params) => {
           const data = filteredTruckList.slice(

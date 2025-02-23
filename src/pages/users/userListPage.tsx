@@ -175,7 +175,7 @@ const UserListPage = () => {
         rowSelection={false}
         pagination={{
           showQuickJumper: true,
-          pageSize: 20,
+          pageSize: 50,
         }}
         request={async (params) => {
           const data = filteredUserList.slice(
