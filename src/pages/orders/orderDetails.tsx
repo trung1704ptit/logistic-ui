@@ -3,7 +3,7 @@ import { Typography, Modal, List, Button, message } from "antd";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { getTotalOrder } from "@/lib/utils";
+import { getTotalOrder, getUnitLabel } from "@/lib/utils";
 import { IOrder } from "@/interfaces/order";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
@@ -95,6 +95,9 @@ const ReviewComponent: React.FC<ReviewProps> = ({
       name: "Trả hàng",
       value: `${data.delivery_province} - ${data.delivery_district}`,
     },
+    { name: "Đơn vị tính", value: getUnitLabel(data.unit) },
+    { name: "Trọng tải xe", value: truck?.capacity },
+    { name: "Trọng tải của đơn hàng", value: data.package_weight },
     { name: "Lương chuyến", value: data.trip_salary },
     { name: "Giá cước từ nhãn hàng", value: data.price_from_client },
     { name: "Cước chuyến cho nhà thầu", value: data.price_for_contractor },
@@ -112,7 +115,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
     { name: "Thu cước", value: data.charge_fee },
   ];
   const total = isReadOnly ? data.total_salary : getTotalOrder(data);
-  const conclusion = [{ name: "Tổng cộng", value: total }];
+  const conclusion = [{ name: "Tổng cước", value: total }];
 
   const handleSave = async () => {
     try {
@@ -185,7 +188,7 @@ const ReviewComponent: React.FC<ReviewProps> = ({
           dataSource={formData}
           bordered
           renderItem={(item) => (
-            <List.Item style={{ padding: "4px 16px" }}>
+            <List.Item style={{ padding: "1px 16px" }}>
               <Text>{item.name}</Text>
               <Text strong style={{ textAlign: "right", display: "block" }}>
                 {item?.value?.toLocaleString()}

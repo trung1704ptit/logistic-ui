@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import { SHORT_KEYS } from "@/constants";
+import { UNIT_TYPES } from "@/constants";
 import { IOrder } from "@/interfaces/order";
 
 export enum NotificationType {
@@ -123,4 +123,16 @@ export function getTotalOrder(data: IOrder) {
     );
   }
   return 0;
+}
+
+
+export function getUnitLabel(unit: string) {
+  if (!unit) return '';
+  if (unit === UNIT_TYPES.trip) {
+    return 'Theo chuyến'
+  } else if (unit === UNIT_TYPES.weight) {
+    return 'Theo tấn'
+  } else {
+    return "Theo khối"
+  }
 }
