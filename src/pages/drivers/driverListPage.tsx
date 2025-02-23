@@ -144,6 +144,7 @@ const DriverListPage = () => {
       dataIndex: "fixed_salary",
       sorter: true,
       align: "center",
+      render: (_, row) => <>{row?.fixed_salary?.toLocaleString()}</>
     },
     {
       title: "Ghi Chú",
