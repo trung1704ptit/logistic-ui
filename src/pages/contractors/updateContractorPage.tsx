@@ -77,8 +77,19 @@ const ContractorForm: React.FC = () => {
     Modal.confirm({
       title: "Xác nhận xóa xe tải",
       content: `Bạn có chắc muốn xóa xe tải ${truck.plateNumber}?`,
-      onOk: () => {
-        console.log("Deleted truck:", truck);
+      onOk: async () => {
+        try {
+          const res = await http.delete(`${apiRoutes.trucks}/${truck.id}`);
+          console.log(res);
+          dispatch(fetchTrucks());
+          dispatch(fetchContractors());
+          if (res.status === 204) {
+            message.success("Xóa thành công!");
+          }
+        } catch (error) {
+          console.error("Error deleting:", error);
+          message.error("Đã có lỗi xảy ra, vui lòng thử lại sau.");
+        }
       },
     });
   };
@@ -173,7 +184,7 @@ const ContractorForm: React.FC = () => {
       const contractor: IContractor | undefined = contractors.find(
         (item) => item.id === contractorId
       );
-      if (contractor && contractor.id !== selectedContractor?.id) {
+      if (contractor) {
         setLoading(false);
         setSelectedContractor(contractor);
         setFilteredDriverList(contractor?.drivers || []);
@@ -181,7 +192,7 @@ const ContractorForm: React.FC = () => {
         form.setFieldsValue(contractor);
       }
     }
-  }, [contractors, contractorId]);
+  }, [contractorId, contractors]);
 
   const handleSearchTruck = (_: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
@@ -199,14 +210,14 @@ const ContractorForm: React.FC = () => {
     setFilteredTruckList(filtered);
   };
 
-  const handleSubmit = async (contractor: IContractor) => {
+  const handleSubmit = async (payload: IContractor) => {
     if (selectedContractor) {
       try {
         setIsUpdateLoading(true);
         setIsUpdateError(false);
         const res = await http.put(
           `/contractors/${selectedContractor.id}`,
-          contractor
+          payload
         );
         if (res && res.data) {
           dispatch(fetchContractors());
@@ -234,8 +245,19 @@ const ContractorForm: React.FC = () => {
     Modal.confirm({
       title: "Xác nhận xóa tài xế",
       content: `Bạn có chắc muốn xóa tài xế ${driver.full_name}?`,
-      onOk: () => {
-        console.log("Deleted driver:", driver.full_name);
+      onOk: async () => {
+        try {
+          const res = await http.delete(`${apiRoutes.drivers}/${driver.id}`);
+
+          if (res.status === 204) {
+            dispatch(fetchDrivers());
+            dispatch(fetchContractors());
+            message.success("Xóa thành công!");
+          }
+        } catch (error) {
+          console.error("Error deleting contractor:", error);
+          message.error("Đã có lỗi xảy ra, vui lòng thử lại sau.");
+        }
       },
     });
   };
@@ -396,12 +418,12 @@ const ContractorForm: React.FC = () => {
                 name="avatar"
                 className="avatar-uploader m-3 cursor-pointer"
                 customRequest={({ file }: any) => {
-                  setLoading(true)
+                  setLoading(true);
                   handleUploadDriverAndTruck(
                     file,
                     selectedContractor?.id as string
                   ).then(() => {
-                    setLoading(false)
+                    setLoading(false);
                   });
                 }}
                 showUploadList={false}
