@@ -100,4 +100,10 @@ export const OWNER_TYPES = {
   contractor: 'contractor'
 }
 
+export const UNIT_TYPES = {
+  trip: 'trip',
+  weight: 'weight',
+  volumn: 'volumn'
+}
+
 export const DEFAULT_PRICE = '-';

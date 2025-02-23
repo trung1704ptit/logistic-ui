@@ -31,6 +31,7 @@ import {
   OWNER_TYPES,
   priceKeys,
   priceKeysBlackList,
+  UNIT_TYPES,
 } from "@/constants";
 import { omit } from "lodash";
 import { AiOutlineExport } from "react-icons/ai";
@@ -81,7 +82,7 @@ const UpdateOrderForm: React.FC = () => {
   const [deliveryDistrictList, setDeliveryDistrictList] = useState<string[]>(
     []
   );
-  const [unitSelected, setUnitSelected] = useState("weight");
+  const [unitSelected, setUnitSelected] = useState(UNIT_TYPES.trip);
   const [isReview, setIsReview] = useState(false);
   const allDrivers = useSelector((state: RootState) => state.driver.drivers);
   const allClients = useSelector((state: RootState) => state.client.clients);

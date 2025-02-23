@@ -4,7 +4,9 @@ const InputNumber = (props: any) => {
   return (
     <InputN
       size="large"
-      className="w-full"
+      className={`w-full ${
+        props.isHighlight && "bg-orange-500 animate-pulse"
+      }`}
       formatter={(value: any) =>
         value !== null
           ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
