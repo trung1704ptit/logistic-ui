@@ -14,7 +14,6 @@ import moment from "moment";
 import ErrorMessage from "@/components/Alert/Error";
 import { IDriver } from "@/interfaces/driver";
 import { fetchContractors } from "@/store/slices/contractorSlice";
-import { fetchTrucks } from "@/store/slices/truckSlice";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -126,7 +125,7 @@ const EditDriverForm: React.FC = () => {
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
-              label="Căn cước công dân"
+              label="Số căn cước"
               name="cccd"
               rules={[{ required: true, message: "Hãy nhập CCCD!" }]}
             >
@@ -134,7 +133,7 @@ const EditDriverForm: React.FC = () => {
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
-            <Form.Item label="Ngày Cấp Căn Cước" name="issue_date">
+            <Form.Item label="Ngày cấp" name="issue_date">
               <DatePicker
                 size="large"
                 placeholder="Chọn ngày cấp"
@@ -161,16 +160,16 @@ const EditDriverForm: React.FC = () => {
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
-              label="Số Bằng Lái Xe"
+              label="Số bằng lái"
               name="license_number"
-              rules={[{ required: true, message: "Hãy nhập số bằng lái xe!" }]}
+              rules={[{ required: true, message: "Hãy nhập Số bằng lái!" }]}
             >
-              <Input size="large" placeholder="Nhập số bằng lái xe" />
+              <Input size="large" placeholder="Nhập Số bằng lái" />
             </Form.Item>
           </Col>
           <Col xs={24} sm={12}>
             <Form.Item
-              label="Ngày Hết Hạn Bằng Lái"
+              label="Ngày hết hạn"
               name="license_expiry"
               rules={[{ required: true, message: "Hãy chọn ngày hết hạn!" }]}
             >
