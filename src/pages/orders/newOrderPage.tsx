@@ -683,7 +683,7 @@ const AddOrderForm: React.FC = () => {
                 name="truck_capacity"
                 rules={
                   unitSelected === UNIT_TYPES.trip
-                    ? [{ required: true, message: "Nhập số tấn của hàng" }]
+                    ? [{ required: true, message: "Nhập trọng tải xe" }]
                     : []
                 }
               >

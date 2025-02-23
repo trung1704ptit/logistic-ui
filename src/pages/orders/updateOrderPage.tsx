@@ -75,6 +75,7 @@ const UpdateOrderForm: React.FC = () => {
   const orderId = params.get("id");
   const [selectedContractor, setSelectedContractor] = useState<IContractor>();
   const [selectedClient, setSelectedClient] = useState<IClient>();
+  const [selectedTruck, setSelectedTruck] = useState<ITruck>();
   const [priceListContractor, setPriceListContractor] = useState<IPrice[]>([]);
   const [priceListClient, setPriceListClient] = useState<IPrice[]>([]);
 
@@ -82,7 +83,7 @@ const UpdateOrderForm: React.FC = () => {
   const [deliveryDistrictList, setDeliveryDistrictList] = useState<string[]>(
     []
   );
-  const [unitSelected, setUnitSelected] = useState(UNIT_TYPES.trip);
+  const [unitSelected, setUnitSelected] = useState("");
   const [isReview, setIsReview] = useState(false);
   const allDrivers = useSelector((state: RootState) => state.driver.drivers);
   const allClients = useSelector((state: RootState) => state.client.clients);
@@ -111,13 +112,14 @@ const UpdateOrderForm: React.FC = () => {
   const navigate = useNavigate();
 
   const packageWeight = Form.useWatch("package_weight", form);
+  const truckCapacity = Form.useWatch("truck_capacity", form);
   const packageVolumn = Form.useWatch("package_volumn", form);
   const pickupProvince = Form.useWatch("pickup_province", form);
   const pickupDistrict = Form.useWatch("pickup_district", form);
   const deliveryProvince = Form.useWatch("delivery_province", form);
   const deliveryDistrict = Form.useWatch("delivery_district", form);
 
-  const isIntenal = selectedContractor?.type === CONTRACTOR_TYPES.internal;
+  const isInternal = selectedContractor?.type === CONTRACTOR_TYPES.internal;
 
   const handleSelectContractor = (value: string) => {
     const filterContractor = contractors.find((item) => item.id === value);
@@ -212,6 +214,9 @@ const UpdateOrderForm: React.FC = () => {
           data.price_for_contractor_id
         );
         handleSelectPriceClient(data.client.id, data.price_from_client_id);
+        setSelectedTruck(data.truck);
+        setUnitSelected(data.unit)
+        form.setFieldValue("truck_capacity", data?.truck?.capacity)
       }
     } catch (error) {
       console.log(error);
@@ -244,10 +249,6 @@ const UpdateOrderForm: React.FC = () => {
   };
 
   const handleDistrictChange = () => {
-    keepOriginPrices.current = false;
-  };
-
-  const handleChangePackage = () => {
     keepOriginPrices.current = false;
   };
 
@@ -402,8 +403,20 @@ const UpdateOrderForm: React.FC = () => {
 
   const handleUnitSelect = (value: string) => {
     setUnitSelected(value);
-    form.setFieldValue("package_volumn", undefined);
-    form.setFieldValue("package_weight", undefined);
+
+    if (value === UNIT_TYPES.trip) {
+      if (!form.getFieldValue("truck_id")) {
+        message.info("Vui lòng chọn xe tải!");
+        return;
+      } else {
+        // if user selected a truck
+        form.setFieldValue("truck_capacity", selectedTruck?.capacity);
+      }
+    } else {
+      form.setFieldValue("package_volumn", undefined);
+      form.setFieldValue("package_weight", undefined);
+      form.setFieldValue("truck_capacity", undefined);
+    }
   };
 
   // watch changes, update the price_from_client
@@ -412,7 +425,7 @@ const UpdateOrderForm: React.FC = () => {
     // change the pickup_province, pickup_district, delivery_province, delivery_district
     if (
       selectedPriceClient &&
-      (packageWeight || packageVolumn) &&
+      (packageWeight || packageVolumn || truckCapacity) &&
       pickupDistrict &&
       deliveryProvince &&
       pickupDistrict &&
@@ -429,7 +442,12 @@ const UpdateOrderForm: React.FC = () => {
           item.delivery_district === deliveryDistrict
       );
       if (priceFound) {
-        const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
+        let value = "";
+        if (unitSelected === UNIT_TYPES.trip) {
+          value = `${truckCapacity}T`;
+        } else {
+          value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
+        }
         const priceCalculated = findPrice(priceFound.weight_prices, value);
         form.setFieldValue("price_from_client", priceCalculated);
       } else {
@@ -442,6 +460,7 @@ const UpdateOrderForm: React.FC = () => {
   }, [
     selectedPriceClient,
     packageWeight,
+    truckCapacity,
     packageVolumn,
     pickupProvince,
     pickupDistrict,
@@ -456,7 +475,7 @@ const UpdateOrderForm: React.FC = () => {
     // change the pickup_province, pickup_district, delivery_province, delivery_district
     if (
       selectedPriceContractor &&
-      (packageWeight || packageVolumn) &&
+      (packageWeight || packageVolumn || truckCapacity) &&
       pickupDistrict &&
       deliveryProvince &&
       pickupDistrict &&
@@ -472,10 +491,15 @@ const UpdateOrderForm: React.FC = () => {
           item.delivery_province === deliveryProvince &&
           item.delivery_district === deliveryDistrict
       );
-      let key = isIntenal ? "trip_salary" : "price_for_contractor";
+      const key = isInternal ? "trip_salary" : "price_for_contractor";
 
       if (priceFound) {
-        const value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
+        let value = "";
+        if (unitSelected === UNIT_TYPES.trip) {
+          value = `${truckCapacity}T`;
+        } else {
+          value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
+        }
         const priceCalculated = findPrice(priceFound.weight_prices, value);
         form.setFieldValue(key, priceCalculated);
       } else {
@@ -491,6 +515,7 @@ const UpdateOrderForm: React.FC = () => {
   }, [
     selectedPriceContractor,
     packageWeight,
+    truckCapacity,
     packageVolumn,
     pickupProvince,
     pickupDistrict,
@@ -498,6 +523,13 @@ const UpdateOrderForm: React.FC = () => {
     deliveryDistrict,
     keepOriginPrices,
   ]);
+
+
+  const handleSelectTruck = (truckId: string) => {
+    const filterTruck = trucks.find(item => item.id === truckId)
+    setSelectedTruck(filterTruck)
+    form.setFieldValue("truck_capacity", filterTruck?.capacity)
+  }
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -509,7 +541,6 @@ const UpdateOrderForm: React.FC = () => {
           trip_count: 1,
           trip_salary: 0,
           order_time: dayjs(new Date()),
-          unit: "weight",
         }}
       >
         <Row gutter={[16, 0]}>
@@ -559,6 +590,7 @@ const UpdateOrderForm: React.FC = () => {
                 size="large"
                 placeholder="Chọn xe tải"
                 disabled={!selectedContractor?.id}
+                onChange={handleSelectTruck}
               >
                 {selectedContractor?.id &&
                   trucks.map((truck) => (
@@ -634,7 +666,7 @@ const UpdateOrderForm: React.FC = () => {
             <Form.Item
               label={
                 <div>
-                  {isIntenal ? "Bảng tính lương " : "Bảng giá nhà thầu "}
+                  {isInternal ? "Bảng tính lương " : "Bảng giá nhà thầu "}
                   {selectedContractor?.id && (
                     <Upload
                       name="avatar"
@@ -684,42 +716,76 @@ const UpdateOrderForm: React.FC = () => {
                 size="large"
                 placeholder="Chọn đơn vị tính"
                 onChange={handleUnitSelect}
+                disabled={!selectedContractor}
               >
-                <Option key="weight" value="weight">
+                <Option key={UNIT_TYPES.trip} value={UNIT_TYPES.trip}>
+                  Theo Chuyến
+                </Option>
+                <Option key={UNIT_TYPES.weight} value={UNIT_TYPES.weight}>
                   Theo Tấn
                 </Option>
-                <Option key="volumn" value="volumn">
+                <Option key={UNIT_TYPES.volumn} value={UNIT_TYPES.volumn}>
                   Theo Khối
                 </Option>
               </Select>
             </Form.Item>
           </Col>
-          {unitSelected === "weight" && (
+          {unitSelected === UNIT_TYPES.trip && (
             <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item
-                label="Số tấn của hàng"
-                name="package_weight"
-                rules={[{ required: true, message: "Nhập số tấn của hàng" }]}
+                label="Trọng tải xe"
+                name="truck_capacity"
+                rules={
+                  unitSelected === UNIT_TYPES.trip
+                    ? [{ required: true, message: "Nhập trọng tải xe" }]
+                    : []
+                }
               >
                 <InputNumber
                   size="large"
                   placeholder="Nhập số tấn"
-                  onChange={handleChangePackage}
+                  disabled={!selectedContractor}
                 />
               </Form.Item>
             </Col>
           )}
-          {unitSelected === "volumn" && (
+
+          {(unitSelected === UNIT_TYPES.trip ||
+            unitSelected === UNIT_TYPES.weight) && (
+            <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
+              <Form.Item
+                label="Trọng tải của đơn hàng"
+                name="package_weight"
+                rules={
+                  unitSelected === UNIT_TYPES.weight
+                    ? [{ required: true, message: "Nhập số tấn của hàng" }]
+                    : []
+                }
+              >
+                <InputNumber
+                  size="large"
+                  placeholder="Nhập số tấn"
+                  disabled={!selectedContractor}
+                />
+              </Form.Item>
+            </Col>
+          )}
+
+          {unitSelected === UNIT_TYPES.volumn && (
             <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item
                 label="Số khối của hàng"
                 name="package_volumn"
-                rules={[{ required: true, message: "Nhập số khối của hàng" }]}
+                rules={
+                  unitSelected === UNIT_TYPES.volumn
+                    ? [{ required: true, message: "Nhập số khối của hàng" }]
+                    : []
+                }
               >
                 <InputNumber
                   size="large"
                   placeholder="Nhập số khối"
-                  onChange={handleChangePackage}
+                  disabled={!selectedContractor}
                 />
               </Form.Item>
             </Col>
@@ -828,7 +894,7 @@ const UpdateOrderForm: React.FC = () => {
             </Form.Item>
           </Col>
 
-          {isIntenal ? (
+          {isInternal ? (
             <Col xs={24} sm={12} md={8} lg={6} xxl={4}>
               <Form.Item
                 label="Luơng chuyến"

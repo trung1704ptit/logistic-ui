@@ -96,8 +96,14 @@ const ReviewComponent: React.FC<ReviewProps> = ({
       value: `${data.delivery_province} - ${data.delivery_district}`,
     },
     { name: "Đơn vị tính", value: getUnitLabel(data.unit) },
-    { name: "Trọng tải xe", value: truck?.capacity },
-    { name: "Trọng tải của đơn hàng", value: data.package_weight },
+    {
+      name: "Trọng tải xe",
+      value: truck?.capacity ? `${truck?.capacity}T` : "",
+    },
+    {
+      name: "Trọng tải của đơn hàng",
+      value: data.package_weight ? `${data.package_weight}T` : "",
+    },
     { name: "Lương chuyến", value: data.trip_salary },
     { name: "Giá cước từ nhãn hàng", value: data.price_from_client },
     { name: "Cước chuyến cho nhà thầu", value: data.price_for_contractor },

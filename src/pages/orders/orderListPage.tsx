@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal, message, Select } from "antd";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
@@ -26,6 +26,7 @@ const TruckListPage = () => {
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
+  const navigate = useNavigate();
 
   const handleDeleteOrder = (order: any) => {
     Modal.confirm({
@@ -106,6 +107,10 @@ const TruckListPage = () => {
     fetchOrders();
   }, [searchParams]);
 
+  const handleUpdateOrder = (orderId: string) => {
+    navigate(`${webRoutes.updateOrder}?id=${orderId}`);
+  };
+
   const columns: ProColumns[] = [
     {
       title: "Thời gian",
@@ -179,6 +184,9 @@ const TruckListPage = () => {
         <Space>
           <Button type="dashed" onClick={() => setOrderDetail(row)}>
             Chi tiết
+          </Button>
+          <Button type="dashed" onClick={() => handleUpdateOrder(row.id)}>
+            Sửa
           </Button>
           <Button danger onClick={() => handleDeleteOrder(row)}>
             Xóa
