@@ -149,7 +149,12 @@ export const parseExcelFile = (file: any): Promise<any> => {
       try {
         const ab = e.target.result;
         const wb = XLSX.read(ab, { type: "array" });
-        const ws = wb.Sheets[wb.SheetNames[0]];
+        if (wb.SheetNames.length === 0) {
+          reject(new Error("No sheets found in the Excel file"));
+          return;
+        }
+        const firstSheetName = wb.SheetNames[0];
+        const ws = wb.Sheets[firstSheetName];
         const jsonData = XLSX.utils.sheet_to_json(ws);
         resolve(jsonData);
       } catch (error) {
