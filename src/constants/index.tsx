@@ -107,3 +107,16 @@ export const UNIT_TYPES = {
 }
 
 export const DEFAULT_PRICE = '-';
+
+export const DAYJS_DATE_FORMAT = [
+  "DD-MM-YYYY", // 06-07-1985
+  "D-M-YYYY",   // 6-7-1985
+  "D/MM/YYYY",  // 6/07/1985
+  "DD/MM/YYYY", // 06/07/1985
+  "D/M/YYYY",   // 6/7/1985
+  "DD/M/YYYY",  // 06/7/1985
+  "M/D/YYYY",   // 1/3/1975
+  "M-DD-YYYY",  // 1-03-1975 (if such format exists)
+];
+
+export const TIME_FORMAT = 'YYYY-MM-DDT00:00:00+07:00'
