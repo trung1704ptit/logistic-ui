@@ -1,20 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, Upload, message } from "antd";
+import { Form, Input, Button, Row, Col, Upload, message, Divider } from "antd";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { BreadcrumbProps, Space, Modal, Card } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
-import Title from "antd/lib/typography/Title";
-import dayjs from "dayjs";
-import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
-import { PlusOutlined } from "@ant-design/icons";
-import {
-  findSheetByName,
-  handleUploadDriverAndTruck,
-  parseExcelFileMultipleSheets,
-  removeVietnameseTones,
-} from "@/lib/utils";
+import { ProColumns } from "@ant-design/pro-components";
+import { handleUploadDriverAndTruck, removeVietnameseTones } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import { IContractor } from "@/interfaces/contractor";
@@ -28,6 +20,8 @@ import { BsFileEarmarkExcel } from "react-icons/bs";
 import { apiRoutes } from "@/routes/api";
 import { fetchTrucks } from "@/store/slices/truckSlice";
 import { fetchDrivers } from "@/store/slices/driverSlice";
+import DriverList from "@/components/driverList";
+import TruckList from "@/components/truckList";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -60,7 +54,7 @@ const ContractorForm: React.FC = () => {
   const drivers = useSelector((state: RootState) => state.driver.drivers);
   const trucks = useSelector((state: RootState) => state.truck.trucks);
   const contractorId = params.get("id");
-  const [searchTerm, setSearchTerm] = useState("");
+  // const [searchTerm, setSearchTerm] = useState("");
   const [filteredDriverList, setFilteredDriverList] = useState<IDriver[]>([]);
 
   const [searchTruckTerm, setSearchTruckTerm] = useState("");
@@ -450,100 +444,11 @@ const ContractorForm: React.FC = () => {
       </Card>
 
       <div className="mt-6"></div>
+      <DriverList drivers={filteredDriverList} contractorId={contractorId} />
 
-      <ProTable
-        columns={truckColumns}
-        cardBordered={true}
-        cardProps={{
-          title: <Title level={5}>Danh sách xe tải</Title>,
-          extra: (
-            <Space>
-              <Input
-                placeholder="Tìm kiếm xe tải..."
-                value={searchTerm}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSearchTruckTerm(value);
-                  handleSearchTruck(value);
-                }}
-                style={{ minWidth: "10%" }}
-              />
-              <Link to={webRoutes.addNewTruck}>
-                <Button type="primary" icon={<PlusOutlined />}>
-                  Thêm xe tải
-                </Button>
-              </Link>
-            </Space>
-          ),
-        }}
-        bordered={true}
-        showSorterTooltip={false}
-        scroll={{ x: true }}
-        tableLayout={"fixed"}
-        rowSelection={false}
-        pagination={{
-          showQuickJumper: true,
-          pageSize: 200,
-        }}
-        request={async (params) => {
-          const data = filteredTruckList.slice(
-            ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
-            (params?.current ?? 1) * (params?.pageSize ?? 10)
-          );
-          return {
-            data,
-            success: true,
-            total: filteredTruckList.length,
-          } as RequestData<(typeof trucks)[0]>;
-        }}
-        dataSource={filteredTruckList}
-        dateFormatter="string"
-        rowKey="id"
-        search={false}
-        size="small"
-      />
+      <Divider />
 
-      <div className="mt-6"></div>
-
-      <ProTable
-        columns={driverColumns}
-        cardBordered={true}
-        cardProps={{
-          title: <Title level={5}>Danh sách tài xế</Title>,
-          extra: (
-            <Space>
-              <Input
-                placeholder="Tìm kiếm tài xế..."
-                value={searchTerm}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSearchTerm(value);
-                  handleSearchDriver(value);
-                }}
-                style={{ minWidth: "15%" }}
-              />
-              <Link to={webRoutes.addNewDrivers}>
-                <Button type="primary" icon={<PlusOutlined />}>
-                  Thêm tài xế
-                </Button>
-              </Link>
-            </Space>
-          ),
-        }}
-        bordered={true}
-        showSorterTooltip={false}
-        scroll={{ x: true }}
-        tableLayout={"fixed"}
-        pagination={{
-          showQuickJumper: true,
-          pageSize: 200,
-        }}
-        dataSource={filteredDriverList}
-        dateFormatter="string"
-        rowKey="id"
-        search={false}
-        size="small"
-      />
+      <TruckList trucks={filteredTruckList} contractorId={contractorId} />
     </BasePageContainer>
   );
 };
