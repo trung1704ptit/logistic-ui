@@ -13,9 +13,9 @@ import { RootState } from "@/store";
 import moment from "moment";
 import OrderDetails from "./orderDetails";
 import { IOrder } from "@/interfaces/order";
+import { debounce } from "lodash";
 
 const TruckListPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +47,7 @@ const TruckListPage = () => {
     });
   };
 
-  const handleSearch = (searchTerm: string) => {
+  const handleSearch = debounce((searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
       searchTerm.toLowerCase()
     );
@@ -61,7 +61,7 @@ const TruckListPage = () => {
     );
 
     setFilteredData(filtered);
-  };
+  }, 400);
 
   useEffect(() => {
     const month = searchParams.get("month");
@@ -293,10 +293,8 @@ const TruckListPage = () => {
               <Space className="mb-3">
                 <Input
                   placeholder="Tìm kiếm đơn hàng..."
-                  value={searchTerm}
                   onChange={(e) => {
                     const value = e.target.value;
-                    setSearchTerm(value);
                     handleSearch(value);
                   }}
                   style={{ minWidth: "10%" }}

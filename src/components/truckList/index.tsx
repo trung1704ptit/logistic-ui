@@ -15,6 +15,7 @@ import { BsFileEarmarkExcel } from "react-icons/bs";
 import { apiRoutes } from "@/routes/api";
 import UploadDriverAndTruckExcel from "../uploadDriverAndTruckExcel";
 import { fetchContractors } from "@/store/slices/contractorSlice";
+import { debounce } from "lodash";
 
 interface IProps {
   trucks: ITruck[];
@@ -22,7 +23,6 @@ interface IProps {
 }
 
 const TruckList = ({ trucks, contractorId }: IProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const appDispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
@@ -42,7 +42,7 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
     }
   }, [trucks]);
 
-  const handleSearchTruck = (searchTerm: string) => {
+  const handleSearchTruck = debounce((searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
       searchTerm.toLowerCase()
     );
@@ -56,7 +56,7 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
     );
 
     setFilteredTruckList(filtered);
-  };
+  }, 400);
 
   const columns: ProColumns[] = [
     {
@@ -240,10 +240,8 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
             <Space>
               <Input
                 placeholder="Tìm kiếm xe tải..."
-                value={searchTerm}
                 onChange={(e) => {
                   const value = e.target.value;
-                  setSearchTerm(value);
                   handleSearchTruck(value);
                 }}
                 style={{ minWidth: "10%" }}

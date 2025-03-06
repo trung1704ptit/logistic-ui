@@ -17,6 +17,7 @@ import UploadDriverAndTruckExcel from "@/components/uploadDriverAndTruckExcel";
 import { apiRoutes } from "@/routes/api";
 import { INVALID_DATE } from "@/constants";
 import { fetchContractors } from "@/store/slices/contractorSlice";
+import { debounce } from "lodash";
 
 interface IProps {
   drivers: IDriver[];
@@ -24,7 +25,6 @@ interface IProps {
 }
 
 const DriverList = ({ drivers, contractorId }: IProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -142,7 +142,7 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
   ];
 
   // Search functionality
-  const handleSearch = (searchTerm: string) => {
+  const handleSearch = debounce((searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
       searchTerm.toLowerCase()
     );
@@ -156,7 +156,7 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
     );
 
     setFilteredDataList(filtered);
-  };
+  }, 400);
 
   const handleToggleModal = () => {
     setOpenModal(!openModal);
@@ -250,10 +250,8 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
             <Space>
               <Input
                 placeholder="Tìm kiếm tài xế..."
-                value={searchTerm}
                 onChange={(e) => {
                   const value = e.target.value;
-                  setSearchTerm(value);
                   handleSearch(value);
                 }}
                 style={{ minWidth: "10%" }}
