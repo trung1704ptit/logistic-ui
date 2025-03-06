@@ -16,6 +16,7 @@ import { BsFileEarmarkExcel } from "react-icons/bs";
 import UploadDriverAndTruckExcel from "@/components/uploadDriverAndTruckExcel";
 import { apiRoutes } from "@/routes/api";
 import { INVALID_DATE } from "@/constants";
+import { fetchContractors } from "@/store/slices/contractorSlice";
 
 interface IProps {
   drivers: IDriver[];
@@ -87,7 +88,7 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
     },
     {
       title: "Ngày Hết Hạn Bằng Lái",
-      dataIndex: "license_expiry", // Date string 'YYYY-MM-DD'
+      dataIndex: "license_expiry",
       sorter: false,
       align: "center",
       render: (_, row) =>
@@ -178,6 +179,7 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
 
           if (res.status === 204) {
             dispatch(fetchDrivers());
+            dispatch(fetchContractors());
             message.success("Xóa thành công");
           }
         } catch (error) {
@@ -211,6 +213,7 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
               );
               setFilteredDataList(updatedDriverList);
               dispatch(fetchDrivers());
+              dispatch(fetchContractors());
               message.success({
                 content: `Đã xóa ${selectedRowKeys.length} mục`,
                 key: "delete",
@@ -282,7 +285,7 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
         rowSelection={rowSelection}
         dataSource={filteredDataList}
         pagination={{
-            pageSize: 50,
+          pageSize: 50,
         }}
         options={{
           reload: false,

@@ -14,6 +14,7 @@ import { fetchTrucks } from "@/store/slices/truckSlice";
 import { BsFileEarmarkExcel } from "react-icons/bs";
 import { apiRoutes } from "@/routes/api";
 import UploadDriverAndTruckExcel from "../uploadDriverAndTruckExcel";
+import { fetchContractors } from "@/store/slices/contractorSlice";
 
 interface IProps {
   trucks: ITruck[];
@@ -167,6 +168,7 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
           if (res.status === 204) {
             message.success("Xóa thành công");
             appDispatch(fetchTrucks() as any);
+            appDispatch(fetchContractors() as any);
           }
         } catch (error) {
           message.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
@@ -197,13 +199,13 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
                 (item) => !deletedIds.includes(item.id)
               );
               setFilteredTruckList(updatedTruckList);
-
               message.success({
                 content: `Đã xóa ${selectedRowKeys.length} mục`,
                 key: "delete",
               });
               setSelectedRowKeys([]);
               await appDispatch(fetchTrucks() as any);
+              await appDispatch(fetchContractors() as any);
             }
           } catch (error) {
             message.error("Đã có lỗi xảy ra khi xóa.");

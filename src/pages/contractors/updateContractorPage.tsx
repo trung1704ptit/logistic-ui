@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Row, Col, Upload, message, Divider } from "antd";
+import { Form, Input, Button, Row, Col, Upload, Divider } from "antd";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { BreadcrumbProps, Space, Modal, Card } from "antd";
+import { BreadcrumbProps, Space, Card } from "antd";
 import { webRoutes } from "@/routes/web";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
-import { ProColumns } from "@ant-design/pro-components";
-import { handleUploadDriverAndTruck, removeVietnameseTones } from "@/lib/utils";
+import { handleUploadDriverAndTruck } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store";
 import { useDispatch, useSelector } from "react-redux";
 import { IContractor } from "@/interfaces/contractor";
 import http from "@/lib/http";
 import { ITruck } from "@/interfaces/truck";
 import { IDriver } from "@/interfaces/driver";
-import moment from "moment";
 import ErrorMessage from "@/components/Alert/Error";
 import { fetchContractors } from "@/store/slices/contractorSlice";
 import { BsFileEarmarkExcel } from "react-icons/bs";
-import { apiRoutes } from "@/routes/api";
-import { fetchTrucks } from "@/store/slices/truckSlice";
-import { fetchDrivers } from "@/store/slices/driverSlice";
 import DriverList from "@/components/driverList";
 import TruckList from "@/components/truckList";
 
@@ -51,127 +46,15 @@ const ContractorForm: React.FC = () => {
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
-  const drivers = useSelector((state: RootState) => state.driver.drivers);
-  const trucks = useSelector((state: RootState) => state.truck.trucks);
   const contractorId = params.get("id");
-  // const [searchTerm, setSearchTerm] = useState("");
   const [filteredDriverList, setFilteredDriverList] = useState<IDriver[]>([]);
 
-  const [searchTruckTerm, setSearchTruckTerm] = useState("");
   const [filteredTruckList, setFilteredTruckList] = useState<ITruck[]>([]);
 
   const [isUpdateLoading, setIsUpdateLoading] = useState(false);
   const [isUpdateError, setIsUpdateError] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const handleEditTruck = (truck: any) => {
-    navigate(`${webRoutes.updateTruck}?id=${truck.id}`);
-  };
 
-  const handleDeleteTruck = (truck: any) => {
-    Modal.confirm({
-      title: "Xác nhận xóa xe tải",
-      content: `Bạn có chắc muốn xóa xe tải ${truck.plateNumber}?`,
-      onOk: async () => {
-        try {
-          const res = await http.delete(`${apiRoutes.trucks}/${truck.id}`);
-          console.log(res);
-          dispatch(fetchTrucks());
-          dispatch(fetchContractors());
-          if (res.status === 204) {
-            message.success("Xóa thành công!");
-          }
-        } catch (error) {
-          console.error("Error deleting:", error);
-          message.error("Đã có lỗi xảy ra, vui lòng thử lại sau.");
-        }
-      },
-    });
-  };
-
-  const truckColumns: ProColumns[] = [
-    {
-      title: "Biển Kiểm Soát",
-      dataIndex: "license_plate",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-    },
-    {
-      title: "Tải Trọng",
-      dataIndex: "capacity",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-      render: (_, row) => `${row.capacity} T`,
-    },
-    {
-      title: "Dài",
-      dataIndex: "length",
-      sorter: false,
-      align: "center",
-      render: (_, row) => `${row.length} m`,
-    },
-    {
-      title: "Rộng",
-      dataIndex: "width",
-      sorter: false,
-      align: "center",
-      render: (_, row) => `${row.width} m`,
-    },
-    {
-      title: "Cao",
-      dataIndex: "height",
-      sorter: false,
-      align: "center",
-      render: (_, row) => `${row.height} m`,
-    },
-    {
-      title: "Thể Tích",
-      dataIndex: "volume",
-      sorter: false,
-      align: "center",
-      render: (_, row) => `${row.volume} m³`,
-    },
-    {
-      title: "Thương hiệu",
-      dataIndex: "brand",
-      sorter: false,
-      align: "center",
-    },
-    {
-      title: "Nhà Thầu",
-      dataIndex: "contractor_id",
-      sorter: false,
-      align: "center",
-      render: (_, row) => {
-        const contractor = contractors?.find(
-          (contractor) => contractor.id === row.contractor_id
-        );
-        return contractor ? contractor.name : undefined;
-      },
-    },
-    {
-      title: "Ghi Chú",
-      dataIndex: "note",
-      sorter: false,
-      align: "center",
-    },
-    {
-      title: "Hành động",
-      align: "center",
-      key: "actions",
-      render: (_, row) => (
-        <Space>
-          <Button type="dashed" onClick={() => handleEditTruck(row)}>
-            Xem Chi Tiết
-          </Button>
-          <Button danger onClick={() => handleDeleteTruck(row)}>
-            Xóa
-          </Button>
-        </Space>
-      ),
-    },
-  ];
 
   useEffect(() => {
     if (contractors) {
@@ -187,22 +70,6 @@ const ContractorForm: React.FC = () => {
       }
     }
   }, [contractorId, contractors]);
-
-  const handleSearchTruck = (_: string) => {
-    const normalizedSearchTerm = removeVietnameseTones(
-      searchTruckTerm.toLowerCase()
-    );
-
-    const filtered = trucks.filter((truck: any) =>
-      Object.keys(truck).some((key) =>
-        removeVietnameseTones(String(truck[key]))
-          .toLowerCase()
-          .includes(normalizedSearchTerm)
-      )
-    );
-
-    setFilteredTruckList(filtered);
-  };
 
   const handleSubmit = async (payload: IContractor) => {
     if (selectedContractor) {
@@ -227,137 +94,6 @@ const ContractorForm: React.FC = () => {
 
   const handleCancel = () => {
     navigate(webRoutes.contractors);
-  };
-
-  // Handle driver edit
-  const handleEditDriver = (driver: IDriver) => {
-    navigate(`${webRoutes.updateDrivers}?id=${driver.id}`);
-  };
-
-  // Handle driver deletion
-  const handleDeleteDriver = (driver: IDriver) => {
-    Modal.confirm({
-      title: "Xác nhận xóa tài xế",
-      content: `Bạn có chắc muốn xóa tài xế ${driver.full_name}?`,
-      onOk: async () => {
-        try {
-          const res = await http.delete(`${apiRoutes.drivers}/${driver.id}`);
-
-          if (res.status === 204) {
-            dispatch(fetchDrivers());
-            dispatch(fetchContractors());
-            message.success("Xóa thành công!");
-          }
-        } catch (error) {
-          console.error("Error deleting contractor:", error);
-          message.error("Đã có lỗi xảy ra, vui lòng thử lại sau.");
-        }
-      },
-    });
-  };
-
-  const driverColumns: ProColumns[] = [
-    {
-      title: "Họ và Tên",
-      dataIndex: "full_name",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-    },
-    {
-      title: "Số Điện Thoại",
-      dataIndex: "phone",
-      sorter: false,
-      align: "center",
-      ellipsis: true,
-    },
-    {
-      title: "Căn Cước Công Dân",
-      dataIndex: "cccd",
-      sorter: false,
-      align: "center",
-    },
-    {
-      title: "Ngày Cấp",
-      dataIndex: "issue_date", // Date string 'YYYY-MM-DD'
-      sorter: true,
-      align: "center",
-      render: (_, row) => moment(row.issue_date).format("DD-MM-YYYY"), // Render the string directly
-    },
-    {
-      title: "Ngày Sinh",
-      dataIndex: "date_of_birth", // Date string 'YYYY-MM-DD'
-      sorter: false,
-      align: "center",
-      render: (_, row) => moment(row.date_of_birth).format("DD-MM-YYYY"), // Render the string directly
-    },
-    {
-      title: "Địa Chỉ",
-      dataIndex: "address",
-      sorter: false,
-      align: "center",
-    },
-    {
-      title: "Số Bằng Lái",
-      dataIndex: "license_number",
-      sorter: false,
-      align: "center",
-    },
-    {
-      title: "Ngày Hết Hạn Bằng Lái",
-      dataIndex: "license_expiry", // Date string 'YYYY-MM-DD'
-      sorter: false,
-      align: "center",
-      render: (_, row) => moment(row.license_expiry).format("DD-MM-YYYY"), // Render the string directly
-    },
-    {
-      title: "Loại Tài Xế",
-      dataIndex: "contractor_id",
-      align: "center",
-      render: (_, row) => {
-        const contractor = contractors?.find(
-          (contractor) => contractor.id === row.contractor_id
-        );
-        return contractor ? contractor.name : undefined;
-      },
-    },
-    {
-      title: "Ghi Chú",
-      dataIndex: "note",
-      align: "center",
-    },
-    {
-      title: "Hành động",
-      align: "center",
-      key: "actions",
-      render: (_, row) => (
-        <Space>
-          <Button type="dashed" onClick={() => handleEditDriver(row)}>
-            Sửa
-          </Button>
-          <Button danger onClick={() => handleDeleteDriver(row)}>
-            Xóa
-          </Button>
-        </Space>
-      ),
-    },
-  ];
-
-  // Example search function
-  const handleSearchDriver = (searchTerm: string) => {
-    const normalizedSearchTerm = removeVietnameseTones(
-      searchTerm.toLowerCase()
-    );
-
-    const filtered = drivers.filter((driver: any) =>
-      Object.keys(driver).some((key) =>
-        removeVietnameseTones(String(driver[key]))
-          .toLowerCase()
-          .includes(normalizedSearchTerm)
-      )
-    );
-
-    setFilteredDriverList(filtered);
   };
 
   return (

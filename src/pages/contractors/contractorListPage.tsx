@@ -36,12 +36,10 @@ const DriverListPage = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  // Handle contractor edit
   const handleEditContractor = (contractor: IContractor) => {
     navigate(`${webRoutes.updateContractors}?id=${contractor.id}`);
   };
 
-  // Handle contractor deletion
   const handleDeleteContractor = (contractor: any) => {
     Modal.confirm({
       title: "Xác nhận xóa nhà thầu",
@@ -126,7 +124,6 @@ const DriverListPage = () => {
     },
   ];
 
-  // Example search function
   const handleSearch = (searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
       searchTerm.toLowerCase()
