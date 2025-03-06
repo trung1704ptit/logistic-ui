@@ -16,6 +16,7 @@ import { BreadcrumbProps } from "antd";
 import Title from "antd/lib/typography/Title";
 import { BsFileEarmarkExcel } from "react-icons/bs";
 import UploadDriverAndTruckExcel from "./uploadDriverAndTruckExcel";
+import { apiRoutes } from "@/routes/api";
 
 const breadcrumb: BreadcrumbProps = {
   items: [
@@ -36,6 +37,8 @@ const DriverListPage = () => {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 50 });
   // Access drivers from Redux store
   const drivers = useSelector((state: RootState) => state.driver.drivers);
 
@@ -189,6 +192,69 @@ const DriverListPage = () => {
     setOpenModal(!openModal);
   };
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (selectedKeys: React.Key[]) => {
+      setSelectedRowKeys(selectedKeys);
+    },
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (selectedRowKeys.length === 0) {
+        message.warning("Vui lòng chọn ít nhất một xe tải để xóa.");
+        return;
+      }
+      message.loading({ content: "Đang xóa...", key: "delete" });
+
+      const res = await http.post(`${apiRoutes.drivers}/delete`, {
+        driver_ids: selectedRowKeys,
+      });
+      if (res && res.data?.data?.deleted_ids?.length > 0) {
+        const deletedIds = res.data?.data?.deleted_ids;
+
+        // Update filteredDriverList by removing the deleted drivers
+        const updatedDriverList = filteredDriverList.filter(
+          (item) => !deletedIds.includes(item.id)
+        );
+        setFilteredDriverList(updatedDriverList);
+
+        message.success({
+          content: `Đã xóa ${selectedRowKeys.length} mục`,
+          key: "delete",
+        });
+        setSelectedRowKeys([]); // Clear selection only after deletion
+        await dispatch(fetchDrivers() as any); // Ensure drivers are refetched before UI updates
+      }
+    } catch (error) {
+      message.error("Lỗi khi xóa xe tải. Vui lòng thử lại.");
+      console.error("Delete error:", error);
+    }
+  };
+
+  const request = async (params: any) => {
+    const { current = 1, pageSize = 50 } = params;
+
+    // Calculate paginated data
+    const startIndex = (current - 1) * pageSize;
+    const endIndex = current * pageSize;
+
+    // Update pagination state
+    setPagination({
+      current,
+      pageSize,
+    });
+
+    const paginatedData = filteredDriverList.slice(startIndex, endIndex);
+
+    // Update pagination to reflect the correct total count of filtered data
+    return {
+      data: paginatedData,
+      success: true,
+      total: filteredDriverList.length, // Update the total count to reflect the new filtered list length
+    };
+  };
+
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
       {contextHolder}
@@ -233,18 +299,17 @@ const DriverListPage = () => {
         }}
         bordered={true}
         scroll={{ x: true }}
-        pagination={{ pageSize: 50 }}
-        request={async (params) => {
-          const data = filteredDriverList.slice(
-            ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
-            (params?.current ?? 1) * (params?.pageSize ?? 10)
-          );
-          return {
-            data,
-            success: true,
-            total: filteredDriverList.length,
-          } as RequestData<(typeof drivers)[0]>;
+        tableAlertOptionRender={({ selectedRowKeys }) => (
+          <Button type="primary" danger onClick={handleDelete}>
+            Xóa ({selectedRowKeys.length}) mục đã chọn
+          </Button>
+        )}
+        rowSelection={rowSelection}
+        pagination={{
+          ...pagination,
+          total: filteredDriverList.length,
         }}
+        request={request}
         options={{
           reload: false,
           density: false,

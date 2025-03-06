@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
+import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
@@ -14,15 +14,16 @@ import http from "@/lib/http";
 import { fetchTrucks } from "@/store/slices/truckSlice";
 import { BsFileEarmarkExcel } from "react-icons/bs";
 import UploadDriverAndTruckExcel from "../drivers/uploadDriverAndTruckExcel";
-
+import { apiRoutes } from "@/routes/api";
 const TruckListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const appDispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
-
-  const truckState = useSelector((state: RootState) => state.truck);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const trucks = useSelector((state: RootState) => state.truck.trucks);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 50 });
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
@@ -33,10 +34,10 @@ const TruckListPage = () => {
   };
 
   useEffect(() => {
-    if (truckState.trucks) {
-      setFilteredTruckList(truckState.trucks);
+    if (trucks) {
+      setFilteredTruckList(trucks);
     }
-  }, [truckState]);
+  }, [trucks]);
 
   const handleDeleteTruck = (truck: ITruck) => {
     Modal.confirm({
@@ -69,7 +70,7 @@ const TruckListPage = () => {
       searchTerm.toLowerCase()
     );
 
-    const filtered = truckState?.trucks.filter((truck: any) =>
+    const filtered = trucks.filter((truck: any) =>
       Object.keys(truck).some((key) =>
         removeVietnameseTones(String(truck[key]))
           .toLowerCase()
@@ -169,6 +170,69 @@ const TruckListPage = () => {
     setOpenModal(!openModal);
   };
 
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (selectedKeys: React.Key[]) => {
+      setSelectedRowKeys(selectedKeys);
+    },
+  };
+
+  const handleDelete = async () => {
+    try {
+      if (selectedRowKeys.length === 0) {
+        message.warning("Vui lòng chọn ít nhất một xe tải để xóa.");
+        return;
+      }
+      message.loading({ content: "Đang xóa...", key: "delete" });
+
+      const res = await http.post(`${apiRoutes.trucks}/delete`, {
+        truck_ids: selectedRowKeys,
+      });
+      if (res && res.data?.data?.deleted_ids?.length > 0) {
+        const deletedIds = res.data?.data?.deleted_ids;
+
+        // Update filteredTruckList by removing the deleted trucks
+        const updatedTruckList = filteredTruckList.filter(
+          (item) => !deletedIds.includes(item.id)
+        );
+        setFilteredTruckList(updatedTruckList);
+
+        message.success({
+          content: `Đã xóa ${selectedRowKeys.length} mục`,
+          key: "delete",
+        });
+        setSelectedRowKeys([]); // Clear selection only after deletion
+        await appDispatch(fetchTrucks() as any); // Ensure trucks are refetched before UI updates
+      }
+    } catch (error) {
+      message.error("Lỗi khi xóa xe tải. Vui lòng thử lại.");
+      console.error("Delete error:", error);
+    }
+  };
+
+  const request = async (params: any) => {
+    const { current = 1, pageSize = 50 } = params;
+
+    // Calculate paginated data
+    const startIndex = (current - 1) * pageSize;
+    const endIndex = current * pageSize;
+
+    // Update pagination state
+    setPagination({
+      current,
+      pageSize,
+    });
+
+    const paginatedData = filteredTruckList.slice(startIndex, endIndex);
+
+    // Update pagination to reflect the correct total count of filtered data
+    return {
+      data: paginatedData,
+      success: true,
+      total: filteredTruckList.length, // Update the total count to reflect the new filtered list length
+    };
+  };
+
   return (
     <BasePageContainer
       breadcrumb={{
@@ -230,25 +294,21 @@ const TruckListPage = () => {
         bordered={true}
         showSorterTooltip={false}
         scroll={{ x: true }}
+        rowKey="id"
         tableLayout={"fixed"}
-        rowSelection={false}
+        tableAlertOptionRender={({ selectedRowKeys }) => (
+          <Button type="primary" danger onClick={handleDelete}>
+            Xóa ({selectedRowKeys.length}) mục đã chọn
+          </Button>
+        )}
+        rowSelection={rowSelection}
         pagination={{
-          pageSize: 50,
+          ...pagination,
+          total: filteredTruckList.length,
         }}
-        request={async (params) => {
-          const data = filteredTruckList.slice(
-            ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
-            (params?.current ?? 1) * (params?.pageSize ?? 10)
-          );
-          return {
-            data,
-            success: true,
-            total: filteredTruckList.length,
-          } as RequestData<(typeof filteredTruckList)[0]>;
-        }}
+        request={request}
         dataSource={filteredTruckList}
         dateFormatter="string"
-        rowKey="id"
         search={false}
         size="small"
       />
