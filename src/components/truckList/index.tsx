@@ -4,7 +4,7 @@ import { Button, Input, Space, Modal, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
-import { removeVietnameseTones } from "@/lib/utils";
+import { removeVietnameseTones, scrollToId } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
 import { ITruck } from "@/interfaces/truck";
 import { RootState } from "@/store";
@@ -17,7 +17,7 @@ import UploadDriverAndTruckExcel from "../uploadDriverAndTruckExcel";
 
 interface IProps {
   trucks: ITruck[];
-  contractorId?: string | null
+  contractorId?: string | null;
 }
 
 const TruckList = ({ trucks, contractorId }: IProps) => {
@@ -212,28 +212,29 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
   const request = async (params: any) => {
     const { current = 1, pageSize = 50 } = params;
 
-    // Calculate paginated data
     const startIndex = (current - 1) * pageSize;
     const endIndex = current * pageSize;
 
-    // Update pagination state
-    setPagination({
+    setPagination((prev) => ({
+      ...prev,
       current,
       pageSize,
-    });
+      total: filteredTruckList.length, // ✅ Đảm bảo total được cập nhật
+    }));
+
+    scrollToId("truck-list");
 
     const paginatedData = filteredTruckList.slice(startIndex, endIndex);
 
-    // Update pagination to reflect the correct total count of filtered data
     return {
       data: paginatedData,
       success: true,
-      total: filteredTruckList.length, // Update the total count to reflect the new filtered list length
+      total: filteredTruckList.length, // ✅ Quan trọng để pagination hoạt động
     };
   };
 
   return (
-    <>
+    <div>
       <UploadDriverAndTruckExcel
         contractors={contractors}
         handleCancel={handleToggleModal}
@@ -293,12 +294,11 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
           total: filteredTruckList.length,
         }}
         request={request}
-        dataSource={filteredTruckList}
         dateFormatter="string"
         search={false}
         size="small"
       />
-    </>
+    </div>
   );
 };
 

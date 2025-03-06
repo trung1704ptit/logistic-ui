@@ -5,7 +5,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { removeVietnameseTones } from "@/lib/utils";
+import { removeVietnameseTones, scrollToId } from "@/lib/utils";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
 import { useSelector } from "react-redux";
@@ -26,6 +26,7 @@ const TruckListPage = () => {
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 200 });
   const navigate = useNavigate();
 
   const handleDeleteOrder = (order: any) => {
@@ -196,6 +197,30 @@ const TruckListPage = () => {
     },
   ];
 
+  const request = async (params: any) => {
+    const { current = 1, pageSize = 200 } = params;
+
+    const startIndex = (current - 1) * pageSize;
+    const endIndex = current * pageSize;
+
+    setPagination((prev) => ({
+      ...prev,
+      current,
+      pageSize,
+      total: filteredData.length, // ✅ Đảm bảo total được cập nhật
+    }));
+
+    scrollToId("order-list");
+
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedData,
+      success: true,
+      total: filteredData.length, // ✅ Quan trọng để pagination hoạt động
+    };
+  };
+
   return (
     <BasePageContainer
       breadcrumb={{
@@ -211,134 +236,125 @@ const TruckListPage = () => {
         ],
       }}
     >
-      {orderDetail && (
-        <OrderDetails
-          data={orderDetail}
-          isReadOnly={true}
-          onClose={() => setOrderDetail(undefined)}
-        />
-      )}
-      <ProTable
-        columns={columns}
-        cardBordered={false}
-        loading={isLoading}
-        cardProps={{
-          title: (
-            <div className="mb-3">
-              <h4>Danh sách đơn hàng</h4>
-              <Space>
-                <Select
-                  placeholder="Tháng"
-                  className="w-[100px]"
-                  value={parseInt(searchParams.get("month") as string)}
-                  onChange={(val) => handleChangeFilter("month", val)}
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <Select.Option key={i + 1} value={i + 1}>
-                      Tháng {i + 1}
-                    </Select.Option>
-                  ))}
-                </Select>
-                <Select
-                  placeholder="Năm"
-                  className="w-[100px]"
-                  value={searchParams.get("year")}
-                  onChange={(val) => handleChangeFilter("year", val)}
-                >
-                  {Array.from({ length: 5 }, (_, i) => {
-                    const year = d.getFullYear() - i;
-                    return (
-                      <Select.Option key={year} value={year}>
-                        {year}
+      <div id="order-list">
+        {orderDetail && (
+          <OrderDetails
+            data={orderDetail}
+            isReadOnly={true}
+            onClose={() => setOrderDetail(undefined)}
+          />
+        )}
+        <ProTable
+          columns={columns}
+          cardBordered={false}
+          loading={isLoading}
+          cardProps={{
+            title: (
+              <div className="mb-3">
+                <h4>Danh sách đơn hàng</h4>
+                <Space>
+                  <Select
+                    placeholder="Tháng"
+                    className="w-[100px]"
+                    value={parseInt(searchParams.get("month") as string)}
+                    onChange={(val) => handleChangeFilter("month", val)}
+                  >
+                    {Array.from({ length: 12 }, (_, i) => (
+                      <Select.Option key={i + 1} value={i + 1}>
+                        Tháng {i + 1}
                       </Select.Option>
-                    );
-                  })}
-                </Select>
-                <Select
-                  placeholder="Nhà thầu"
-                  className="w-[180px]"
-                  value={searchParams.get("contractor_id")}
-                  onChange={(val) => handleChangeFilter("contractor_id", val)}
-                >
-                  <Select.Option key={"all"} value="all">
-                    Tất cả
-                  </Select.Option>
-                  {contractors.map((item) => (
-                    <Select.Option key={item.id} value={item.id}>
-                      {item.name}
+                    ))}
+                  </Select>
+                  <Select
+                    placeholder="Năm"
+                    className="w-[100px]"
+                    value={searchParams.get("year")}
+                    onChange={(val) => handleChangeFilter("year", val)}
+                  >
+                    {Array.from({ length: 5 }, (_, i) => {
+                      const year = d.getFullYear() - i;
+                      return (
+                        <Select.Option key={year} value={year}>
+                          {year}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                  <Select
+                    placeholder="Nhà thầu"
+                    className="w-[180px]"
+                    value={searchParams.get("contractor_id")}
+                    onChange={(val) => handleChangeFilter("contractor_id", val)}
+                  >
+                    <Select.Option key={"all"} value="all">
+                      Tất cả
                     </Select.Option>
-                  ))}
-                </Select>
+                    {contractors.map((item) => (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
 
-                <Select
-                  placeholder="Tài xế"
-                  className="w-[180px]"
-                  value={searchParams.get("driver_id")}
-                  onChange={(val) => handleChangeFilter("driver_id", val)}
-                >
-                  <Select.Option key={"all"} value="all">
-                    Tất cả
-                  </Select.Option>
-                  {drivers.map((driver) => (
-                    <Select.Option key={driver.id} value={driver.id}>
-                      {driver.full_name}
+                  <Select
+                    placeholder="Tài xế"
+                    className="w-[180px]"
+                    value={searchParams.get("driver_id")}
+                    onChange={(val) => handleChangeFilter("driver_id", val)}
+                  >
+                    <Select.Option key={"all"} value="all">
+                      Tất cả
                     </Select.Option>
-                  ))}
-                </Select>
+                    {drivers.map((driver) => (
+                      <Select.Option key={driver.id} value={driver.id}>
+                        {driver.full_name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Space>
+              </div>
+            ),
+            extra: (
+              <Space className="mb-3">
+                <Input
+                  placeholder="Tìm kiếm đơn hàng..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSearchTerm(value);
+                    handleSearch(value);
+                  }}
+                  style={{ minWidth: "10%" }}
+                />
+                <Link to={webRoutes.addNewOrder}>
+                  <Button type="primary" icon={<PlusOutlined />}>
+                    Thêm đơn hàng
+                  </Button>
+                </Link>
               </Space>
-            </div>
-          ),
-          extra: (
-            <Space className="mb-3">
-              <Input
-                placeholder="Tìm kiếm đơn hàng..."
-                value={searchTerm}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSearchTerm(value);
-                  handleSearch(value);
-                }}
-                style={{ minWidth: "10%" }}
-              />
-              <Link to={webRoutes.addNewOrder}>
-                <Button type="primary" icon={<PlusOutlined />}>
-                  Thêm đơn hàng
-                </Button>
-              </Link>
-            </Space>
-          ),
-        }}
-        bordered={true}
-        showSorterTooltip={false}
-        scroll={{ x: true }}
-        tableLayout={"fixed"}
-        rowSelection={false}
-        pagination={{
-          showQuickJumper: true,
-          pageSize: 200,
-        }}
-        options={{
-          reload: false,
-          density: false,
-          setting: false,
-        }}
-        request={async (params) => {
-          const data = filteredData.slice(
-            ((params?.current ?? 1) - 1) * (params?.pageSize ?? 10),
-            (params?.current ?? 1) * (params?.pageSize ?? 10)
-          );
-          return {
-            data,
-            success: true,
+            ),
+          }}
+          bordered={true}
+          showSorterTooltip={false}
+          scroll={{ x: true }}
+          tableLayout={"fixed"}
+          rowSelection={false}
+          pagination={{
+            ...pagination,
             total: filteredData.length,
-          } as RequestData<(typeof data)[0]>;
-        }}
-        dataSource={filteredData}
-        dateFormatter="string"
-        rowKey="id"
-        search={false}
-        size="small"
-      />
+          }}
+          options={{
+            reload: false,
+            density: false,
+            setting: false,
+          }}
+          request={request}
+          dateFormatter="string"
+          rowKey="id"
+          search={false}
+          size="small"
+        />
+      </div>
     </BasePageContainer>
   );
 };

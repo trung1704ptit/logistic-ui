@@ -6,7 +6,7 @@ import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { removeVietnameseTones } from "@/lib/utils";
+import { removeVietnameseTones, scrollToId } from "@/lib/utils";
 import { fetchDrivers } from "@/store/slices/driverSlice";
 import moment from "moment";
 import http from "@/lib/http";
@@ -224,26 +224,30 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
 
   const request = async (params: any) => {
     const { current = 1, pageSize = 50 } = params;
-
+  
     const startIndex = (current - 1) * pageSize;
     const endIndex = current * pageSize;
-
-    setPagination({
+  
+    setPagination((prev) => ({
+      ...prev,
       current,
       pageSize,
-    });
+      total: filteredDataList.length, // ✅ Đảm bảo total được cập nhật
+    }));
 
+    scrollToId("driver-list")
+  
     const paginatedData = filteredDataList.slice(startIndex, endIndex);
-
+  
     return {
       data: paginatedData,
       success: true,
-      total: filteredDataList.length,
+      total: filteredDataList.length, // ✅ Quan trọng để pagination hoạt động
     };
   };
-
+  
   return (
-    <>
+    <div id="driver-list">
       <UploadDriverAndTruckExcel
         contractors={contractors}
         handleCancel={handleToggleModal}
@@ -291,6 +295,7 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
             Xóa ({selectedRowKeys.length}) mục đã chọn
           </Button>
         )}
+        rowKey="id"
         rowSelection={rowSelection}
         pagination={{
           ...pagination,
@@ -302,13 +307,11 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
           density: false,
           setting: false,
         }}
-        dataSource={filteredDataList}
         dateFormatter="string"
-        rowKey="id"
         search={false}
         size="small"
       />
-    </>
+    </div>
   );
 };
 
