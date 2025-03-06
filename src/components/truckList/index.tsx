@@ -4,7 +4,7 @@ import { Button, Input, Space, Modal, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
-import { removeVietnameseTones, scrollToId } from "@/lib/utils";
+import { removeVietnameseTones } from "@/lib/utils";
 import Title from "antd/lib/typography/Title";
 import { ITruck } from "@/interfaces/truck";
 import { RootState } from "@/store";
@@ -26,7 +26,6 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
   const appDispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 50 });
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
@@ -41,26 +40,6 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
       setFilteredTruckList(trucks);
     }
   }, [trucks]);
-
-  const handleDeleteTruck = (truck: ITruck) => {
-    Modal.confirm({
-      title: "Xác nhận xóa xe tải",
-      content: `Bạn có chắc muốn xóa xe tải?`,
-      onOk: async () => {
-        try {
-          const res = await http.delete(`/trucks/${truck.id}`);
-          console.log(res);
-          appDispatch(fetchTrucks() as any);
-          if (res.status === 204) {
-            message.success("Xóa thành công");
-          }
-        } catch (error) {
-          console.error("Error deleting contractor:", error);
-          message.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
-        }
-      },
-    });
-  };
 
   const handleSearchTruck = (searchTerm: string) => {
     const normalizedSearchTerm = removeVietnameseTones(
@@ -178,59 +157,63 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
     },
   };
 
+  const handleDeleteTruck = (truck: ITruck) => {
+    Modal.confirm({
+      title: "Xác nhận xóa xe tải",
+      content: `Bạn có chắc muốn xóa xe tải?`,
+      onOk: async () => {
+        try {
+          const res = await http.delete(`/trucks/${truck.id}`);
+          if (res.status === 204) {
+            message.success("Xóa thành công");
+            appDispatch(fetchTrucks() as any);
+          }
+        } catch (error) {
+          message.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
+        }
+      },
+    });
+  };
+
   const handleDelete = async () => {
     try {
       if (selectedRowKeys.length === 0) {
         message.warning("Vui lòng chọn ít nhất một xe tải để xóa.");
         return;
       }
-      const res = await http.post(`${apiRoutes.trucks}/delete`, {
-        truck_ids: selectedRowKeys,
+
+      Modal.confirm({
+        title: "Xác nhận xóa",
+        content: `Bạn có chắc muốn xóa ${selectedRowKeys.length} mục không?`,
+        onOk: async () => {
+          try {
+            const res = await http.post(`${apiRoutes.trucks}/delete`, {
+              truck_ids: selectedRowKeys,
+            });
+            if (res && res.data?.data?.deleted_ids?.length > 0) {
+              const deletedIds = res.data?.data?.deleted_ids;
+
+              const updatedTruckList = filteredTruckList.filter(
+                (item) => !deletedIds.includes(item.id)
+              );
+              setFilteredTruckList(updatedTruckList);
+
+              message.success({
+                content: `Đã xóa ${selectedRowKeys.length} mục`,
+                key: "delete",
+              });
+              setSelectedRowKeys([]);
+              await appDispatch(fetchTrucks() as any);
+            }
+          } catch (error) {
+            message.error("Đã có lỗi xảy ra khi xóa.");
+          }
+        },
       });
-      if (res && res.data?.data?.deleted_ids?.length > 0) {
-        const deletedIds = res.data?.data?.deleted_ids;
-
-        // Update filteredTruckList by removing the deleted trucks
-        const updatedTruckList = filteredTruckList.filter(
-          (item) => !deletedIds.includes(item.id)
-        );
-        setFilteredTruckList(updatedTruckList);
-
-        message.success({
-          content: `Đã xóa ${selectedRowKeys.length} mục`,
-          key: "delete",
-        });
-        setSelectedRowKeys([]); // Clear selection only after deletion
-        await appDispatch(fetchTrucks() as any); // Ensure trucks are refetched before UI updates
-      }
     } catch (error) {
       message.error("Lỗi khi xóa xe tải. Vui lòng thử lại.");
       console.error("Delete error:", error);
     }
-  };
-
-  const request = async (params: any) => {
-    const { current = 1, pageSize = 50 } = params;
-
-    const startIndex = (current - 1) * pageSize;
-    const endIndex = current * pageSize;
-
-    setPagination((prev) => ({
-      ...prev,
-      current,
-      pageSize,
-      total: filteredTruckList.length, // ✅ Đảm bảo total được cập nhật
-    }));
-
-    scrollToId("truck-list");
-
-    const paginatedData = filteredTruckList.slice(startIndex, endIndex);
-
-    return {
-      data: paginatedData,
-      success: true,
-      total: filteredTruckList.length, // ✅ Quan trọng để pagination hoạt động
-    };
   };
 
   return (
@@ -290,10 +273,9 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
         )}
         rowSelection={rowSelection}
         pagination={{
-          ...pagination,
-          total: filteredTruckList.length,
+          pageSize: 50,
         }}
-        request={request}
+        dataSource={filteredTruckList}
         dateFormatter="string"
         search={false}
         size="small"

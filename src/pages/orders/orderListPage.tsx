@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { ProTable, ProColumns, RequestData } from "@ant-design/pro-components";
+import { ProTable, ProColumns } from "@ant-design/pro-components";
 import { Button, Input, Space, Modal, message, Select } from "antd";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
 import BasePageContainer from "@/components/layout/pageContainer";
-import { removeVietnameseTones, scrollToId } from "@/lib/utils";
+import { removeVietnameseTones } from "@/lib/utils";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
 import { useSelector } from "react-redux";
@@ -26,7 +26,6 @@ const TruckListPage = () => {
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 200 });
   const navigate = useNavigate();
 
   const handleDeleteOrder = (order: any) => {
@@ -197,30 +196,6 @@ const TruckListPage = () => {
     },
   ];
 
-  const request = async (params: any) => {
-    const { current = 1, pageSize = 200 } = params;
-
-    const startIndex = (current - 1) * pageSize;
-    const endIndex = current * pageSize;
-
-    setPagination((prev) => ({
-      ...prev,
-      current,
-      pageSize,
-      total: filteredData.length, // ✅ Đảm bảo total được cập nhật
-    }));
-
-    scrollToId("order-list");
-
-    const paginatedData = filteredData.slice(startIndex, endIndex);
-
-    return {
-      data: paginatedData,
-      success: true,
-      total: filteredData.length, // ✅ Quan trọng để pagination hoạt động
-    };
-  };
-
   return (
     <BasePageContainer
       breadcrumb={{
@@ -340,15 +315,14 @@ const TruckListPage = () => {
           tableLayout={"fixed"}
           rowSelection={false}
           pagination={{
-            ...pagination,
-            total: filteredData.length,
+            pageSize: 200,
           }}
+          dataSource={filteredData}
           options={{
             reload: false,
             density: false,
             setting: false,
           }}
-          request={request}
           dateFormatter="string"
           rowKey="id"
           search={false}

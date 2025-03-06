@@ -6,7 +6,7 @@ import { webRoutes } from "@/routes/web";
 import { PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
-import { removeVietnameseTones, scrollToId } from "@/lib/utils";
+import { removeVietnameseTones } from "@/lib/utils";
 import { fetchDrivers } from "@/store/slices/driverSlice";
 import moment from "moment";
 import http from "@/lib/http";
@@ -27,7 +27,6 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
   const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 50 });
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
@@ -41,26 +40,6 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
 
   const handleEditDriver = (driver: IDriver) => {
     navigate(`${webRoutes.updateDrivers}?id=${driver.id}`);
-  };
-
-  const handleDeleteDriver = (driver: IDriver) => {
-    Modal.confirm({
-      title: "Xác nhận xóa tài xế",
-      content: `Bạn có chắc muốn xóa tài xế ${driver.full_name}?`,
-      onOk: async () => {
-        try {
-          const res = await http.delete(`${apiRoutes.drivers}/${driver.id}`);
-
-          if (res.status === 204) {
-            dispatch(fetchDrivers());
-            message.success("Xóa thành công");
-          }
-        } catch (error) {
-          console.error("Error deleting contractor:", error);
-          message.error("Có lỗi xảy ra, vui lòng thử lại sau");
-        }
-      },
-    });
   };
 
   const columns: ProColumns[] = [
@@ -189,63 +168,67 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
     },
   };
 
+  const handleDeleteDriver = (driver: IDriver) => {
+    Modal.confirm({
+      title: "Xác nhận xóa tài xế",
+      content: `Bạn có chắc muốn xóa tài xế ${driver.full_name}?`,
+      onOk: async () => {
+        try {
+          const res = await http.delete(`${apiRoutes.drivers}/${driver.id}`);
+
+          if (res.status === 204) {
+            dispatch(fetchDrivers());
+            message.success("Xóa thành công");
+          }
+        } catch (error) {
+          console.error("Error deleting contractor:", error);
+          message.error("Có lỗi xảy ra, vui lòng thử lại sau");
+        }
+      },
+    });
+  };
+
   const handleDelete = async () => {
     try {
       if (selectedRowKeys.length === 0) {
         message.warning("Vui lòng chọn ít nhất một xe tải để xóa.");
         return;
       }
-      message.loading({ content: "Đang xóa...", key: "delete" });
 
-      const res = await http.post(`${apiRoutes.drivers}/delete`, {
-        driver_ids: selectedRowKeys,
+      Modal.confirm({
+        title: "Xác nhận xóa",
+        content: `Bạn có chắc muốn xóa ${selectedRowKeys.length} mục không?`,
+        onOk: async () => {
+          try {
+            const res = await http.post(`${apiRoutes.drivers}/delete`, {
+              driver_ids: selectedRowKeys,
+            });
+            if (res && res.data?.data?.deleted_ids?.length > 0) {
+              const deletedIds = res.data?.data?.deleted_ids;
+
+              const updatedDriverList = filteredDataList.filter(
+                (item) => !deletedIds.includes(item.id)
+              );
+              setFilteredDataList(updatedDriverList);
+              dispatch(fetchDrivers());
+              message.success({
+                content: `Đã xóa ${selectedRowKeys.length} mục`,
+                key: "delete",
+              });
+              setSelectedRowKeys([]);
+              await dispatch(fetchDrivers() as any);
+            }
+          } catch (error) {
+            message.error("Đã có lỗi xảy ra khi xóa.");
+          }
+        },
       });
-      if (res && res.data?.data?.deleted_ids?.length > 0) {
-        const deletedIds = res.data?.data?.deleted_ids;
-
-        // Update filteredDataList by removing the deleted drivers
-        const updatedDriverList = filteredDataList.filter(
-          (item) => !deletedIds.includes(item.id)
-        );
-        setFilteredDataList(updatedDriverList);
-
-        message.success({
-          content: `Đã xóa ${selectedRowKeys.length} mục`,
-          key: "delete",
-        });
-        setSelectedRowKeys([]); // Clear selection only after deletion
-        await dispatch(fetchDrivers() as any); // Ensure drivers are refetched before UI updates
-      }
     } catch (error) {
       message.error("Lỗi khi xóa xe tải. Vui lòng thử lại.");
       console.error("Delete error:", error);
     }
   };
 
-  const request = async (params: any) => {
-    const { current = 1, pageSize = 50 } = params;
-  
-    const startIndex = (current - 1) * pageSize;
-    const endIndex = current * pageSize;
-  
-    setPagination((prev) => ({
-      ...prev,
-      current,
-      pageSize,
-      total: filteredDataList.length, // ✅ Đảm bảo total được cập nhật
-    }));
-
-    scrollToId("driver-list")
-  
-    const paginatedData = filteredDataList.slice(startIndex, endIndex);
-  
-    return {
-      data: paginatedData,
-      success: true,
-      total: filteredDataList.length, // ✅ Quan trọng để pagination hoạt động
-    };
-  };
-  
   return (
     <div id="driver-list">
       <UploadDriverAndTruckExcel
@@ -297,11 +280,10 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
         )}
         rowKey="id"
         rowSelection={rowSelection}
+        dataSource={filteredDataList}
         pagination={{
-          ...pagination,
-          total: filteredDataList.length,
+            pageSize: 50,
         }}
-        request={request}
         options={{
           reload: false,
           density: false,
