@@ -15,10 +15,11 @@ import Title from "antd/lib/typography/Title";
 import { BsFileEarmarkExcel } from "react-icons/bs";
 import UploadDriverAndTruckExcel from "@/components/uploadDriverAndTruckExcel";
 import { apiRoutes } from "@/routes/api";
+import { INVALID_DATE } from "@/constants";
 
 interface IProps {
   drivers: IDriver[];
-  contractorId?: string | null
+  contractorId?: string | null;
 }
 
 const DriverList = ({ drivers, contractorId }: IProps) => {
@@ -88,7 +89,10 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
       dataIndex: "date_of_birth",
       sorter: false,
       align: "center",
-      render: (_, row) => moment(row.date_of_birth).format("DD-MM-YYYY"),
+      render: (_, row) =>
+        (!row?.date_of_birth?.includes(INVALID_DATE) &&
+          moment(row.date_of_birth).format("DD-MM-YYYY")) ||
+        "-",
     },
     {
       title: "Địa Chỉ",
@@ -107,7 +111,11 @@ const DriverList = ({ drivers, contractorId }: IProps) => {
       dataIndex: "license_expiry", // Date string 'YYYY-MM-DD'
       sorter: false,
       align: "center",
-      render: (_, row) => moment(row.license_expiry).format("DD-MM-YYYY"), // Render the string directly
+      render: (_, row) =>
+        (row.license_expiry &&
+          !row.license_expiry.includes(INVALID_DATE) &&
+          moment(row.license_expiry).format("DD-MM-YYYY")) ||
+        "-",
     },
     {
       title: "Nhà thầu",

@@ -120,3 +120,5 @@ export const DAYJS_DATE_FORMAT = [
 ];
 
 export const TIME_FORMAT = 'YYYY-MM-DDT00:00:00+07:00'
+
+export const INVALID_DATE = '0001-01-01'
