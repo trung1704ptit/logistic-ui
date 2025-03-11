@@ -182,13 +182,13 @@ const TruckListPage = () => {
       key: "actions",
       render: (_, row) => (
         <Space>
-          <Button type="dashed" onClick={() => setOrderDetail(row)}>
+          <Button type="dashed" onClick={() => setOrderDetail(row)} size="small">
             Chi tiết
           </Button>
-          <Button type="dashed" onClick={() => handleUpdateOrder(row.id)}>
+          <Button type="dashed" onClick={() => handleUpdateOrder(row.id)} size="small">
             Sửa
           </Button>
-          <Button danger onClick={() => handleDeleteOrder(row)}>
+          <Button danger onClick={() => handleDeleteOrder(row)} size="small">
             Xóa
           </Button>
         </Space>

@@ -137,7 +137,7 @@ const TruckList = ({ trucks, contractorId }: IProps) => {
             onClick={() => handleEditTruck(row)}
             size="small"
           >
-            Xem Chi Tiết
+            Chi Tiết
           </Button>
           <Button danger onClick={() => handleDeleteTruck(row)} size="small">
             Xóa

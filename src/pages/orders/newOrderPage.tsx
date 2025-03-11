@@ -24,7 +24,6 @@ import dayjs from "dayjs";
 import http from "@/lib/http";
 import { IPrice, IPriceDetail } from "@/interfaces/price";
 import { apiRoutes } from "@/routes/api";
-import * as XLSX from "xlsx";
 import {
   CONTRACTOR_TYPES,
   DEFAULT_PRICE,
@@ -101,7 +100,7 @@ const AddOrderForm: React.FC = () => {
   const [selectedPriceContractor, setSelectedPriceContractor] =
     useState<IPrice>();
 
-  const [locationLabels, setLocationLabels] = useState<ILocationLabels>({
+  const [orderLocation, setOrderLocation] = useState<ILocationLabels>({
     allDeliveryProvinces: [],
     allPickupProvinces: [],
   });
@@ -127,6 +126,10 @@ const AddOrderForm: React.FC = () => {
       trip_salary: 0,
       price_for_contractor_id: undefined,
       order_type: filterContractor?.type,
+      pickup_province: undefined,
+      pickup_district: undefined,
+      delivery_province: undefined,
+      delivery_district: undefined,
     });
   };
 
@@ -144,7 +147,7 @@ const AddOrderForm: React.FC = () => {
     setIsReview(true);
   };
 
-  const updateLocationLabels = (data: any) => {
+  const updateOrderLocation = (data: any) => {
     setSelectedPriceContractor(data);
     const allPickupProvinces: string[] = data.price_details.map(
       (item: IPriceDetail) => item.pickup_province
@@ -153,7 +156,7 @@ const AddOrderForm: React.FC = () => {
       (item: IPriceDetail) => item.delivery_province
     );
 
-    setLocationLabels({
+    setOrderLocation({
       allPickupProvinces: [...new Set(allPickupProvinces)],
       allDeliveryProvinces: [...new Set(allDeliveryProvinces)],
     });
@@ -164,7 +167,7 @@ const AddOrderForm: React.FC = () => {
       const { data } = await http.get(
         `${apiRoutes.prices}/${selectedContractor?.id}/${priceId}`
       );
-      updateLocationLabels(data.data);
+      updateOrderLocation(data.data);
     } catch (error) {
       console.log(error);
     }
@@ -186,6 +189,7 @@ const AddOrderForm: React.FC = () => {
   };
 
   const handleProvinceChange = (value: string, field: string) => {
+    console.log('selectedPriceContractor:', selectedPriceContractor, value)
     if (field === "pickup_province") {
       const districts =
         selectedPriceContractor?.price_details
@@ -193,17 +197,18 @@ const AddOrderForm: React.FC = () => {
           .map((item) => item.pickup_district)
           .sort() || [];
 
+      console.log('districts:', districts)
       setPickupDistrictList([...new Set(districts)]);
-      form.setFieldValue("pickup_district", null);
+      form.setFieldValue("pickup_district", undefined);
     } else {
       const districts =
         selectedPriceContractor?.price_details
           .filter((item) => item.delivery_province === value)
           .map((item) => item.delivery_district)
           .sort() || [];
-
+      console.log('districts:', [...new Set(districts)])
       setDeliveryDistrictList([...new Set(districts)]);
-      form.setFieldValue("delivery_district", null);
+      form.setFieldValue("delivery_district", undefined);
     }
   };
 
@@ -240,7 +245,6 @@ const AddOrderForm: React.FC = () => {
       setDrivers(driversFiltered);
     }
   }, [selectedContractor?.id]);
-
 
   const handleFileUpload = async (file: any, ownerType: string) => {
     try {
@@ -306,7 +310,7 @@ const AddOrderForm: React.FC = () => {
         prices,
       };
 
-      updateLocationLabels({ price_details: prices });
+      updateOrderLocation({ price_details: prices });
 
       // Step 4: Send parsed data to the API
       const pricesRes = await http.post(
@@ -344,7 +348,7 @@ const AddOrderForm: React.FC = () => {
         return;
       } else {
         // if user selected a truck
-        console.log('selectedTruck:', selectedTruck)
+        console.log("selectedTruck:", selectedTruck);
         form.setFieldValue("truck_capacity", selectedTruck?.capacity);
       }
     } else {
@@ -376,9 +380,9 @@ const AddOrderForm: React.FC = () => {
           item.delivery_district === deliveryDistrict
       );
       if (priceFound) {
-        let value = '';
+        let value = "";
         if (unitSelected === UNIT_TYPES.trip) {
-          value =`${truckCapacity}T`;
+          value = `${truckCapacity}T`;
         } else {
           value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
         }
@@ -416,20 +420,30 @@ const AddOrderForm: React.FC = () => {
     ) {
       setHighlightPriceForContractor(true);
 
-      const priceFound = selectedPriceContractor?.price_details.find(
-        (item) =>
-          item.pickup_province === pickupProvince &&
-          item.pickup_district === pickupDistrict &&
-          item.delivery_province === deliveryProvince &&
-          item.delivery_district === deliveryDistrict
-      );
+      let priceFound = null;
+
+      if (isInternal) {
+        priceFound = selectedPriceContractor?.price_details.find(
+          (item) =>
+            item.pickup_province === pickupProvince &&
+            item.delivery_province === deliveryProvince
+        );
+      } else {
+        priceFound = selectedPriceContractor?.price_details.find(
+          (item) =>
+            item.pickup_province === pickupProvince &&
+            item.pickup_district === pickupDistrict &&
+            item.delivery_province === deliveryProvince &&
+            item.delivery_district === deliveryDistrict
+        );
+      }
 
       const key = isInternal ? "trip_salary" : "price_for_contractor";
 
       if (priceFound) {
-        let value = '';
+        let value = "";
         if (unitSelected === UNIT_TYPES.trip) {
-          value =`${truckCapacity}T`;
+          value = `${truckCapacity}T`;
         } else {
           value = packageWeight ? `${packageWeight}T` : `${packageVolumn}K`;
         }
@@ -456,12 +470,11 @@ const AddOrderForm: React.FC = () => {
     deliveryDistrict,
   ]);
 
-
   const handleSelectTruck = (truckId: string) => {
-    const filterTruck = trucks.find(item => item.id === truckId)
-    setSelectedTruck(filterTruck)
-    form.setFieldValue("truck_capacity", filterTruck?.capacity)
-  }
+    const filterTruck = trucks.find((item) => item.id === truckId);
+    setSelectedTruck(filterTruck);
+    form.setFieldValue("truck_capacity", filterTruck?.capacity);
+  };
 
   return (
     <BasePageContainer breadcrumb={breadcrumb}>
@@ -742,7 +755,7 @@ const AddOrderForm: React.FC = () => {
                 onChange={(value: string) =>
                   handleProvinceChange(value, "pickup_province")
                 }
-                options={locationLabels.allPickupProvinces}
+                options={orderLocation.allPickupProvinces}
               />
             </Form.Item>
           </Col>
@@ -777,7 +790,7 @@ const AddOrderForm: React.FC = () => {
                 onChange={(value: string) =>
                   handleProvinceChange(value, "delivery_province")
                 }
-                options={locationLabels.allDeliveryProvinces}
+                options={orderLocation.allDeliveryProvinces}
               />
             </Form.Item>
           </Col>

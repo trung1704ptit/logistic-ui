@@ -14,7 +14,7 @@ const SelectWithInput = (props: any) => {
   };
 
   useEffect(() => {
-    setItems((prevItems) => [...new Set([...options, ...prevItems])]);
+    setItems(options);
   }, [options]);
 
   const addItem = (
