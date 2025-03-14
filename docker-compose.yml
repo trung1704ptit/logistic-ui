@@ -11,3 +11,7 @@ services:
       - .:/app
       - /app/node_modules
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"  # Limit the log size to 10MB
