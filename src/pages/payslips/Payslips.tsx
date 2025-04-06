@@ -12,8 +12,8 @@ import * as XLSX from "xlsx";
 import { CONTRACTOR_TYPES, ORDER_KEYS, PAYSLIP_KEYS } from "@/constants";
 import moment from "moment";
 import { IContractor } from "@/interfaces/contractor";
-import InternalSumary from "./InternalSumary";
-import ExternalSumary from "./ExternalSumary";
+import InternalSummary from "./InternalSummary";
+import ExternalSummary from "./ExternalSummary";
 import { BsFileEarmarkExcel } from "react-icons/bs";
 
 const breadcrumb = {
@@ -176,8 +176,7 @@ const PayslipAdmin: React.FC = () => {
   const fetchPayslips = async (contractor?: IContractor) => {
     const values = await form.validateFields();
     const payslipRes = await http.get(
-      `${apiRoutes.payslips}?year=${values.year}&month=${
-        values.month
+      `${apiRoutes.payslips}?year=${values.year}&month=${values.month
       }&contractor_id=${contractor?.id || selectedContractor?.id}`
     );
 
@@ -222,10 +221,10 @@ const PayslipAdmin: React.FC = () => {
   //   window.open(url, "_blank");
   // };
 
-  const hanleViewOrderListByContractor = (driverId: string) => {
-    const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&contractor_id=${driverId}&driver_id=all`;
-    window.open(url, "_blank");
-  };
+  // const hanleViewOrderListByContractor = (driverId: string) => {
+  //   const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&contractor_id=${driverId}&driver_id=all`;
+  //   window.open(url, "_blank");
+  // };
 
   const handleSelectContractor = (contractorId: string) => {
     const filterItem = contractors.find((item) => item.id === contractorId);
@@ -233,17 +232,17 @@ const PayslipAdmin: React.FC = () => {
     return filterItem;
   };
 
-  const exportExcel = (driver: IDriver) => {
-    const orderRecords = orderListRaw.filter(
-      (item: any) => item.driver_id === driver.id
-    );
+  // const exportExcel = (driver: IDriver) => {
+  //   const orderRecords = orderListRaw.filter(
+  //     (item: any) => item.driver_id === driver.id
+  //   );
 
-    const payslipRecords = payslipList.filter(
-      (item: any) => item.driver_id === driver.id
-    );
+  //   const payslipRecords = payslipList.filter(
+  //     (item: any) => item.driver_id === driver.id
+  //   );
 
-    exportSingleDriverToExcel(orderRecords, payslipRecords, driver);
-  };
+  //   exportSingleDriverToExcel(orderRecords, payslipRecords, driver);
+  // };
 
   const exportSingleDriverToExcel = (
     orderRecords: any,
@@ -315,8 +314,7 @@ const PayslipAdmin: React.FC = () => {
 
     XLSX.writeFile(
       workbook,
-      `${
-        driver?.full_name || "Bảng cước"
+      `${driver?.full_name || "Bảng cước"
       }-${selectedMonth}-${selectedYear}.xlsx`
     );
   };
@@ -375,7 +373,7 @@ const PayslipAdmin: React.FC = () => {
               <Select
                 placeholder="Chọn nhà thầu"
                 style={{ width: "100%" }}
-                // onChange={handleSelectContractor}
+              // onChange={handleSelectContractor}
               >
                 {contractors.map((contractor) => (
                   <Select.Option key={contractor.id} value={contractor.id}>
@@ -385,7 +383,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={12} sm={12} md={5}>
+          {/* <Col xs={12} sm={12} md={5}>
             <Form.Item
               label="Tài Xế"
               name="drivers"
@@ -406,7 +404,7 @@ const PayslipAdmin: React.FC = () => {
                 ))}
               </Select>
             </Form.Item>
-          </Col>
+          </Col> */}
         </Row>
         <Space>
           <Button type="primary" onClick={handleSubmit}>
@@ -433,7 +431,7 @@ const PayslipAdmin: React.FC = () => {
         orderListSummarized && (
           <>
             {selectedContractor?.type === CONTRACTOR_TYPES.internal ? (
-              <InternalSumary
+              <InternalSummary
                 orderListSummarized={orderListSummarized}
                 payslipList={payslipList}
                 orderListRaw={orderListRaw}
@@ -443,7 +441,7 @@ const PayslipAdmin: React.FC = () => {
                 fetchPayslips={fetchPayslips}
               />
             ) : (
-              <ExternalSumary
+              <ExternalSummary
                 orderListSummarized={orderListSummarized}
                 payslipList={payslipList}
                 orderListRaw={orderListRaw}

@@ -9,7 +9,7 @@ import {
   Typography,
 } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import http from "@/lib/http";
 import { apiRoutes } from "@/routes/api";
 import { message } from "antd/lib";
@@ -22,6 +22,7 @@ const { TextArea } = Input;
 
 const SummaryFormDriver = (props: any) => {
   const [finalSalary, setFinalSalary] = useState(0);
+  const submitBtnRef = useRef<HTMLButtonElement | null>(null);
   const [loading, setLoading] = useState(false);
   const settings = useSelector((state: RootState) => state.setting.settings);
   const KPIThreshold = settings?.kpi_threshold || 45;
@@ -79,8 +80,8 @@ const SummaryFormDriver = (props: any) => {
         } else {
           await http.post(apiRoutes.payslips, payload);
         }
-
-        message.success("Đã lưu dữ liệu cước");
+        message.destroy();
+        message.success("Đã cập nhật dữ liệu cước mới nhất");
         props.fetchPayslips();
         window.scrollTo({
           top: 0,
@@ -129,6 +130,19 @@ const SummaryFormDriver = (props: any) => {
     useEffect(() => {
       calculateFinalSalary();
     }, [props.data]);
+
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        const btn = submitBtnRef.current;
+        if (btn) {
+          btn.click();
+          submitBtnRef.current = null;
+        }
+      }, 2000);
+
+      return () => clearTimeout(timer); // cleanup on unmount
+    }, []);
 
     return (
       <Form
@@ -298,7 +312,6 @@ const SummaryFormDriver = (props: any) => {
               normalize={(value) => (value ? Number(value) : value)}
             >
               <InputNumber
-                type="number"
                 min={0}
                 className="md:w-[50%] w-[100%]"
               />
@@ -355,8 +368,10 @@ const SummaryFormDriver = (props: any) => {
               <Button
                 type="primary"
                 htmlType="submit"
+                id="submit-btn"
                 icon={<SaveOutlined />}
                 disabled={loading}
+                ref={submitBtnRef}
               >
                 Lưu lại
               </Button>
