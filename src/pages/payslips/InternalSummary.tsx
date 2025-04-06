@@ -117,8 +117,7 @@ const InternalSumary = ({
 
     XLSX.writeFile(
       workbook,
-      `${
-        driver?.full_name || "Bảng cước"
+      `${driver?.full_name || "Bảng cước"
       }-${selectedMonth}-${selectedYear}.xlsx`
     );
   };
@@ -158,7 +157,7 @@ const InternalSumary = ({
       ellipsis: true,
     },
     {
-      title: "Thực lĩnh",
+      title: "Tổng cước",
       dataIndex: "final_salary",
       sorter: false,
       align: "center",
@@ -239,8 +238,8 @@ const InternalSumary = ({
 
       <Divider />
 
-      {orderListSummarized.map((item: any) => {
-        const existPayslip = payslipList.find(
+      {orderListSummarized?.map((item: any) => {
+        const existPayslip = payslipList?.find(
           (p: any) => p.driver_id === item.driver_id
         );
 
@@ -255,9 +254,8 @@ const InternalSumary = ({
             key={item.driver_id}
             title={`${item?.driver?.full_name}, Tháng ${form.getFieldValue(
               "month"
-            )}-${form.getFieldValue("year")} - ${
-              existPayslip?.submitted ? "Đã lưu" : "Chưa lưu"
-            }`}
+            )}-${form.getFieldValue("year")} - ${existPayslip?.submitted ? "Đã lưu" : "Chưa lưu"
+              }`}
             className="mb-8"
           >
             <SummaryFormDriver

@@ -38,7 +38,7 @@ const ExternalSumary = ({
       (item: any) => item.contractor_id === contractor.id
     );
 
-    const payslipRecords = payslipList.filter(
+    const payslipRecords = payslipList?.filter(
       (item: any) => item.contractor_id === contractor.id
     );
 
@@ -226,9 +226,9 @@ const ExternalSumary = ({
 
       <Divider />
 
-      {orderListSummarized.map((item: any) => {
-        const existPayslip = payslipList.find(
-          (p: any) => p.driver_id === item.driver_id
+      {orderListSummarized?.map((item: any) => {
+        const existPayslip = payslipList?.find(
+          (p: any) => p.contractor_id === item.contractor_id
         );
 
         return (

@@ -34,14 +34,14 @@ const SummaryFormDriver = (props: any) => {
         setLoading(true);
         const allFields = form.getFieldsValue();
         const {
-          take_care_truck_salary,
-          allowance_sunday_salary,
-          allowance_daily_salary,
-          allowance_phone_salary,
-          kpi_salary,
-          deposit_salary,
-          other_salary,
-          notes,
+          take_care_truck_salary = 0,
+          allowance_sunday_salary = 0,
+          allowance_daily_salary = 0,
+          allowance_phone_salary = 0,
+          kpi_salary = 0,
+          deposit_salary = 0,
+          other_salary = 0,
+          notes = "",
         } = allFields;
         const payload = {
           driver_id: props.data.driver_id,
@@ -128,21 +128,13 @@ const SummaryFormDriver = (props: any) => {
     };
 
     useEffect(() => {
-      calculateFinalSalary();
+      if (!props?.data?.existPayslip) {
+        calculateFinalSalary();
+      } else {
+        form.setFieldsValue(props?.data?.existPayslip)
+        calculateFinalSalary();
+      }
     }, [props.data]);
-
-
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        const btn = submitBtnRef.current;
-        if (btn) {
-          btn.click();
-          submitBtnRef.current = null;
-        }
-      }, 2000);
-
-      return () => clearTimeout(timer); // cleanup on unmount
-    }, []);
 
     return (
       <Form
@@ -360,7 +352,7 @@ const SummaryFormDriver = (props: any) => {
           <Col xs={24}>
             <Space size="middle">
               <strong className="text-lg">
-                <label className="font-medium">Thực lĩnh: </label>
+                <label className="font-medium">Tổng cước: </label>
                 <Text className="text-red-600 text-lg">
                   {finalSalary.toLocaleString()}
                 </Text>

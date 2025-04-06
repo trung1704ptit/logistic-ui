@@ -87,7 +87,7 @@ export const PAYSLIP_KEYS = [
   { label: "Phí dầu", value: "oil_fee" },
   { label: "Thu cước", value: "charge_fee" },
   { label: "Ghi chú", value: "notes" },
-  { label: "Thực lĩnh", value: "final_salary" },
+  { label: "Tổng cước", value: "final_salary" },
 ];
 
 export const CONTRACTOR_TYPES = {

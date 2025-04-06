@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import http from "@/lib/http";
 import ErrorMessage from "@/components/Alert/Error";
 import { fetchTrucks } from "@/store/slices/truckSlice";
-import { fetchDrivers } from "@/store/slices/driverSlice";
 import { fetchContractors } from "@/store/slices/contractorSlice";
 
 const { TextArea } = Input;
@@ -151,7 +150,6 @@ const UpdateTruckForm: React.FC = () => {
             <Form.Item
               label="Thương hiệu xe"
               name="brand"
-              rules={[{ required: true, message: "Hãy nhập Thương hiệu xe!" }]}
             >
               <Input size="large" placeholder="Ví dụ Huyndai" />
             </Form.Item>

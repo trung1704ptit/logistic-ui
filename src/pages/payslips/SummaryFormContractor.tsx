@@ -30,14 +30,14 @@ const SummaryFormContractor = (props: any) => {
         setLoading(true);
         const allFields = form.getFieldsValue();
         const {
-          take_care_truck_salary,
-          allowance_sunday_salary,
-          allowance_daily_salary,
-          allowance_phone_salary,
-          kpi_salary,
-          deposit_salary,
-          other_salary,
-          notes,
+          take_care_truck_salary = 0,
+          allowance_sunday_salary = 0,
+          allowance_daily_salary = 0,
+          allowance_phone_salary = 0,
+          kpi_salary = 0,
+          deposit_salary = 0,
+          other_salary = 0,
+          notes = "",
         } = allFields;
         const payload = {
           driver_id: props.data.driver_id,
@@ -126,20 +126,13 @@ const SummaryFormContractor = (props: any) => {
     };
 
     useEffect(() => {
-      calculateFinalSalary();
+      if (!props?.data?.existPayslip) {
+        calculateFinalSalary();
+      } else {
+        form.setFieldsValue(props?.data?.existPayslip)
+        calculateFinalSalary();
+      }
     }, [props.data]);
-
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        const btn = submitBtnRef.current;
-        if (btn) {
-          btn.click();
-          submitBtnRef.current = null;
-        }
-      }, 2000);
-
-      return () => clearTimeout(timer); // cleanup on unmount
-    }, []);
 
     return (
       <Form
@@ -160,12 +153,6 @@ const SummaryFormContractor = (props: any) => {
       >
         <Row gutter={[32, 16]}>
           <Col xs={12} sm={6}>
-            <label className="font-medium">Tài xế:</label>
-            <br />
-            <Text>{props?.data?.driver?.full_name}</Text>
-          </Col>
-
-          <Col xs={12} sm={6}>
             <label className="font-medium">Nhà thầu:</label>
             <br />
             <Text>{props.data?.contractor?.name}</Text>
@@ -179,30 +166,9 @@ const SummaryFormContractor = (props: any) => {
           </Col>
 
           <Col xs={12} sm={6}>
-            <label className="font-medium">Lương cứng:</label>
-            <br />
-            <Text>{props.data?.driver?.fixed_salary?.toLocaleString()}</Text>
-          </Col>
-
-          <Col xs={12} sm={6}>
             <Form.Item
               label="Lương trách nhiệm xe:"
               name="take_care_truck_salary"
-              className="mb-0 font-medium"
-              normalize={(value) => (value ? Number(value) : value)}
-            >
-              <InputNumber
-                min={0}
-                placeholder="Nhập lương"
-                className="md:w-[50%] w-[100%]"
-              />
-            </Form.Item>
-          </Col>
-
-          <Col xs={12} sm={6}>
-            <Form.Item
-              label="Phụ cấp làm ngày CN:"
-              name="allowance_sunday_salary"
               className="mb-0 font-medium"
               normalize={(value) => (value ? Number(value) : value)}
             >
@@ -245,48 +211,9 @@ const SummaryFormContractor = (props: any) => {
           </Col>
 
           <Col xs={12} sm={6}>
-            <label className="font-medium">Lương điểm:</label>
-            <br />
-            <Text>{props.data.point_salary}</Text>
-          </Col>
-
-          <Col xs={12} sm={6}>
-            <label className="font-medium">Tổng cước:</label>
-            <br />
-            <Text>{props.data.price_for_contractor.toLocaleString()}</Text>
-          </Col>
-
-          <Col xs={12} sm={6}>
             <label className="font-medium">Tiền ăn:</label>
             <br />
             <Text>{props.data.meal_fee.toLocaleString()}</Text>
-          </Col>
-
-          <Col xs={12} sm={6}>
-            <label className="font-medium">Lương theo ngày:</label>
-            <br />
-            <Text>{props.data.daily_salary.toLocaleString()}</Text>
-          </Col>
-
-          <Col xs={12} sm={6}>
-            <Form.Item
-              label="Thưởng KPI 45c/tháng:"
-              name="kpi_salary"
-              className="mb-0 font-medium"
-              normalize={(value) => (value ? Number(value) : value)}
-            >
-              <InputNumber
-                min={0}
-                placeholder="Nhập lương"
-                className="md:w-[50%] w-[100%]"
-              />
-            </Form.Item>
-          </Col>
-
-          <Col xs={12} sm={6}>
-            <label className="font-medium">Lương bốc xếp:</label>
-            <br />
-            <Text>{props.data.loading_salary.toLocaleString()}</Text>
           </Col>
 
           <Col xs={12} sm={6}>
@@ -357,7 +284,7 @@ const SummaryFormContractor = (props: any) => {
           <Col xs={24}>
             <Space size="middle">
               <strong className="text-lg">
-                <label className="font-medium">Thực lĩnh: </label>
+                <label className="font-medium">Tổng cước: </label>
                 <Text className="text-red-600 text-lg">
                   {finalSalary.toLocaleString()}
                 </Text>

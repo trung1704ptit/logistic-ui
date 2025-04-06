@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Select, Button, Row, Col, Spin, Space, Form, message } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
-import { IDriver } from "@/interfaces/driver";
 import { webRoutes } from "@/routes/web";
 import BasePageContainer from "@/components/layout/pageContainer";
 import { apiRoutes } from "@/routes/api";
@@ -29,12 +28,14 @@ const breadcrumb = {
   ],
 };
 
-function summarizeByDriverId(data: IOrder[]) {
+function summarizeByDriverId(data: IOrder[], payslips: any) {
   const summary: any = {};
 
   data.forEach((entry) => {
     const { driver_id, driver, contractor, contractor_id, ...fields } = entry;
-
+    const existPayslip = payslips?.find(
+      (p: any) => p.driver_id === driver_id && p.contractor_id === contractor_id
+    );
     if (driver?.full_name) {
       if (!summary[driver_id]) {
         summary[driver_id] = {
@@ -57,6 +58,7 @@ function summarizeByDriverId(data: IOrder[]) {
           outside_oil_fee: 0,
           total_salary: 0,
           charge_fee: 0,
+          existPayslip
         };
       }
 
@@ -79,27 +81,33 @@ function summarizeByDriverId(data: IOrder[]) {
     }
   });
 
-  return Object.values(summary);
+
+  console.log("summary drivers:", summary)
+
+  return Object.values(summary) || [];
 }
 
 function summarizeByContractor(
   data: IOrder[],
-  selectedContractor?: IContractor
+  payslips: any,
+  contractorId?: string,
 ) {
   const summary: any = {};
-
-  const filterData = data.filter(
-    (item) => item.contractor_id === selectedContractor?.id
-  );
+  let filterData = data;
+  if (contractorId !== "all") {
+    filterData = data.filter(
+      (item) => item.contractor_id === contractorId
+    );
+  }
 
   filterData.forEach((entry) => {
     const { driver_id, driver, contractor, contractor_id, ...fields } = entry;
-
+    const existPayslip = payslips?.find(
+      (p: any) => p.contractor_id === contractor_id
+    );
     if (!summary[contractor_id]) {
       summary[contractor_id] = {
-        driver_id,
         contractor_id,
-        driver,
         contractor,
         total_trips: 0,
         trip_salary: 0,
@@ -116,6 +124,7 @@ function summarizeByContractor(
         outside_oil_fee: 0,
         total_salary: 0,
         charge_fee: 0,
+        existPayslip
       };
     }
 
@@ -137,8 +146,11 @@ function summarizeByContractor(
     summary[contractor_id].charge_fee += fields.charge_fee || 0;
   });
 
+
+  console.log('summary contractor:', summary)
   return Object.values(summary);
 }
+
 
 const PayslipAdmin: React.FC = () => {
   const [form] = Form.useForm();
@@ -147,67 +159,168 @@ const PayslipAdmin: React.FC = () => {
   const contractors = useSelector(
     (state: RootState) => state.contractor.contractors
   );
-  const drivers = useSelector((state: RootState) => state.driver.drivers);
-
-  const [selectedContractor, setSelectedContractor] = useState<IContractor>();
-  const [selectedDriver, setSelectedDriver] = useState<string | null>(null);
-  const [filteredDrivers, setFilteredDrivers] = useState<IDriver[]>([]);
+  const selectedContractordRef = useRef<IContractor>()
   const [isLoading, setIsLoading] = useState(false);
-  const [orderListSummarized, setOrderListSummarized] = useState<any>([]);
+  const [orderListSummarized, setOrderListSummarized] = useState<any>();
   const [orderListRaw, setOrderListRaw] = useState<any>([]);
   const [payslipList, setPayslipList] = useState<any>([]);
+  const settings = useSelector((state: RootState) => state.setting.settings);
+  const KPIThreshold = settings?.kpi_threshold || 45;
+  const KPIBonus = settings?.kpi_bonus || 500000;
 
   const currentYear = new Date().getFullYear();
   const selectedMonth = form.getFieldValue("month");
   const selectedYear = form.getFieldValue("year");
 
-  // Handle contractor selection and filter drivers based on the contractor
-  useEffect(() => {
-    if (selectedContractor) {
-      const filtered = drivers.filter(
-        (driver) => driver.contractor_id === selectedContractor.id
+  const fetchPayslips = async (type?: string) => {
+    try {
+      const values = await form.validateFields();
+      const payslipRes = await http.get(
+        `${apiRoutes.payslips}?year=${values.year}&month=${values.month}&contractor_id=${values.contractor_id}&type=${type}`
       );
 
-      setFilteredDrivers(filtered);
-      setSelectedDriver(null);
+      if (payslipRes && payslipRes.data) {
+        const payslipData = payslipRes.data.data;
+        setPayslipList(payslipData);
+      }
+      return payslipRes.data.data;
+    } catch (error) {
+      console.log(error);
+      return []
     }
-  }, [selectedContractor, drivers]);
+  };
 
-  const fetchPayslips = async (contractor?: IContractor) => {
-    const values = await form.validateFields();
-    const payslipRes = await http.get(
-      `${apiRoutes.payslips}?year=${values.year}&month=${values.month
-      }&contractor_id=${contractor?.id || selectedContractor?.id}`
-    );
+  const handleSubmitDrivers = async (data: any) => {
+    try {
+      const kpiSalary = data.total_trips >= KPIThreshold ? KPIBonus : 0;
+      const finalSalary =
+        kpiSalary +
+        data.total_salary +
+        data.driver.fixed_salary;
 
-    if (payslipRes && payslipRes.data) {
-      const payslipData = payslipRes.data.data;
-      setPayslipList(payslipData);
+      const payload = {
+        driver_id: data.driver_id,
+        contractor_id: data.contractor_id,
+        total_trips: data.total_trips,
+        take_care_truck_salary: 0,
+        point_salary: data.point_salary,
+        trip_salary: data.trip_salary,
+        daily_salary: data.daily_salary,
+        meal_fee: data.meal_fee,
+        charge_fee: data.charge_fee,
+        loading_salary: data.loading_salary,
+        allowance_sunday_salary: 0,
+        allowance_daily_salary: 0,
+        allowance_phone_salary: 0,
+        kpi_salary: kpiSalary,
+        oil_fee: data.oil_fee,
+        other_salary: 0,
+        outside_oil_fee: data.outside_oil_fee,
+        parking_fee: data.parking_fee,
+        recovery_fee: data.recovery_fee,
+        deposit_salary: 0,
+        standby_fee: data.standby_fee,
+        total_salary: data.total_salary,
+        final_salary: finalSalary,
+        year: form.getFieldValue("year"),
+        month: form.getFieldValue("month"),
+        notes: "",
+      };
+
+      if (!data?.existPayslip) {
+        await http.post(apiRoutes.payslips, payload);
+        message.destroy();
+        message.success("Đã cập nhật dữ liệu cước mới nhất");
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } catch (error) {
+      message.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
+      console.log(error);
+    }
+  };
+
+  const handleSubmitContractors = async (data: any) => {
+    try {
+      const payload = {
+        driver_id: data.driver_id,
+        contractor_id: data.contractor_id,
+        total_trips: data.total_trips,
+        take_care_truck_salary: 0,
+        point_salary: data.point_salary,
+        trip_salary: data.trip_salary,
+        daily_salary: data.daily_salary,
+        meal_fee: data.meal_fee,
+        charge_fee: data.charge_fee,
+        loading_salary: data.loading_salary,
+        allowance_sunday_salary: 0,
+        allowance_daily_salary: 0,
+        allowance_phone_salary: 0,
+        kpi_salary: 0,
+        oil_fee: data.oil_fee,
+        other_salary: 0,
+        outside_oil_fee: data.outside_oil_fee,
+        parking_fee: data.parking_fee,
+        recovery_fee: data.recovery_fee,
+        deposit_salary: 0,
+        standby_fee: data.standby_fee,
+        total_salary: data.total_salary,
+        final_salary: data.total_salary,
+        year: form.getFieldValue("year"),
+        month: form.getFieldValue("month"),
+        notes: "",
+      };
+
+      if (!data?.existPayslip) {
+        await http.post(apiRoutes.payslips, payload);
+        message.destroy();
+        message.success("Đã cập nhật dữ liệu cước mới nhất");
+      }
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    } catch (error) {
+      message.error("Đã có lỗi xảy ra, vui lòng thử lại sau");
+      console.log(error);
     }
   };
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      const selectedContractor = handleSelectContractor(values.contractor_id);
+      const payslips = await fetchPayslips(selectedContractordRef.current?.type);
       setIsLoading(true);
       const orderRes = await http.get(
-        `${apiRoutes.orders}?year=${values.year}&month=${values.month}&contractor_id=${selectedContractor?.id}`
+        `${apiRoutes.orders}?year=${values.year}&month=${values.month}&contractor_id=${values.contractor_id}`
       );
-      fetchPayslips(selectedContractor);
 
       if (orderRes && orderRes.data) {
-        let orderData = {};
-        if (selectedContractor?.type === CONTRACTOR_TYPES.internal) {
-          orderData = summarizeByDriverId(orderRes.data.data);
+        let orderData = [];
+        if (selectedContractordRef.current?.type === CONTRACTOR_TYPES.internal) {
+          console.log('run into drivers')
+          orderData = summarizeByDriverId(orderRes.data.data, payslips);
+          orderData?.forEach(data => handleSubmitDrivers(data))
         } else {
+          console.log('run into contractor...')
+
           orderData = summarizeByContractor(
             orderRes.data.data,
-            selectedContractor
+            payslips,
+            values.contractor_id
           );
+          orderData?.forEach(data => handleSubmitContractors(data))
         }
+
         setOrderListSummarized(orderData);
         setOrderListRaw(orderRes.data.data);
+        setTimeout(() => {
+          fetchPayslips(selectedContractordRef.current?.type)
+        }, 1000)
       }
     } catch (error) {
       console.log(error);
@@ -216,33 +329,10 @@ const PayslipAdmin: React.FC = () => {
     }
   };
 
-  // const hanleViewOrderListByDriver = (driverId: string) => {
-  //   const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&driver_id=${driverId}`;
-  //   window.open(url, "_blank");
-  // };
-
-  // const hanleViewOrderListByContractor = (driverId: string) => {
-  //   const url = `${webRoutes.orders}?year=${selectedYear}&month=${selectedMonth}&contractor_id=${driverId}&driver_id=all`;
-  //   window.open(url, "_blank");
-  // };
-
   const handleSelectContractor = (contractorId: string) => {
     const filterItem = contractors.find((item) => item.id === contractorId);
-    setSelectedContractor(filterItem);
-    return filterItem;
+    selectedContractordRef.current = filterItem;
   };
-
-  // const exportExcel = (driver: IDriver) => {
-  //   const orderRecords = orderListRaw.filter(
-  //     (item: any) => item.driver_id === driver.id
-  //   );
-
-  //   const payslipRecords = payslipList.filter(
-  //     (item: any) => item.driver_id === driver.id
-  //   );
-
-  //   exportSingleDriverToExcel(orderRecords, payslipRecords, driver);
-  // };
 
   const exportSingleDriverToExcel = (
     orderRecords: any,
@@ -328,7 +418,10 @@ const PayslipAdmin: React.FC = () => {
       <Form
         form={form}
         layout="vertical"
-        initialValues={{ year: currentYear, drivers: "*" }}
+        initialValues={{
+          year: currentYear,
+          contractor_id: "all"
+        }}
       >
         <Row gutter={16}>
           <Col xs={12} sm={12} md={3}>
@@ -349,7 +442,7 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          <Col xs={12} sm={12} md={3}>
+          <Col xs={12} sm={12} md={4}>
             <Form.Item
               label="Tháng"
               name="month"
@@ -373,8 +466,11 @@ const PayslipAdmin: React.FC = () => {
               <Select
                 placeholder="Chọn nhà thầu"
                 style={{ width: "100%" }}
-              // onChange={handleSelectContractor}
+                onChange={handleSelectContractor}
               >
+                <Select.Option value="all">
+                  Tất cả
+                </Select.Option>
                 {contractors.map((contractor) => (
                   <Select.Option key={contractor.id} value={contractor.id}>
                     {contractor.name}
@@ -383,28 +479,6 @@ const PayslipAdmin: React.FC = () => {
               </Select>
             </Form.Item>
           </Col>
-          {/* <Col xs={12} sm={12} md={5}>
-            <Form.Item
-              label="Tài Xế"
-              name="drivers"
-              rules={[{ required: true, message: "Vui lòng chọn tài xế" }]}
-            >
-              <Select
-                mode="multiple"
-                placeholder="Chọn tài xế"
-                style={{ width: "100%" }}
-              >
-                <Select.Option key={"*"} value={"*"}>
-                  Tất cả
-                </Select.Option>
-                {filteredDrivers.map((driver) => (
-                  <Select.Option key={driver.id} value={driver.id}>
-                    {driver.full_name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col> */}
         </Row>
         <Space>
           <Button type="primary" onClick={handleSubmit}>
@@ -413,7 +487,7 @@ const PayslipAdmin: React.FC = () => {
           <Button
             type="dashed"
             onClick={() => {
-              if (!selectedContractor || !selectedMonth || !selectedYear) {
+              if (!selectedContractordRef.current || !selectedMonth || !selectedYear) {
                 message.error("Vui lòng lựa chọn nhà thầu, tháng, năm!");
                 return;
               }
@@ -430,7 +504,7 @@ const PayslipAdmin: React.FC = () => {
       ) : (
         orderListSummarized && (
           <>
-            {selectedContractor?.type === CONTRACTOR_TYPES.internal ? (
+            {selectedContractordRef.current?.type === CONTRACTOR_TYPES.internal ? (
               <InternalSummary
                 orderListSummarized={orderListSummarized}
                 payslipList={payslipList}
@@ -438,7 +512,7 @@ const PayslipAdmin: React.FC = () => {
                 selectedYear={selectedYear}
                 selectedMonth={selectedMonth}
                 form={form}
-                fetchPayslips={fetchPayslips}
+                fetchPayslips={() => fetchPayslips(selectedContractordRef.current?.type)}
               />
             ) : (
               <ExternalSummary
@@ -448,7 +522,7 @@ const PayslipAdmin: React.FC = () => {
                 selectedYear={selectedYear}
                 selectedMonth={selectedMonth}
                 form={form}
-                fetchPayslips={fetchPayslips}
+                fetchPayslips={() => fetchPayslips(selectedContractordRef.current?.type)}
               />
             )}
           </>
